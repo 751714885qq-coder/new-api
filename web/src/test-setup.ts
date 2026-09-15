@@ -20,7 +20,14 @@ import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
 import i18next from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import { afterEach, beforeAll } from 'vitest'
+import { afterEach, beforeAll, vi } from 'vitest'
+
+// @visactor/vchart ships ESM files with extensionless relative imports that
+// Node-style resolution cannot load under vitest; charts are not under test.
+vi.mock('@visactor/react-vchart', () => ({ VChart: () => null }))
+vi.mock('@visactor/vchart', () => ({
+  ThemeManager: { setCurrentTheme: () => undefined },
+}))
 
 beforeAll(async () => {
   await i18next.use(initReactI18next).init({

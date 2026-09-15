@@ -107,19 +107,23 @@ async function renderOverview() {
 }
 
 describe('overview setup guide', () => {
-  it('shows usage first and only a header entry when setup is complete', async () => {
+  it('shows cockpit heading first and only a header entry when setup is complete', async () => {
     await renderOverview()
 
     const toggle = await screen.findByRole('button', { name: 'Setup guide' })
     expect(toggle).toHaveAttribute('aria-expanded', 'false')
     expect(
       screen.getAllByRole('heading').map((heading) => heading.textContent)
-    ).toEqual(['Overview', 'Usage at a glance'])
+    ).toEqual(['AI Connects the World · Making Models Work for You'])
     expect(screen.queryByText('Setup guide complete')).not.toBeInTheDocument()
     expect(screen.queryByText('Setup progress: 3/3')).not.toBeInTheDocument()
-    for (const name of ['API Keys', 'Channels', 'Usage Logs', 'Pricing']) {
+    for (const name of ['Channels', 'Pricing']) {
       expect(screen.queryByRole('button', { name })).not.toBeInTheDocument()
     }
+    // Quick access is a permanent cockpit panel, independent of the guide.
+    expect(
+      screen.getAllByRole('button', { name: 'API Keys' }).length
+    ).toBeGreaterThan(0)
     const panel = document.getElementById(
       toggle.getAttribute('aria-controls') ?? ''
     )
@@ -145,7 +149,9 @@ describe('overview setup guide', () => {
       })
     ).toBeVisible()
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: /^API Keys/ })).toBeVisible()
+      expect(
+        screen.getAllByRole('button', { name: /^API Keys/ }).length
+      ).toBeGreaterThan(0)
     )
 
     await user.keyboard(' ')
@@ -191,7 +197,10 @@ describe('overview setup guide', () => {
     expect(
       screen.getByText('Setup guide is collapsed. Expand it anytime.')
     ).toBeVisible()
-    expect(screen.getByRole('button', { name: 'API Keys' })).toBeVisible()
+    // The banner's compact quick actions coexist with the cockpit panel.
+    expect(
+      screen.getAllByRole('button', { name: 'API Keys' }).length
+    ).toBeGreaterThan(0)
     expect(
       screen.queryByRole('button', { name: 'Setup guide' })
     ).not.toBeInTheDocument()
