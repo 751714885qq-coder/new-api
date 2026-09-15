@@ -1,0 +1,61 @@
+name: Publish Docker image (deep-space)
+
+# WO-019: build the deep-space console restyle into a self-hosted image and
+# publish to GHCR. Server pulls ghcr.io/751714885qq-coder/new-api:rc36-deepspace-v1
+# (package visibility is set to public after first successful build).
+
+on:
+  push:
+    branches: [deepspace-rc36]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    name: Build & push (linux/amd64)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 1
+
+      - name: Write VERSION
+        run: |
+          echo "rc36-deepspace-v1" > VERSION
+          echo "Publishing version: rc36-deepspace-v1"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+
+      - name: Log in to GHCR
+        uses: docker/login-action@c99871dec2022cc055c062a10cc1a1310835ceb4 # v4.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push
+        id: build
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/751714885qq-coder/new-api:rc36-deepspace-v1
+          labels: |
+            org.opencontainers.image.source=https://github.com/751714885qq-coder/new-api
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Output digest
+        run: |
+          echo "### Deep Space image" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "ghcr.io/751714885qq-coder/new-api:rc36-deepspace-v1" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.build.outputs.digest }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

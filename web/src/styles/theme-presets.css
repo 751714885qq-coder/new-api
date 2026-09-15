@@ -426,10 +426,14 @@ For commercial licensing, please contact support@quantumnous.com
  *   - `anthropic`: warm cream surfaces are a brand choice, NOT a primary-mix
  *     derivation (the Anthropic system deliberately uses warm neutrals for
  *     cards/borders rather than tinting them with the clay accent).
- *   - `simple-large`: keeps intentionally neutral, high-contrast surfaces. */
+ *   - `simple-large`: keeps intentionally neutral, high-contrast surfaces.
+ *   - `deep-space`: bespoke deep-space surfaces defined in its own block
+ *     (WO-019); derived primary-mix surfaces would fight the palette. */
 [data-theme-preset]:not([data-theme-preset='default']):not(
   [data-theme-preset='anthropic']
-):not([data-theme-preset='simple-large']) {
+):not([data-theme-preset='simple-large']):not(
+  [data-theme-preset='deep-space']
+) {
   --card: color-mix(in oklch, var(--primary) 3%, var(--background));
   --popover: color-mix(in oklch, var(--primary) 5%, var(--background));
   --muted: color-mix(in oklch, var(--primary) 7%, var(--background));
@@ -454,7 +458,9 @@ For commercial licensing, please contact support@quantumnous.com
 .dark
   [data-theme-preset]:not([data-theme-preset='default']):not(
     [data-theme-preset='anthropic']
-  ):not([data-theme-preset='simple-large']) {
+  ):not([data-theme-preset='simple-large']):not(
+    [data-theme-preset='deep-space']
+  ) {
   --card: color-mix(in oklch, var(--primary) 8%, var(--background));
   --popover: color-mix(in oklch, var(--primary) 12%, var(--background));
   --muted: color-mix(in oklch, var(--primary) 12%, var(--background));
@@ -739,4 +745,110 @@ For commercial licensing, please contact support@quantumnous.com
     margin-inline: auto;
     width: 100%;
   }
+}
+
+/* ── Deep Space (MindClaw, WO-019) ────────────────────────────────────── */
+/* Bespoke deep-space palette derived from the approved WO-008 homepage
+ * visual system (feTurbulence nebula, --mc-* token family). Like
+ * `anthropic`, this preset defines its own full surface set instead of
+ * relying on the primary-mix semantic bridge, so it is opted out below.
+ * Light mode is an original design in the same color family (no mockup
+ * baseline exists for light); subject to user visual review. */
+[data-theme-preset='deep-space'] {
+  --background: oklch(0.966 0.016 262.8);
+  --foreground: oklch(0.249 0.043 271.4);
+  --card: oklch(0.982 0.008 265);
+  --card-foreground: oklch(0.249 0.043 271.4);
+  --popover: oklch(0.99 0.005 265);
+  --popover-foreground: oklch(0.249 0.043 271.4);
+  --primary: oklch(0.659 0.181 261.4);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.92 0.038 271);
+  --secondary-foreground: oklch(0.249 0.043 271.4);
+  --muted: oklch(0.94 0.02 265);
+  --muted-foreground: oklch(0.531 0.07 267.1);
+  --accent: oklch(0.92 0.038 271);
+  --accent-foreground: oklch(0.249 0.043 271.4);
+  --success: oklch(0.627 0.146 163.8);
+  --success-foreground: oklch(1 0 0);
+  --border: oklch(0.89 0.03 268);
+  --input: oklch(0.86 0.035 268);
+  --ring: oklch(0.659 0.181 261.4);
+  --chart-1: oklch(0.659 0.181 261.4);
+  --chart-2: oklch(0.599 0.23 286.2);
+  --chart-3: oklch(0.68 0.12 234.7);
+  --chart-4: oklch(0.75 0.15 74.9);
+  --chart-5: oklch(0.627 0.146 163.8);
+  --overview-accent-1: var(--chart-1);
+  --overview-accent-2: var(--chart-2);
+  --overview-accent-3: var(--chart-3);
+  --sidebar: oklch(0.945 0.02 264);
+  --sidebar-foreground: oklch(0.249 0.043 271.4);
+  --sidebar-primary: oklch(0.659 0.181 261.4);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.92 0.038 271);
+  --sidebar-accent-foreground: oklch(0.249 0.043 271.4);
+  --sidebar-border: oklch(0.89 0.03 268);
+  --sidebar-ring: oklch(0.659 0.181 261.4);
+  --skeleton-base: oklch(0.93 0.02 265);
+  --skeleton-highlight: oklch(0.965 0.01 265);
+}
+.dark [data-theme-preset='deep-space'] {
+  --background: oklch(0.127 0.027 254.6);
+  --foreground: oklch(0.95 0.024 270.3);
+  --card: oklch(0.187 0.052 269.2);
+  --card-foreground: oklch(0.95 0.024 270.3);
+  --popover: oklch(0.227 0.06 267.6);
+  --popover-foreground: oklch(0.95 0.024 270.3);
+  --primary: oklch(0.659 0.181 261.4);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.739 0.134 272.4);
+  --secondary-foreground: oklch(0.127 0.027 254.6);
+  --muted: oklch(0.227 0.06 267.6);
+  --muted-foreground: oklch(0.771 0.079 266);
+  --accent: oklch(0.271 0.052 268.8);
+  --accent-foreground: oklch(0.95 0.024 270.3);
+  --success: oklch(0.818 0.159 163.8);
+  --success-foreground: oklch(0.127 0.027 254.6);
+  --warning: oklch(0.818 0.134 74.9);
+  --warning-foreground: oklch(0.127 0.027 254.6);
+  --info: oklch(0.739 0.134 272.4);
+  --info-foreground: oklch(0.127 0.027 254.6);
+  --neutral: oklch(0.771 0.079 266);
+  --neutral-foreground: oklch(0.127 0.027 254.6);
+  --border: oklch(0.334 0.057 268.4);
+  --input: oklch(0.334 0.057 268.4);
+  --ring: oklch(0.659 0.181 261.4);
+  --chart-1: oklch(0.659 0.181 261.4);
+  --chart-2: oklch(0.709 0.159 293.5);
+  --chart-3: oklch(0.844 0.091 234.7);
+  --chart-4: oklch(0.818 0.134 74.9);
+  --chart-5: oklch(0.818 0.159 163.8);
+  --overview-accent-1: var(--chart-1);
+  --overview-accent-2: var(--chart-2);
+  --overview-accent-3: var(--chart-3);
+  --sidebar: oklch(0.16 0.045 267);
+  --sidebar-foreground: oklch(0.95 0.024 270.3);
+  --sidebar-primary: oklch(0.659 0.181 261.4);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.271 0.052 268.8);
+  --sidebar-accent-foreground: oklch(0.95 0.024 270.3);
+  --sidebar-border: oklch(0.271 0.052 268.8);
+  --sidebar-ring: oklch(0.659 0.181 261.4);
+  --skeleton-base: oklch(0.227 0.06 267.6);
+  --skeleton-highlight: oklch(0.271 0.052 268.8);
+}
+
+/* ── Deep Space backdrop ──────────────────────────────────────────────── */
+/* feTurbulence nebula + star field, same technique as the WO-008 homepage
+ * (no radial-gradient "sticker" glows — explicitly rejected by the user).
+ * Fixed attachment so the sky is continuous while content scrolls. */
+body[data-theme-preset='deep-space'] {
+  background-color: var(--background);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='32' cy='48' r='1' opacity='.55'/%3E%3Ccircle cx='118' cy='14' r='.8' opacity='.4'/%3E%3Ccircle cx='207' cy='77' r='1.1' opacity='.65'/%3E%3Ccircle cx='289' cy='33' r='.7' opacity='.35'/%3E%3Ccircle cx='361' cy='102' r='1' opacity='.5'/%3E%3Ccircle cx='76' cy='161' r='.8' opacity='.4'/%3E%3Ccircle cx='173' cy='139' r='1' opacity='.55'/%3E%3Ccircle cx='258' cy='187' r='.7' opacity='.3'/%3E%3Ccircle cx='341' cy='155' r='1.2' opacity='.6'/%3E%3Ccircle cx='402' cy='211' r='.8' opacity='.4'/%3E%3Ccircle cx='19' cy='247' r='1' opacity='.5'/%3E%3Ccircle cx='96' cy='288' r='.7' opacity='.35'/%3E%3Ccircle cx='188' cy='262' r='1.1' opacity='.6'/%3E%3Ccircle cx='277' cy='301' r='.8' opacity='.4'/%3E%3Ccircle cx='352' cy='274' r='1' opacity='.5'/%3E%3Ccircle cx='55' cy='352' r='.8' opacity='.4'/%3E%3Ccircle cx='142' cy='381' r='1' opacity='.55'/%3E%3Ccircle cx='231' cy='356' r='.7' opacity='.3'/%3E%3Ccircle cx='316' cy='392' r='1' opacity='.5'/%3E%3Ccircle cx='393' cy='349' r='.9' opacity='.45'/%3E%3C/g%3E%3C/svg%3E");
+  background-attachment: fixed;
+}
+.dark body[data-theme-preset='deep-space'] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006 0.011' numOctaves='3' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 0.31  0 0 0 0 0.43  0 0 0 0 1  0 0 0 0.4 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 0 0 0.06 0.12 0.2 0.3 0.42'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='1600' height='900' filter='url(%23n)'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='32' cy='48' r='1' opacity='.7'/%3E%3Ccircle cx='118' cy='14' r='.8' opacity='.5'/%3E%3Ccircle cx='207' cy='77' r='1.1' opacity='.8'/%3E%3Ccircle cx='289' cy='33' r='.7' opacity='.4'/%3E%3Ccircle cx='361' cy='102' r='1' opacity='.6'/%3E%3Ccircle cx='76' cy='161' r='.8' opacity='.5'/%3E%3Ccircle cx='173' cy='139' r='1' opacity='.7'/%3E%3Ccircle cx='258' cy='187' r='.7' opacity='.35'/%3E%3Ccircle cx='341' cy='155' r='1.2' opacity='.75'/%3E%3Ccircle cx='402' cy='211' r='.8' opacity='.5'/%3E%3Ccircle cx='19' cy='247' r='1' opacity='.6'/%3E%3Ccircle cx='96' cy='288' r='.7' opacity='.4'/%3E%3Ccircle cx='188' cy='262' r='1.1' opacity='.75'/%3E%3Ccircle cx='277' cy='301' r='.8' opacity='.5'/%3E%3Ccircle cx='352' cy='274' r='1' opacity='.6'/%3E%3Ccircle cx='55' cy='352' r='.8' opacity='.5'/%3E%3Ccircle cx='142' cy='381' r='1' opacity='.7'/%3E%3Ccircle cx='231' cy='356' r='.7' opacity='.35'/%3E%3Ccircle cx='316' cy='392' r='1' opacity='.6'/%3E%3Ccircle cx='393' cy='349' r='.9' opacity='.55'/%3E%3C/g%3E%3C/svg%3E");
+  background-attachment: fixed, fixed;
 }

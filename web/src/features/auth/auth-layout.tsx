@@ -53,6 +53,17 @@ export function AuthLayout({ children }: AuthLayoutProps) {
           <h1 className='text-xl font-medium'>{systemName}</h1>
         )}
       </Link>
+      <div className='absolute top-20 left-4 z-10 hidden max-w-xs space-y-1 sm:top-24 sm:left-8 lg:block'>
+        <p className='text-lg font-semibold text-foreground'>
+          {t("The relay to the world's leading AI models")}
+        </p>
+        <p className='text-sm leading-relaxed text-muted-foreground'>
+          {t('One API Key for OpenAI, Claude, Gemini, DeepSeek, Qwen and more')}
+        </p>
+        <p className='text-sm text-muted-foreground'>
+          {t('Stable · Fast · Affordable')}
+        </p>
+      </div>
       <div className='container flex items-center pt-16 sm:pt-0'>
         <div className='mx-auto flex w-full flex-col justify-center space-y-2 px-4 py-8 sm:w-[480px] sm:p-8'>
           {children}

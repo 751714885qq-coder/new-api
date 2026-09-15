@@ -25,6 +25,14 @@ For commercial licensing, please contact support@quantumnous.com
 
 export const THEME_PRESETS = [
   {
+    // MindClaw deep-space visual system (WO-019). Dark palette mirrors the
+    // approved WO-008 homepage (--mc-* family); light is an original design
+    // in the same color family, pending user visual review.
+    value: 'deep-space',
+    name: 'Deep Space',
+    swatches: ['oklch(0.127 0.027 254.6)', 'oklch(0.659 0.181 261.4)'],
+  },
+  {
     value: 'default',
     name: 'Default',
     swatches: ['oklch(0.72 0.18 250)', 'oklch(0.7 0.12 280)'],
@@ -116,7 +124,7 @@ export type ThemeCustomization = {
 }
 
 export const DEFAULT_THEME_CUSTOMIZATION: ThemeCustomization = {
-  preset: 'default',
+  preset: 'deep-space',
   font: 'default',
   radius: 'default',
   scale: 'default',
