@@ -896,13 +896,13 @@ body[data-theme-preset='deep-space'] {
   [data-slot='sidebar-menu-button'][data-active='true'] {
   background-image: linear-gradient(
     90deg,
-    color-mix(in oklch, var(--primary) 55%, transparent),
-    color-mix(in oklch, var(--violet) 30%, transparent) 100%
+    color-mix(in oklch, var(--primary) 70%, transparent),
+    color-mix(in oklch, var(--violet) 40%, transparent) 100%
   );
   box-shadow:
     inset 0 0 0 1px
-      color-mix(in oklch, var(--primary) 45%, transparent),
-    0 0 18px -2px color-mix(in oklch, var(--primary) 40%, transparent);
+      color-mix(in oklch, var(--primary) 55%, transparent),
+    0 0 22px -2px color-mix(in oklch, var(--primary) 55%, transparent);
 }
 .dark
   :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])

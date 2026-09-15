@@ -208,7 +208,7 @@ function DeepSpaceBackdrop() {
           <feComponentTransfer>
             <feFuncA
               type='discrete'
-              tableValues='0 0 0 0.06 0.12 0.2 0.3 0.42'
+              tableValues='0 0 0 0.08 0.16 0.26 0.4 0.55'
             />
           </feComponentTransfer>
         </filter>
@@ -234,7 +234,7 @@ function DeepSpaceBackdrop() {
           <feComponentTransfer>
             <feFuncA
               type='discrete'
-              tableValues='0 0 0 0 0.05 0.1 0.16 0.26 0.38'
+              tableValues='0 0 0 0 0.08 0.14 0.24 0.36 0.5'
             />
           </feComponentTransfer>
         </filter>
