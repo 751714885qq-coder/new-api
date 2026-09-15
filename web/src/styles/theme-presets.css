@@ -754,6 +754,13 @@ For commercial licensing, please contact support@quantumnous.com
  * relying on the primary-mix semantic bridge, so it is opted out below.
  * Light mode is an original design in the same color family (no mockup
  * baseline exists for light); subject to user visual review. */
+/* Deep Space is the shipped default preset (WO-019). The provider REMOVES
+ * `data-theme-preset` when the active preset equals the default
+ * (theme-customization-provider.tsx applyAttribute), so every deep-space
+ * selector must also match the attribute-less body — that state IS
+ * deep-space. An explicit `data-theme-preset='deep-space'` can still occur
+ * via cookie when the user re-picks it from the drawer. */
+body:not([data-theme-preset]),
 [data-theme-preset='deep-space'] {
   --background: oklch(0.966 0.016 262.8);
   --foreground: oklch(0.249 0.043 271.4);
@@ -793,6 +800,7 @@ For commercial licensing, please contact support@quantumnous.com
   --skeleton-base: oklch(0.93 0.02 265);
   --skeleton-highlight: oklch(0.965 0.01 265);
 }
+.dark body:not([data-theme-preset]),
 .dark [data-theme-preset='deep-space'] {
   --background: oklch(0.127 0.027 254.6);
   --foreground: oklch(0.95 0.024 270.3);
@@ -843,11 +851,13 @@ For commercial licensing, please contact support@quantumnous.com
 /* feTurbulence nebula + star field, same technique as the WO-008 homepage
  * (no radial-gradient "sticker" glows — explicitly rejected by the user).
  * Fixed attachment so the sky is continuous while content scrolls. */
+body:not([data-theme-preset]),
 body[data-theme-preset='deep-space'] {
   background-color: var(--background);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='32' cy='48' r='1' opacity='.55'/%3E%3Ccircle cx='118' cy='14' r='.8' opacity='.4'/%3E%3Ccircle cx='207' cy='77' r='1.1' opacity='.65'/%3E%3Ccircle cx='289' cy='33' r='.7' opacity='.35'/%3E%3Ccircle cx='361' cy='102' r='1' opacity='.5'/%3E%3Ccircle cx='76' cy='161' r='.8' opacity='.4'/%3E%3Ccircle cx='173' cy='139' r='1' opacity='.55'/%3E%3Ccircle cx='258' cy='187' r='.7' opacity='.3'/%3E%3Ccircle cx='341' cy='155' r='1.2' opacity='.6'/%3E%3Ccircle cx='402' cy='211' r='.8' opacity='.4'/%3E%3Ccircle cx='19' cy='247' r='1' opacity='.5'/%3E%3Ccircle cx='96' cy='288' r='.7' opacity='.35'/%3E%3Ccircle cx='188' cy='262' r='1.1' opacity='.6'/%3E%3Ccircle cx='277' cy='301' r='.8' opacity='.4'/%3E%3Ccircle cx='352' cy='274' r='1' opacity='.5'/%3E%3Ccircle cx='55' cy='352' r='.8' opacity='.4'/%3E%3Ccircle cx='142' cy='381' r='1' opacity='.55'/%3E%3Ccircle cx='231' cy='356' r='.7' opacity='.3'/%3E%3Ccircle cx='316' cy='392' r='1' opacity='.5'/%3E%3Ccircle cx='393' cy='349' r='.9' opacity='.45'/%3E%3C/g%3E%3C/svg%3E");
   background-attachment: fixed;
 }
+.dark body:not([data-theme-preset]),
 .dark body[data-theme-preset='deep-space'] {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006 0.011' numOctaves='3' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 0.31  0 0 0 0 0.43  0 0 0 0 1  0 0 0 0.4 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 0 0 0.06 0.12 0.2 0.3 0.42'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='1600' height='900' filter='url(%23n)'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='32' cy='48' r='1' opacity='.7'/%3E%3Ccircle cx='118' cy='14' r='.8' opacity='.5'/%3E%3Ccircle cx='207' cy='77' r='1.1' opacity='.8'/%3E%3Ccircle cx='289' cy='33' r='.7' opacity='.4'/%3E%3Ccircle cx='361' cy='102' r='1' opacity='.6'/%3E%3Ccircle cx='76' cy='161' r='.8' opacity='.5'/%3E%3Ccircle cx='173' cy='139' r='1' opacity='.7'/%3E%3Ccircle cx='258' cy='187' r='.7' opacity='.35'/%3E%3Ccircle cx='341' cy='155' r='1.2' opacity='.75'/%3E%3Ccircle cx='402' cy='211' r='.8' opacity='.5'/%3E%3Ccircle cx='19' cy='247' r='1' opacity='.6'/%3E%3Ccircle cx='96' cy='288' r='.7' opacity='.4'/%3E%3Ccircle cx='188' cy='262' r='1.1' opacity='.75'/%3E%3Ccircle cx='277' cy='301' r='.8' opacity='.5'/%3E%3Ccircle cx='352' cy='274' r='1' opacity='.6'/%3E%3Ccircle cx='55' cy='352' r='.8' opacity='.5'/%3E%3Ccircle cx='142' cy='381' r='1' opacity='.7'/%3E%3Ccircle cx='231' cy='356' r='.7' opacity='.35'/%3E%3Ccircle cx='316' cy='392' r='1' opacity='.6'/%3E%3Ccircle cx='393' cy='349' r='.9' opacity='.55'/%3E%3C/g%3E%3C/svg%3E");
   background-attachment: fixed, fixed;
