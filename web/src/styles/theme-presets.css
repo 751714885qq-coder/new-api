@@ -770,6 +770,7 @@ body:not([data-theme-preset]),
   --popover-foreground: oklch(0.249 0.043 271.4);
   --primary: oklch(0.659 0.181 261.4);
   --primary-foreground: oklch(1 0 0);
+  --violet: oklch(0.587 0.236 285);
   --secondary: oklch(0.92 0.038 271);
   --secondary-foreground: oklch(0.249 0.043 271.4);
   --muted: oklch(0.94 0.02 265);
@@ -812,6 +813,8 @@ body:not([data-theme-preset]),
   --popover-foreground: oklch(0.95 0.024 270.3);
   --primary: oklch(0.659 0.181 261.4);
   --primary-foreground: oklch(1 0 0);
+  /* WO-008 purple #7c5cff, used by rendering-aligned gradient accents. */
+  --violet: oklch(0.587 0.236 285);
   --secondary: oklch(0.739 0.134 272.4);
   --secondary-foreground: oklch(0.127 0.027 254.6);
   --muted: oklch(0.227 0.06 267.6);
@@ -884,25 +887,42 @@ body[data-theme-preset='deep-space'] {
   -webkit-backdrop-filter: blur(16px) saturate(1.1);
 }
 
-/* Dark: active sidebar entry gets a deep-space glow trail, primary
- * buttons get the WO-008 blue halo. Unlayered rules so they win over
+/* Dark: rendering-aligned accents. Active sidebar entry = full gradient
+ * capsule with outer glow; primary buttons = blue→violet gradient with
+ * halo; cards get a top highlight edge. Unlayered rules so they win over
  * Tailwind utilities. */
 .dark
   :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='sidebar-menu-button'][data-active='true'] {
   background-image: linear-gradient(
     90deg,
-    color-mix(in oklch, var(--primary) 28%, transparent),
-    color-mix(in oklch, var(--primary) 8%, transparent) 72%,
-    transparent
+    color-mix(in oklch, var(--primary) 55%, transparent),
+    color-mix(in oklch, var(--violet) 30%, transparent) 100%
   );
-  box-shadow: inset 0 0 0 1px
-    color-mix(in oklch, var(--primary) 32%, transparent);
+  box-shadow:
+    inset 0 0 0 1px
+      color-mix(in oklch, var(--primary) 45%, transparent),
+    0 0 18px -2px color-mix(in oklch, var(--primary) 40%, transparent);
 }
 .dark
   :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='button'].bg-primary {
+  background-image: linear-gradient(
+    135deg,
+    var(--primary),
+    var(--violet) 115%
+  );
   box-shadow:
     0 0 0 1px color-mix(in oklch, var(--primary) 55%, transparent),
-    0 6px 28px -6px color-mix(in oklch, var(--primary) 60%, transparent);
+    0 6px 28px -6px color-mix(in oklch, var(--violet) 65%, transparent);
+}
+/* Glass cards: top highlight edge + faint blue-violet rim, as in the
+ * rendering baseline. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  :is([data-slot='card'], [data-slot='popover-content']) {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, white 7%, transparent),
+    inset 0 0 0 1px
+      color-mix(in oklch, var(--primary) 14%, transparent);
 }

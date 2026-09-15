@@ -46,15 +46,16 @@ type Star = {
   tint: string
 }
 
-const STAR_TINTS = ['#e8eeff', '#cfe4ff', '#8fd6ff', '#ffffff']
+const STAR_TINTS = ['#e8eeff', '#cfe4ff', '#8fd6ff', '#ffffff', '#b9a8ff']
 
 function seedStars(width: number, height: number): Star[] {
   const stars: Star[] = []
-  // Three depth layers: far/dim/dense -> near/bright/sparse.
+  // Three depth layers: far/dim/dense -> near/bright/sparse. Densities and
+  // alphas tuned against the rendering baseline (dense visible field).
   const layers = [
-    { count: 90, rMin: 0.4, rMax: 0.9, alpha: 0.35, vx: -0.004 },
-    { count: 55, rMin: 0.8, rMax: 1.4, alpha: 0.55, vx: -0.009 },
-    { count: 22, rMin: 1.3, rMax: 2.1, alpha: 0.85, vx: -0.016 },
+    { count: 150, rMin: 0.4, rMax: 0.9, alpha: 0.45, vx: -0.004 },
+    { count: 85, rMin: 0.8, rMax: 1.4, alpha: 0.65, vx: -0.009 },
+    { count: 30, rMin: 1.3, rMax: 2.2, alpha: 0.95, vx: -0.016 },
   ]
   for (const layer of layers) {
     for (let i = 0; i < layer.count; i++) {
@@ -120,11 +121,12 @@ function DeepSpaceBackdrop() {
     const paintFrame = (now: number) => {
       const w = window.innerWidth
       const h = window.innerHeight
-      // WO-008 void family: #020711 base with a slightly lifted horizon.
+      // Rendering-baseline sky: indigo with a violet-lifted upper field,
+      // close to the approved concept art rather than near-black.
       const sky = ctx.createLinearGradient(0, 0, 0, h)
-      sky.addColorStop(0, '#081226')
-      sky.addColorStop(0.45, '#040c1c')
-      sky.addColorStop(1, '#020711')
+      sky.addColorStop(0, '#141a3d')
+      sky.addColorStop(0.4, '#0d1330')
+      sky.addColorStop(1, '#050818')
       ctx.fillStyle = sky
       ctx.fillRect(0, 0, w, h)
 
@@ -211,6 +213,36 @@ function DeepSpaceBackdrop() {
           </feComponentTransfer>
         </filter>
         <rect width='1600' height='900' filter='url(#deepspace-nebula)' />
+        {/* Second nebula layer: violet, offset turbulence so the two
+         * clouds interleave like in the concept art. */}
+        <filter
+          id='deepspace-nebula-violet'
+          x='-20%'
+          y='-20%'
+          width='140%'
+          height='140%'
+        >
+          <feTurbulence
+            type='fractalNoise'
+            baseFrequency='0.0045 0.009'
+            numOctaves='3'
+            seed='47'
+          />
+          <feColorMatrix
+            values='0 0 0 0 0.55  0 0 0 0 0.38  0 0 0 0 1  0 0 0 0.36 0'
+          />
+          <feComponentTransfer>
+            <feFuncA
+              type='discrete'
+              tableValues='0 0 0 0 0.05 0.1 0.16 0.26 0.38'
+            />
+          </feComponentTransfer>
+        </filter>
+        <rect
+          width='1600'
+          height='900'
+          filter='url(#deepspace-nebula-violet)'
+        />
       </svg>
     </div>
   )
