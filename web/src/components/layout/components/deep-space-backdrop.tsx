@@ -195,22 +195,23 @@ function DeepSpaceBackdrop() {
         viewBox='0 0 1600 900'
         preserveAspectRatio='xMidYMid slice'
       >
-        <filter id='deepspace-nebula'>
+        <filter id='deepspace-nebula' x='-20%' y='-20%' width='140%' height='140%'>
           <feTurbulence
             type='fractalNoise'
-            baseFrequency='0.006 0.011'
+            baseFrequency='0.0032 0.006'
             numOctaves='3'
             seed='11'
           />
           <feColorMatrix
-            values='0 0 0 0 0.31  0 0 0 0 0.43  0 0 0 0 1  0 0 0 0.4 0'
+            values='0 0 0 0 0.31  0 0 0 0 0.43  0 0 0 0 1  0 0 0 1 0'
           />
+          {/* Gamma curve: mid-noise maps to ~0 so the sky stays dark and
+           * only turbulence peaks surface as clouds (validated against a
+           * standalone render — discrete/table tables filled the screen). */}
           <feComponentTransfer>
-            <feFuncA
-              type='discrete'
-              tableValues='0 0 0 0.08 0.16 0.26 0.4 0.55'
-            />
+            <feFuncA type='gamma' amplitude='0.65' exponent='5' offset='0' />
           </feComponentTransfer>
+          <feGaussianBlur stdDeviation='2' />
         </filter>
         <rect width='1600' height='900' filter='url(#deepspace-nebula)' />
         {/* Second nebula layer: violet, offset turbulence so the two
@@ -224,19 +225,17 @@ function DeepSpaceBackdrop() {
         >
           <feTurbulence
             type='fractalNoise'
-            baseFrequency='0.0045 0.009'
+            baseFrequency='0.0024 0.005'
             numOctaves='3'
             seed='47'
           />
           <feColorMatrix
-            values='0 0 0 0 0.55  0 0 0 0 0.38  0 0 0 0 1  0 0 0 0.36 0'
+            values='0 0 0 0 0.55  0 0 0 0 0.38  0 0 0 0 1  0 0 0 1 0'
           />
           <feComponentTransfer>
-            <feFuncA
-              type='discrete'
-              tableValues='0 0 0 0 0.08 0.14 0.24 0.36 0.5'
-            />
+            <feFuncA type='gamma' amplitude='0.55' exponent='5' offset='0' />
           </feComponentTransfer>
+          <feGaussianBlur stdDeviation='2' />
         </filter>
         <rect
           width='1600'
