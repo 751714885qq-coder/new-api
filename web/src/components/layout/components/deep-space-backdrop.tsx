@@ -46,7 +46,14 @@ type Star = {
   tint: string
 }
 
-const STAR_TINTS = ['#e8eeff', '#cfe4ff', '#8fd6ff', '#ffffff', '#b9a8ff']
+const STAR_TINTS = [
+  '#e8eeff',
+  '#cfe4ff',
+  '#8fd6ff',
+  '#ffffff',
+  '#b9a8ff',
+  '#22d3ee',
+]
 
 function seedStars(width: number, height: number): Star[] {
   const stars: Star[] = []
@@ -121,12 +128,12 @@ function DeepSpaceBackdrop() {
     const paintFrame = (now: number) => {
       const w = window.innerWidth
       const h = window.innerHeight
-      // Rendering-baseline sky: indigo with a violet-lifted upper field,
-      // close to the approved concept art rather than near-black.
+      // Spec v2 sky: interstellar blue #092B55 fading into deep-space
+      // black #020617.
       const sky = ctx.createLinearGradient(0, 0, 0, h)
-      sky.addColorStop(0, '#141a3d')
-      sky.addColorStop(0.4, '#0d1330')
-      sky.addColorStop(1, '#050818')
+      sky.addColorStop(0, '#092b55')
+      sky.addColorStop(0.45, '#061a3a')
+      sky.addColorStop(1, '#020617')
       ctx.fillStyle = sky
       ctx.fillRect(0, 0, w, h)
 
@@ -195,6 +202,15 @@ function DeepSpaceBackdrop() {
         viewBox='0 0 1600 900'
         preserveAspectRatio='xMidYMid slice'
       >
+        <defs>
+          {/* Distant planet limb, top-right: dark sphere with a thin
+           * quantum-blue atmosphere rim. */}
+          <radialGradient id='deepspace-planet' cx='35%' cy='35%' r='75%'>
+            <stop offset='0%' stopColor='#0e2a55' />
+            <stop offset='55%' stopColor='#061530' />
+            <stop offset='100%' stopColor='#020711' />
+          </radialGradient>
+        </defs>
         <filter id='deepspace-nebula' x='-20%' y='-20%' width='140%' height='140%'>
           <feTurbulence
             type='fractalNoise'
@@ -202,8 +218,9 @@ function DeepSpaceBackdrop() {
             numOctaves='3'
             seed='11'
           />
+          {/* Quantum blue #00BFFF cloud body. */}
           <feColorMatrix
-            values='0 0 0 0 0.31  0 0 0 0 0.43  0 0 0 0 1  0 0 0 1 0'
+            values='0 0 0 0 0  0 0 0 0 0.75  0 0 0 0 1  0 0 0 1 0'
           />
           {/* Gamma curve: mid-noise maps to ~0 so the sky stays dark and
            * only turbulence peaks surface as clouds (validated against a
@@ -213,7 +230,26 @@ function DeepSpaceBackdrop() {
           </feComponentTransfer>
           <feGaussianBlur stdDeviation='2' />
         </filter>
-        <rect width='1600' height='900' filter='url(#deepspace-nebula)' />
+        {/* Planet behind the clouds, stars occluded by the sphere. */}
+        <g opacity='0.9'>
+          <circle cx='1430' cy='60' r='210' fill='url(#deepspace-planet)' />
+          <circle
+            cx='1430'
+            cy='60'
+            r='210'
+            fill='none'
+            stroke='#00bfff'
+            strokeOpacity='0.35'
+            strokeWidth='1.5'
+          />
+        </g>
+        {/* Nebula clouds breathe slowly (spec: 光线呼吸效果). */}
+        <rect
+          className='deepspace-nebula-layer'
+          width='1600'
+          height='900'
+          filter='url(#deepspace-nebula)'
+        />
         {/* Second nebula layer: violet, offset turbulence so the two
          * clouds interleave like in the concept art. */}
         <filter
@@ -229,8 +265,9 @@ function DeepSpaceBackdrop() {
             numOctaves='3'
             seed='47'
           />
+          {/* Energy purple #8B5CF6 cloud body. */}
           <feColorMatrix
-            values='0 0 0 0 0.55  0 0 0 0 0.38  0 0 0 0 1  0 0 0 1 0'
+            values='0 0 0 0 0.545  0 0 0 0 0.361  0 0 0 0 0.965  0 0 0 1 0'
           />
           <feComponentTransfer>
             <feFuncA type='gamma' amplitude='0.55' exponent='5' offset='0' />
@@ -238,6 +275,7 @@ function DeepSpaceBackdrop() {
           <feGaussianBlur stdDeviation='2' />
         </filter>
         <rect
+          className='deepspace-nebula-layer deepspace-nebula-delay'
           width='1600'
           height='900'
           filter='url(#deepspace-nebula-violet)'

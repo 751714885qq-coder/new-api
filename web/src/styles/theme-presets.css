@@ -770,7 +770,7 @@ body:not([data-theme-preset]),
   --popover-foreground: oklch(0.249 0.043 271.4);
   --primary: oklch(0.659 0.181 261.4);
   --primary-foreground: oklch(1 0 0);
-  --violet: oklch(0.587 0.236 285);
+  --violet: oklch(0.606 0.25 292.7);
   --secondary: oklch(0.92 0.038 271);
   --secondary-foreground: oklch(0.249 0.043 271.4);
   --muted: oklch(0.94 0.02 265);
@@ -811,28 +811,33 @@ body:not([data-theme-preset]),
 }
 .dark body:not([data-theme-preset]),
 .dark [data-theme-preset='deep-space'] {
-  --background: oklch(0.127 0.027 254.6);
+  /* Spec v2 backgrounds: deep-space black #020617 canvas. */
+  --background: oklch(0.165 0.045 265);
   --foreground: oklch(0.95 0.024 270.3);
   /* Glass surfaces (WO-019 v2): translucent tokens + backdrop-blur rules
    * in the surfaces block below let the canvas starfield show through. */
-  --card: oklch(0.187 0.052 269.2 / 0.64);
+  /* Spec v2 card glass: rgba(10,30,60,0.55) + cyan border, blur 20px. */
+  --card: oklch(0.245 0.055 253 / 0.55);
   --card-foreground: oklch(0.95 0.024 270.3);
   --popover: oklch(0.227 0.06 267.6 / 0.86);
   --popover-foreground: oklch(0.95 0.024 270.3);
   --primary: oklch(0.659 0.181 261.4);
   --primary-foreground: oklch(1 0 0);
-  /* WO-008 purple #7c5cff, used by rendering-aligned gradient accents. */
-  --violet: oklch(0.587 0.236 285);
+  /* Spec v2 energy purple #8B5CF6, gradient accent partner. */
+  --violet: oklch(0.606 0.25 292.7);
   --secondary: oklch(0.739 0.134 272.4);
   --secondary-foreground: oklch(0.127 0.027 254.6);
   --muted: oklch(0.227 0.06 267.6);
   --muted-foreground: oklch(0.771 0.079 266);
   --accent: oklch(0.271 0.052 268.8);
   --accent-foreground: oklch(0.95 0.024 270.3);
-  --success: oklch(0.818 0.159 163.8);
+  /* Spec v2 status colors: neon green / starlight orange / deep red. */
+  --success: oklch(0.87 0.186 165.5);
   --success-foreground: oklch(0.127 0.027 254.6);
-  --warning: oklch(0.818 0.134 74.9);
+  --warning: oklch(0.83 0.155 78);
   --warning-foreground: oklch(0.127 0.027 254.6);
+  --destructive: oklch(0.655 0.211 14.5);
+  --destructive-foreground: oklch(1 0 0);
   --info: oklch(0.739 0.134 272.4);
   --info-foreground: oklch(0.127 0.027 254.6);
   --neutral: oklch(0.771 0.079 266);
@@ -881,10 +886,10 @@ body[data-theme-preset='deep-space'] {
 }
 .dark body:not([data-theme-preset]),
 .dark body[data-theme-preset='deep-space'] {
-  /* Match the canvas sky gradient so public pages (no backdrop component)
-   * share the console's indigo field. */
-  background-color: #0d1330;
-  background-image: linear-gradient(180deg, #141a3d, #0d1330 40%, #050818),
+  /* Match the canvas sky gradient (spec v2) so public pages share the
+   * console field. */
+  background-color: #020617;
+  background-image: linear-gradient(180deg, #092b55, #061a3a 40%, #020617),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cfilter id='n' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0032 0.006' numOctaves='3' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 0.31  0 0 0 0 0.43  0 0 0 0 1  0 0 0 1 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='gamma' amplitude='0.65' exponent='5' offset='0'/%3E%3C/feComponentTransfer%3E%3CfeGaussianBlur stdDeviation='2'/%3E%3C/filter%3E%3Crect width='1600' height='900' filter='url(%23n)'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='32' cy='48' r='1' opacity='.7'/%3E%3Ccircle cx='118' cy='14' r='.8' opacity='.5'/%3E%3Ccircle cx='207' cy='77' r='1.1' opacity='.8'/%3E%3Ccircle cx='289' cy='33' r='.7' opacity='.4'/%3E%3Ccircle cx='361' cy='102' r='1' opacity='.6'/%3E%3Ccircle cx='76' cy='161' r='.8' opacity='.5'/%3E%3Ccircle cx='173' cy='139' r='1' opacity='.7'/%3E%3Ccircle cx='258' cy='187' r='.7' opacity='.35'/%3E%3Ccircle cx='341' cy='155' r='1.2' opacity='.75'/%3E%3Ccircle cx='402' cy='211' r='.8' opacity='.5'/%3E%3Ccircle cx='19' cy='247' r='1' opacity='.6'/%3E%3Ccircle cx='96' cy='288' r='.7' opacity='.4'/%3E%3Ccircle cx='188' cy='262' r='1.1' opacity='.75'/%3E%3Ccircle cx='277' cy='301' r='.8' opacity='.5'/%3E%3Ccircle cx='352' cy='274' r='1' opacity='.6'/%3E%3Ccircle cx='55' cy='352' r='.8' opacity='.5'/%3E%3Ccircle cx='142' cy='381' r='1' opacity='.7'/%3E%3Ccircle cx='231' cy='356' r='.7' opacity='.35'/%3E%3Ccircle cx='316' cy='392' r='1' opacity='.6'/%3E%3Ccircle cx='393' cy='349' r='.9' opacity='.55'/%3E%3C/g%3E%3C/svg%3E");
   background-attachment: fixed, fixed, fixed;
 }
@@ -911,8 +916,8 @@ body[data-theme-preset='deep-space'] {
 }
 :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   :is([data-slot='card'], [data-slot='popover-content']) {
-  backdrop-filter: blur(16px) saturate(1.1);
-  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  backdrop-filter: blur(20px) saturate(1.15);
+  -webkit-backdrop-filter: blur(20px) saturate(1.15);
 }
 
 /* Dark: rendering-aligned accents. Active sidebar entry = full gradient
@@ -944,15 +949,118 @@ body[data-theme-preset='deep-space'] {
     0 0 0 1px color-mix(in oklch, var(--primary) 55%, transparent),
     0 6px 28px -6px color-mix(in oklch, var(--violet) 65%, transparent);
 }
-/* Glass cards: top highlight edge + faint blue-violet rim, as in the
- * rendering baseline. */
+/* Glass cards: top highlight edge + spec-v2 cyan rim rgba(0,180,255,.3). */
 .dark
   :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   :is([data-slot='card'], [data-slot='popover-content']) {
   box-shadow:
     inset 0 1px 0 color-mix(in oklch, white 7%, transparent),
-    inset 0 0 0 1px
-      color-mix(in oklch, var(--primary) 14%, transparent);
+    inset 0 0 0 1px color-mix(in oklch, #00b4ff 30%, transparent);
+}
+
+/* ── Spec v2 motion layer ─────────────────────────────────────────────── */
+/* Energy current flowing along card edges (conic sweep, masked to the
+ * border ring) + hover lift + nebula breathing. */
+
+@property --ds-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='card'] {
+  position: relative;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='card']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--ds-angle),
+    transparent 0deg,
+    rgba(0, 191, 255, 0.55) 40deg,
+    transparent 95deg,
+    transparent 180deg,
+    rgba(139, 92, 246, 0.45) 225deg,
+    transparent 280deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: ds-energy-flow 8s linear infinite;
+  pointer-events: none;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='card']:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, white 7%, transparent),
+    inset 0 0 0 1px color-mix(in oklch, #00b4ff 45%, transparent),
+    0 14px 44px -14px rgba(0, 191, 255, 0.35);
+}
+@keyframes ds-energy-flow {
+  to {
+    --ds-angle: 360deg;
+  }
+}
+
+/* Sidebar active entry: quantum-blue energy light bar + glow. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-menu-button'][data-active='true'] {
+  position: relative;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-menu-button'][data-active='true']::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 18%;
+  bottom: 18%;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #00bfff, #8b5cf6);
+  box-shadow: 0 0 12px 1px rgba(0, 191, 255, 0.8);
+}
+
+/* Nebula breathing (backdrop SVG layers). */
+.deepspace-nebula-layer {
+  animation: ds-breathe 9s ease-in-out infinite;
+}
+.deepspace-nebula-delay {
+  animation-delay: -4.5s;
+}
+@keyframes ds-breathe {
+  0%,
+  100% {
+    opacity: 0.78;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .deepspace-nebula-layer {
+    animation: none;
+  }
+  .dark
+    :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+    [data-slot='card']::after {
+    animation: none;
+  }
 }
 
 /* ── Deep Space component layer (WO-019 v3) ───────────────────────────── */
