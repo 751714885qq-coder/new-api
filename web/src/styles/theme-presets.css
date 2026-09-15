@@ -937,3 +937,105 @@ body[data-theme-preset='deep-space'] {
     inset 0 0 0 1px
       color-mix(in oklch, var(--primary) 14%, transparent);
 }
+
+/* ── Deep Space component layer (WO-019 v3) ───────────────────────────── */
+/* Rendering-baseline chrome for controls: pill buttons, glass inputs,
+ * blue-tinted tables, glass badges. Dark mode only; light keeps stock
+ * chrome until its own pass. Prefix "P" = deep-space dark scope. */
+
+/* Buttons: pill geometry as in the rendering (icon buttons round). */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='button'] {
+  border-radius: 9999px;
+}
+/* Outline chrome: blue glass instead of stock gray. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='button'].border-input {
+  border-color: color-mix(in oklch, var(--primary) 30%, transparent);
+  background-color: color-mix(in oklch, var(--primary) 8%, transparent);
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='button'].bg-secondary {
+  background-color: color-mix(in oklch, var(--primary) 12%, transparent);
+}
+
+/* Inputs and select triggers: dark glass with a faint blue rim, glow on
+ * focus. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  :is([data-slot='input'], [data-slot='select-trigger'], textarea) {
+  background-color: color-mix(in oklch, white 4%, transparent);
+  border-color: color-mix(in oklch, var(--primary) 22%, transparent);
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  :is([data-slot='input'], [data-slot='select-trigger'], textarea):focus-visible {
+  border-color: color-mix(in oklch, var(--primary) 60%, transparent);
+  box-shadow: 0 0 0 3px
+    color-mix(in oklch, var(--primary) 22%, transparent);
+}
+
+/* Tables: translucent rows, faint blue dividers, blue-tinted hover. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='table-row'] {
+  border-color: color-mix(in oklch, var(--primary) 10%, transparent);
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='table-head'] {
+  background-color: transparent;
+  color: var(--muted-foreground);
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='table-body'] [data-slot='table-row']:hover {
+  background-color: color-mix(in oklch, var(--primary) 7%, transparent);
+}
+
+/* Badges: glass pills tinted by their own text color (success stays
+ * green, info blue, default white). */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='badge'] {
+  background-color: color-mix(in oklch, currentColor 12%, transparent);
+  border-color: color-mix(in oklch, currentColor 28%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* Tabs: glass pill list, active trigger tinted. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='tabs-list'] {
+  background-color: color-mix(in oklch, white 4%, transparent);
+  border: 1px solid color-mix(in oklch, var(--primary) 15%, transparent);
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='tabs-trigger'][data-state='active'] {
+  background-color: color-mix(in oklch, var(--primary) 18%, transparent);
+}
+
+/* Dialogs, alert dialogs and sheets join the glass family. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  :is(
+    [data-slot='dialog-content'],
+    [data-slot='alert-dialog-content'],
+    [data-slot='sheet-content']
+  ) {
+  backdrop-filter: blur(18px) saturate(1.1);
+  -webkit-backdrop-filter: blur(18px) saturate(1.1);
+}
+
+/* Thin blue scrollbars. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space']) * {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklch, var(--primary) 28%, transparent)
+    transparent;
+}
