@@ -764,9 +764,9 @@ body:not([data-theme-preset]),
 [data-theme-preset='deep-space'] {
   --background: oklch(0.966 0.016 262.8);
   --foreground: oklch(0.249 0.043 271.4);
-  --card: oklch(0.982 0.008 265);
+  --card: oklch(0.982 0.008 265 / 0.8);
   --card-foreground: oklch(0.249 0.043 271.4);
-  --popover: oklch(0.99 0.005 265);
+  --popover: oklch(0.99 0.005 265 / 0.92);
   --popover-foreground: oklch(0.249 0.043 271.4);
   --primary: oklch(0.659 0.181 261.4);
   --primary-foreground: oklch(1 0 0);
@@ -789,7 +789,7 @@ body:not([data-theme-preset]),
   --overview-accent-1: var(--chart-1);
   --overview-accent-2: var(--chart-2);
   --overview-accent-3: var(--chart-3);
-  --sidebar: oklch(0.945 0.02 264);
+  --sidebar: oklch(0.945 0.02 264 / 0.72);
   --sidebar-foreground: oklch(0.249 0.043 271.4);
   --sidebar-primary: oklch(0.659 0.181 261.4);
   --sidebar-primary-foreground: oklch(1 0 0);
@@ -804,9 +804,11 @@ body:not([data-theme-preset]),
 .dark [data-theme-preset='deep-space'] {
   --background: oklch(0.127 0.027 254.6);
   --foreground: oklch(0.95 0.024 270.3);
-  --card: oklch(0.187 0.052 269.2);
+  /* Glass surfaces (WO-019 v2): translucent tokens + backdrop-blur rules
+   * in the surfaces block below let the canvas starfield show through. */
+  --card: oklch(0.187 0.052 269.2 / 0.64);
   --card-foreground: oklch(0.95 0.024 270.3);
-  --popover: oklch(0.227 0.06 267.6);
+  --popover: oklch(0.227 0.06 267.6 / 0.86);
   --popover-foreground: oklch(0.95 0.024 270.3);
   --primary: oklch(0.659 0.181 261.4);
   --primary-foreground: oklch(1 0 0);
@@ -835,7 +837,7 @@ body:not([data-theme-preset]),
   --overview-accent-1: var(--chart-1);
   --overview-accent-2: var(--chart-2);
   --overview-accent-3: var(--chart-3);
-  --sidebar: oklch(0.16 0.045 267);
+  --sidebar: oklch(0.16 0.045 267 / 0.6);
   --sidebar-foreground: oklch(0.95 0.024 270.3);
   --sidebar-primary: oklch(0.659 0.181 261.4);
   --sidebar-primary-foreground: oklch(1 0 0);
@@ -861,4 +863,46 @@ body[data-theme-preset='deep-space'] {
 .dark body[data-theme-preset='deep-space'] {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006 0.011' numOctaves='3' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 0.31  0 0 0 0 0.43  0 0 0 0 1  0 0 0 0.4 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 0 0 0.06 0.12 0.2 0.3 0.42'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='1600' height='900' filter='url(%23n)'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='32' cy='48' r='1' opacity='.7'/%3E%3Ccircle cx='118' cy='14' r='.8' opacity='.5'/%3E%3Ccircle cx='207' cy='77' r='1.1' opacity='.8'/%3E%3Ccircle cx='289' cy='33' r='.7' opacity='.4'/%3E%3Ccircle cx='361' cy='102' r='1' opacity='.6'/%3E%3Ccircle cx='76' cy='161' r='.8' opacity='.5'/%3E%3Ccircle cx='173' cy='139' r='1' opacity='.7'/%3E%3Ccircle cx='258' cy='187' r='.7' opacity='.35'/%3E%3Ccircle cx='341' cy='155' r='1.2' opacity='.75'/%3E%3Ccircle cx='402' cy='211' r='.8' opacity='.5'/%3E%3Ccircle cx='19' cy='247' r='1' opacity='.6'/%3E%3Ccircle cx='96' cy='288' r='.7' opacity='.4'/%3E%3Ccircle cx='188' cy='262' r='1.1' opacity='.75'/%3E%3Ccircle cx='277' cy='301' r='.8' opacity='.5'/%3E%3Ccircle cx='352' cy='274' r='1' opacity='.6'/%3E%3Ccircle cx='55' cy='352' r='.8' opacity='.5'/%3E%3Ccircle cx='142' cy='381' r='1' opacity='.7'/%3E%3Ccircle cx='231' cy='356' r='.7' opacity='.35'/%3E%3Ccircle cx='316' cy='392' r='1' opacity='.6'/%3E%3Ccircle cx='393' cy='349' r='.9' opacity='.55'/%3E%3C/g%3E%3C/svg%3E");
   background-attachment: fixed, fixed;
+}
+
+/* ── Deep Space glass surfaces (WO-019 v2) ────────────────────────────── */
+/* The DeepSpaceBackdrop canvas renders the animated sky at negative
+ * z-index; the shell decides where the sky shows through. Dark mode is
+ * glass-over-starfield; light mode gets a fainter frost. */
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-inset'] {
+  background-color: transparent;
+}
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-inner'] {
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+}
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  :is([data-slot='card'], [data-slot='popover-content']) {
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+}
+
+/* Dark: active sidebar entry gets a deep-space glow trail, primary
+ * buttons get the WO-008 blue halo. Unlayered rules so they win over
+ * Tailwind utilities. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-menu-button'][data-active='true'] {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in oklch, var(--primary) 28%, transparent),
+    color-mix(in oklch, var(--primary) 8%, transparent) 72%,
+    transparent
+  );
+  box-shadow: inset 0 0 0 1px
+    color-mix(in oklch, var(--primary) 32%, transparent);
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='button'].bg-primary {
+  box-shadow:
+    0 0 0 1px color-mix(in oklch, var(--primary) 55%, transparent),
+    0 6px 28px -6px color-mix(in oklch, var(--primary) 60%, transparent);
 }

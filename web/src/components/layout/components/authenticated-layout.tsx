@@ -26,6 +26,7 @@ import { cn } from '@/lib/utils'
 
 import { AppHeader } from './app-header'
 import { AppSidebar } from './app-sidebar'
+import { DeepSpaceBackdrop } from './deep-space-backdrop'
 
 type AuthenticatedLayoutProps = {
   children?: React.ReactNode
@@ -38,6 +39,7 @@ export function AuthenticatedLayout(props: AuthenticatedLayoutProps) {
     <LayoutProvider>
       <SearchProvider>
         <SidebarProvider defaultOpen={defaultOpen} className='flex-col'>
+          <DeepSpaceBackdrop />
           <SkipToMain />
           <AppHeader />
           <div className='flex min-h-0 w-full flex-1'>
