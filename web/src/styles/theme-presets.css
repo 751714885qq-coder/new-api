@@ -880,6 +880,13 @@ body[data-theme-preset='deep-space'] {
   [data-slot='sidebar-inset'] {
   background-color: transparent;
 }
+/* Public layout root (pricing / home) also paints an opaque page
+ * background over the body sky — let it through in dark mode. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  div.bg-background.min-h-svh {
+  background-color: transparent;
+}
 :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='sidebar-inner'] {
   backdrop-filter: blur(18px) saturate(1.15);
