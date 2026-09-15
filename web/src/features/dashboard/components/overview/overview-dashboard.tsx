@@ -61,6 +61,7 @@ import {
   useApiInfo,
   useDashboardContentVisibility,
 } from '../../hooks/use-status-data'
+import { DeepSpaceHero } from './deep-space-hero'
 import { AnnouncementsPanel } from './announcements-panel'
 import { ApiInfoPanel } from './api-info-panel'
 import { FAQPanel } from './faq-panel'
@@ -643,6 +644,7 @@ export function OverviewDashboard() {
       </SectionPageLayout.Actions>
       <SectionPageLayout.Content>
         <div className='flex flex-col gap-4'>
+          <DeepSpaceHero />
           <div id={setupGuideId} hidden={!setupGuideExpanded}>
             {setupGuideExpanded && (
               <CardStaggerContainer className='grid items-stretch gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]'>
