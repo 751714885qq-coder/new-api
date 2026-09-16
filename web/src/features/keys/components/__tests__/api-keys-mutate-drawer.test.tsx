@@ -47,22 +47,33 @@ const originalGet = apiClient.get
 const originalPost = apiClient.post
 let renderedDrawer: RenderedDrawer | null = null
 
-function installApiFixtures(createdPayloads: Array<Record<string, unknown>>) {
+const STANDARD_GROUPS_FIXTURE = {
+  auto: { desc: 'Automatic routing', ratio: 'auto' },
+  default: { desc: 'Standard access', ratio: 1 },
+  vip: { desc: 'Priority access', ratio: 2 },
+}
+
+type GroupsFixture = Record<
+  string,
+  { desc: string; ratio: number | string }
+>
+
+function installApiFixtures(
+  createdPayloads: Array<Record<string, unknown>>,
+  groupsFixture: GroupsFixture = STANDARD_GROUPS_FIXTURE,
+  statusFixture: Record<string, unknown> = { default_use_auto_group: true }
+) {
   apiClient.get = async (url) => {
     switch (url) {
       case '/api/status':
-        return { data: { data: { default_use_auto_group: true } } }
+        return { data: { data: statusFixture } }
       case '/api/user/models':
         return { data: { success: true, data: [] } }
       case '/api/user/self/groups':
         return {
           data: {
             success: true,
-            data: {
-              auto: { desc: 'Automatic routing', ratio: 'auto' },
-              default: { desc: 'Standard access', ratio: 1 },
-              vip: { desc: 'Priority access', ratio: 2 },
-            },
+            data: groupsFixture,
           },
         }
       case '/api/token/auto-groups':
@@ -84,16 +95,17 @@ function installApiFixtures(createdPayloads: Array<Record<string, unknown>>) {
   }
 }
 
-async function renderCreateDrawer(): Promise<void> {
+async function renderCreateDrawer(
+  groupsFixture: GroupsFixture = STANDARD_GROUPS_FIXTURE,
+  statusFixture: Record<string, unknown> = { default_use_auto_group: true }
+): Promise<void> {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
   const freshAt = Date.now() + 60_000
-  queryClient.setQueryData(
-    ['status'],
-    { default_use_auto_group: true },
-    { updatedAt: freshAt }
-  )
+  queryClient.setQueryData(['status'], statusFixture, {
+    updatedAt: freshAt,
+  })
   queryClient.setQueryData(
     ['user-models'],
     { success: true, data: [] },
@@ -103,11 +115,7 @@ async function renderCreateDrawer(): Promise<void> {
     ['user-groups'],
     {
       success: true,
-      data: {
-        auto: { desc: 'Automatic routing', ratio: 'auto' },
-        default: { desc: 'Standard access', ratio: 1 },
-        vip: { desc: 'Priority access', ratio: 2 },
-      },
+      data: groupsFixture,
     },
     { updatedAt: freshAt }
   )
@@ -237,8 +245,7 @@ describe('API keys mutate drawer Auto group integration', () => {
     }
   })
 
-  test('preserves an unsaved custom order and mode after Auto to ordinary to Auto changes', async () => {
-    const createdPayloads: Array<Record<string, unknown>> = []
+  test('preserves an unsaved custom order and mode after Auto to ordinary to Auto changes', async () => {    const createdPayloads: Array<Record<string, unknown>> = []
     installApiFixtures(createdPayloads)
     await renderCreateDrawer()
 
@@ -276,5 +283,43 @@ describe('API keys mutate drawer Auto group integration', () => {
     fireEvent.click(findButton('Save changes', true))
     await waitFor(() => expect(createdPayloads).toHaveLength(1))
     expect(createdPayloads[0]?.auto_groups).toEqual(['vip'])
+  })
+
+  test('hides the injected own group and preselects the first real group (WO-019 R1)', async () => {
+    const createdPayloads: Array<Record<string, unknown>> = []
+    installApiFixtures(
+      createdPayloads,
+      {
+        auto: { desc: 'Automatic routing', ratio: 'auto' },
+        default: { desc: '用户分组', ratio: 1 },
+        vip: { desc: 'Priority access', ratio: 2 },
+      },
+      { default_use_auto_group: false }
+    )
+    await renderCreateDrawer(
+      {
+        auto: { desc: 'Automatic routing', ratio: 'auto' },
+        default: { desc: '用户分组', ratio: 1 },
+        vip: { desc: 'Priority access', ratio: 2 },
+      },
+      { default_use_auto_group: false }
+    )
+
+    const groupTrigger = getControlByLabel('Group')
+    expect(groupTrigger.textContent?.includes('default')).toBe(false)
+    expect(groupTrigger.textContent?.includes('vip')).toBe(true)
+
+    fireEvent.click(groupTrigger)
+    const optionTexts = [
+      ...document.querySelectorAll('[data-slot="command-item"]'),
+    ]
+      .map((item) => item.textContent)
+      .join(' ')
+    expect(optionTexts).not.toContain('用户分组')
+
+    changeInput(getControlByLabel('Name'), 'preselected')
+    fireEvent.click(findButton('Save changes', true))
+    await waitFor(() => expect(createdPayloads).toHaveLength(1))
+    expect(createdPayloads[0]?.group).toBe('vip')
   })
 })

@@ -65,6 +65,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useStatus } from '@/hooks/use-status'
 import { getUserModels, getUserGroups } from '@/lib/api'
 import { getCurrencyDisplay, getCurrencyLabel } from '@/lib/currency'
+import { isInjectedOwnGroup } from '@/lib/user-groups'
 import { cn } from '@/lib/utils'
 
 import {
@@ -73,7 +74,7 @@ import {
   getApiKey,
   getTokenAutoGroups,
 } from '../api'
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants'
+import { DEFAULT_GROUP, ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants'
 import {
   getApiKeyFormSchema,
   type ApiKeyFormValues,
@@ -155,14 +156,19 @@ export function ApiKeysMutateDrawer({
   })
 
   const models = modelsData?.data || []
+  // WO-019 R1: drop the user's own group injected by the backend (e.g.
+  // 'default') — it has no channel binding, so offering or preselecting it
+  // creates dead tokens. The first real group becomes the default choice.
   const groups = useMemo<ApiKeyGroupOption[]>(
     () =>
-      Object.entries(groupsData?.data || {}).map(([key, info]) => ({
-        value: key,
-        label: key,
-        desc: info.desc || key,
-        ratio: info.ratio,
-      })),
+      Object.entries(groupsData?.data || {})
+        .filter(([, info]) => !isInjectedOwnGroup(info.desc))
+        .map(([key, info]) => ({
+          value: key,
+          label: key,
+          desc: info.desc || key,
+          ratio: info.ratio,
+        })),
     [groupsData]
   )
   const backendHasAuto = groups.some((g) => g.value === 'auto')
@@ -229,9 +235,13 @@ export function ApiKeysMutateDrawer({
         setInitializedTarget(target)
       }
     } else {
-      form.reset(
-        getApiKeyFormDefaultValues(defaultUseAutoGroup && backendHasAuto)
-      )
+      form.reset({
+        ...getApiKeyFormDefaultValues(defaultUseAutoGroup && backendHasAuto),
+        group:
+          defaultUseAutoGroup && backendHasAuto
+            ? 'auto'
+            : (groups.find((g) => g.value !== 'auto')?.value ?? DEFAULT_GROUP),
+      })
       setInitializedTarget(target)
     }
   }, [
@@ -242,6 +252,7 @@ export function ApiKeysMutateDrawer({
     defaultUseAutoGroup,
     statusLoading,
     backendHasAuto,
+    groups,
     groupsFetched,
     groupsFetching,
     autoGroupsFetched,
@@ -260,12 +271,13 @@ export function ApiKeysMutateDrawer({
   const selectedGroup = form.watch('group')
 
   // Correct group after groups load: if the form value is not in available groups, fall back
+  // (WO-019 R1: prefer the first real group over the injected own group)
   useEffect(() => {
     if (groups.length === 0) return
     const currentGroup = selectedGroup
     if (currentGroup && !groups.some((g) => g.value === currentGroup)) {
       const fallback =
-        groups.find((g) => g.value === 'default')?.value ??
+        groups.find((g) => g.value !== 'auto')?.value ??
         groups[0]?.value ??
         ''
       form.setValue('group', fallback)

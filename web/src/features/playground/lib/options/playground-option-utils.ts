@@ -52,9 +52,9 @@ export function getGroupFallback(
     return null
   }
 
-  return (
-    groups.find((group) => group.value === 'default')?.value ?? groups[0].value
-  )
+  // WO-019 R1: the group list no longer contains the injected own group
+  // (e.g. 'default'), so the first entry is the first real group.
+  return groups[0].value
 }
 
 export function getOptionLoadErrorMessage(

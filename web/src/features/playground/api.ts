@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { api } from '@/lib/api'
+import { isInjectedOwnGroup } from '@/lib/user-groups'
 
 import { API_ENDPOINTS } from './constants'
 import type {
@@ -72,11 +73,15 @@ export async function getUserGroups(): Promise<GroupOption[]> {
 
   const groupData = data.data as Record<string, { desc: string; ratio: number }>
 
-  // label is for button display (name only); desc is for dropdown content
-  return Object.entries(groupData).map(([group, info]) => ({
-    label: group,
-    value: group,
-    ratio: info.ratio,
-    desc: info.desc,
-  }))
+  // label is for button display (name only); desc is for dropdown content.
+  // WO-019 R1: drop the user's own group injected by the backend (e.g.
+  // 'default') — it has no channel binding and would only yield dead runs.
+  return Object.entries(groupData)
+    .filter(([, info]) => !isInjectedOwnGroup(info.desc))
+    .map(([group, info]) => ({
+      label: group,
+      value: group,
+      ratio: info.ratio,
+      desc: info.desc,
+    }))
 }
