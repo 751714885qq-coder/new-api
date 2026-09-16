@@ -16,7 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { dataScheme as vchartDefaultDataScheme } from '@visactor/vchart/esm/theme/color-scheme/builtin/default'
 
 import { MAX_CHART_TREND_POINTS } from '@/features/dashboard/constants'
 import type {
@@ -39,14 +38,24 @@ type TooltipLineItem = {
   shapeSize?: number
 }
 
-export function getDashboardChartColors(domainLength: number): string[] {
-  const scheme =
-    vchartDefaultDataScheme.find(
-      (item) => !item.maxDomainLength || domainLength <= item.maxDomainLength
-    ) ?? vchartDefaultDataScheme[vchartDefaultDataScheme.length - 1]
+/** S-series spec (07-设计语言-v4规范.md section 3) chart palette,
+ * verbatim: 8 slots ordered by share, everything beyond the 7
+ * chromatic slots folds into "other" = white 22%. */
+const DASHBOARD_CHART_PALETTE = [
+  '#22d3ee',
+  '#818cf8',
+  '#a78bfa',
+  '#38bdf8',
+  '#2dd4bf',
+  '#60a5fa',
+  '#c084fc',
+  'rgba(255,255,255,0.22)',
+]
 
-  return scheme.scheme.filter(
-    (color): color is string => typeof color === 'string'
+export function getDashboardChartColors(domainLength: number): string[] {
+  return DASHBOARD_CHART_PALETTE.slice(
+    0,
+    Math.max(1, Math.min(domainLength, DASHBOARD_CHART_PALETTE.length))
   )
 }
 

@@ -6194,6 +6194,16 @@
     "Topup Records": "充值记录",
     "Your recent topup orders": "你最近的充值订单",
     "View All": "查看全部",
-    "No topup records yet": "暂无充值记录"
+    "No topup records yet": "暂无充值记录",
+    "Good morning": "早上好",
+    "Good afternoon": "下午好",
+    "Good evening": "晚上好",
+    "Your relay to frontier AI models — ": "通往全球前沿 AI 模型的中转站 —— 通过",
+    "one API key": "一个 API Key",
+    " calling OpenAI, Claude, Gemini, DeepSeek and more.": "调用 OpenAI、Claude、Gemini、DeepSeek 等主流模型。",
+    "System operational": "系统运行正常",
+    "available": "可用",
+    "Last 24 hours · hourly · peak ": "过去 24 小时 · 每小时聚合 · 峰值 ",
+    " req/h": " 次/时"
   }
 }

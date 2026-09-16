@@ -6194,6 +6194,16 @@
     "Topup Records": "Topup Records",
     "Your recent topup orders": "Your recent topup orders",
     "View All": "View All",
-    "No topup records yet": "No topup records yet"
+    "No topup records yet": "No topup records yet",
+    "Good morning": "Good morning",
+    "Good afternoon": "Good afternoon",
+    "Good evening": "Good evening",
+    "Your relay to frontier AI models — ": "Your relay to frontier AI models — ",
+    "one API key": "one API key",
+    " calling OpenAI, Claude, Gemini, DeepSeek and more.": " calling OpenAI, Claude, Gemini, DeepSeek and more.",
+    "System operational": "System operational",
+    "available": "available",
+    "Last 24 hours · hourly · peak ": "Last 24 hours · hourly · peak ",
+    " req/h": " req/h"
   }
 }
