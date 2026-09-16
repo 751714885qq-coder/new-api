@@ -17,45 +17,31 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { useQuery } from '@tanstack/react-query'
-import { Link } from '@tanstack/react-router'
-import {
-  Activity,
-  CalendarDays,
-  FileText,
-  Flame,
-  KeyRound,
-  Orbit,
-  Wallet,
-  type LucideIcon,
-} from 'lucide-react'
+import { VChart } from '@visactor/react-vchart'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { VChart } from '@visactor/react-vchart'
-import { Button } from '@/components/ui/button'
-import { IconBadge } from '@/components/ui/icon-badge'
-import { LineSparkline } from '@/features/dashboard/components/ui/stat-card'
 import { useTheme } from '@/context/theme-provider'
-import { useThemeCustomization } from '@/context/theme-customization-provider'
 import { getUserQuotaDates } from '@/features/dashboard/api'
-import {
-  getDashboardChartColors,
-  processChartData,
-} from '@/features/dashboard/lib/charts'
+import { LineSparkline } from '@/features/dashboard/components/ui/stat-card'
+import { getDashboardChartColors } from '@/features/dashboard/lib/charts'
 import type { QuotaDataItem } from '@/features/dashboard/types'
+import { getApiKeys } from '@/features/keys/api'
+import { getUserModels } from '@/lib/api'
 import { formatNumber, formatQuota } from '@/lib/format'
-import { useThemeRadiusPx } from '@/lib/theme-radius'
-import { computeTimeRange } from '@/lib/time'
-import { VCHART_OPTION } from '@/lib/vchart'
 import { cn } from '@/lib/utils'
+import { VCHART_OPTION } from '@/lib/vchart'
 import { useAuthStore } from '@/stores/auth-store'
 
 /**
- * Deep Space cockpit overview (WO-019 rendering baseline, strictly aligned):
- * greeting header + planet, four stat cards with deltas and sparklines
- * (balance card carries the recharge action), model call trend, model usage
- * donut with a top-model legend, and a quick-access column. Data comes from
- * the existing /api/data/self quota endpoints; charts reuse processChartData.
+ * Deep Space cockpit overview, aligned to the approved v6-01-s1 rendering:
+ * time-of-day greeting + tagline with a service status bar, four stat cards
+ * (current balance / today's usage / today's requests / active tokens with a
+ * progress bar), a 24-hour request trend area chart, and a today usage-share
+ * donut with an amount legend. Data comes from /api/data/self, /api/token/
+ * and /api/user/models. Values without a real source render as "—" instead
+ * of fabricated numbers; the mock's success/failure split has no upstream
+ * field, so the trend carries a single request series.
  */
 
 // ---------------------------------------------------------------------------
@@ -128,14 +114,6 @@ function toStartOfLocalDay(offsetDays = 0): number {
   return Math.floor(day.getTime() / 1000)
 }
 
-function startOfCurrentMonth(monthOffset = 0): number {
-  const now = new Date()
-  return Math.floor(
-    new Date(now.getFullYear(), now.getMonth() + monthOffset, 1).getTime() /
-      1000
-  )
-}
-
 function percentDelta(current: number, previous: number): number | null {
   if (previous <= 0) return null
   return ((current - previous) / previous) * 100
@@ -179,73 +157,168 @@ function bucketSeries(
   return buckets
 }
 
-/** Back-computed balance trend: current balance minus past usage, walking
- * backwards over daily buckets. */
-function balanceSeries(
-  dailyData: QuotaDataItem[],
-  startSec: number,
-  endSec: number,
-  currentBalance: number
-): number[] {
-  const daily = bucketSeries(dailyData, startSec, endSec, 31, 'quota')
-  const series: number[] = []
-  let balance = currentBalance
-  for (let i = daily.length - 1; i >= 0; i--) {
-    series[i] = Math.max(0, balance)
-    balance += daily[i]
-  }
-  return series
-}
-
 function formatPercent(delta: number): string {
-  return `${delta > 0 ? '+' : ''}${delta.toFixed(1)}%`
+  return `${Math.abs(delta).toFixed(1)}%`
 }
 
-function DeltaLine(props: { delta: number | null; upIsBad: boolean }) {
+function formatHourLabel(sec: number): string {
+  const hour = new Date(sec * 1000).getHours()
+  return `${String(hour).padStart(2, '0')}:00`
+}
+
+function deltaToneClass(
+  upIsBad: boolean,
+  delta: number,
+  badTone?: 'destructive' | 'warning' | 'neutral'
+): string {
+  const good = upIsBad ? delta < 0 : delta > 0
+  if (good) return 'text-success'
+  if (badTone === 'neutral') return 'text-muted-foreground'
+  return badTone === 'warning' ? 'text-warning' : 'text-destructive'
+}
+
+function DeltaLine(props: {
+  delta: number | null
+  upIsBad: boolean
+  badTone?: 'destructive' | 'warning' | 'neutral'
+}) {
   if (props.delta === null) {
     return <span className='text-muted-foreground text-xs'>--</span>
   }
-  const good = props.upIsBad ? props.delta < 0 : props.delta > 0
+  if (props.delta === 0) {
+    return <span className='text-muted-foreground text-xs'>0.0%</span>
+  }
   return (
     <span
       className={cn(
         'text-xs font-medium tabular-nums',
-        good ? 'text-success' : 'text-destructive'
+        deltaToneClass(props.upIsBad, props.delta, props.badTone)
       )}
     >
-      {props.delta < 0 ? '↓' : '↑'} {formatPercent(props.delta)}
+      {props.delta < 0 ? '▼' : '▲'} {formatPercent(props.delta)}
     </span>
   )
 }
 
+/** Renders "$42.18" with the currency symbol smaller, as in the v6 mock. */
+function QuotaValue(props: { text: string }) {
+  const match = props.text.match(/^[^0-9]*/)
+  const prefix = match ? match[0] : ''
+  if (!prefix) return props.text
+  return (
+    <>
+      <span className='text-muted-foreground mr-0.5 text-sm sm:text-base'>
+        {prefix}
+      </span>
+      {props.text.slice(prefix.length)}
+    </>
+  )
+}
+
 // ---------------------------------------------------------------------------
-// Header: greeting + planet decor
+// Shared 48h quota query (deduped across header / stat cards / trend)
 // ---------------------------------------------------------------------------
+
+/** End timestamp quantized to the minute so all cockpit mounts share one
+ * react-query cache entry instead of fetching per-second variants. */
+function cockpitRange(days: number): {
+  start_timestamp: number
+  end_timestamp: number
+} {
+  const end = Math.floor(Date.now() / 1000 / 60) * 60
+  return { start_timestamp: end - days * 24 * 3600, end_timestamp: end }
+}
+
+function useQuota48h() {
+  const range = useMemo(() => cockpitRange(2), [])
+  const query = useQuery({
+    queryKey: ['cockpit', '48h', range.start_timestamp],
+    queryFn: async () => {
+      const result = await getUserQuotaDates({
+        start_timestamp: range.start_timestamp,
+        end_timestamp: range.end_timestamp,
+        default_time: 'hour',
+      })
+      return result.success ? (result.data ?? []) : []
+    },
+    staleTime: 60 * 1000,
+  })
+  return { query, range }
+}
+
+// ---------------------------------------------------------------------------
+// Header: greeting + tagline + service status bar
+// ---------------------------------------------------------------------------
+
+function StatusItem(props: { label: string; value: React.ReactNode }) {
+  return (
+    <div className='flex min-w-14 flex-col gap-0.5'>
+      <span className='text-muted-foreground text-xs'>{props.label}</span>
+      <span className='text-sm font-semibold tabular-nums'>{props.value}</span>
+    </div>
+  )
+}
+
+/** Time-of-day greeting key, mirroring the v6 mock's greeting. */
+function greetingKey(hour: number): string {
+  if (hour < 12) return 'Good morning, {{name}}'
+  if (hour < 18) return 'Good afternoon, {{name}}'
+  return 'Good evening, {{name}}'
+}
 
 export function CockpitHeader() {
   const { t } = useTranslation()
-  const { customization } = useThemeCustomization()
   const user = useAuthStore((state) => state.auth.user)
   const name = user?.username || user?.display_name || ''
 
+  const { query: quota48, range } = useQuota48h()
+  const models = useQuery({
+    queryKey: ['cockpit', 'user-models'],
+    queryFn: async () => {
+      const result = await getUserModels()
+      return result.success ? (result.data ?? []) : []
+    },
+    staleTime: 5 * 60 * 1000,
+  })
+
+  let modelCount = '—'
+  if (models.isLoading) modelCount = '…'
+  else if (models.data) modelCount = String(models.data.length)
+
+  const todayUsage = useMemo(
+    () =>
+      sumBetween(quota48.data ?? [], toStartOfLocalDay(), range.end_timestamp)
+        .quota,
+    [quota48.data, range.end_timestamp]
+  )
+
+  const greeting = t(greetingKey(new Date().getHours()), { name })
+
   return (
-    <div className='flex flex-wrap items-center justify-between gap-4'>
+    <div className='flex flex-wrap items-start justify-between gap-4'>
       <div className='flex min-w-0 flex-col gap-1'>
         <h1 className='text-xl font-bold tracking-tight sm:text-2xl'>
-          {t('AI Connects the World · Making Models Work for You')}
+          {greeting}
         </h1>
         <p className='text-muted-foreground text-xs sm:text-sm'>
-          {t('Welcome back, {{name}}', { name })}
+          {t(
+            'One API key for OpenAI, Claude, Gemini, DeepSeek and more leading models.'
+          )}
         </p>
       </div>
-      {customization.preset === 'deep-space' && (
-        <div className='ds-cockpit-planet-wrap' aria-hidden='true'>
-          <div className='ds-cockpit-planet' />
-          <div className='ds-cockpit-orbit'>
-            <span className='ds-cockpit-node' />
-          </div>
+      <div className='flex flex-wrap items-center gap-x-6 gap-y-2 pt-1'>
+        <div className='flex items-center gap-2 text-xs'>
+          <span className='bg-success size-2 rounded-full' aria-hidden='true' />
+          {t('Service operational')}
         </div>
-      )}
+        <StatusItem label={t('Online models')} value={modelCount} />
+        {/* No latency telemetry exists upstream; render an honest placeholder. */}
+        <StatusItem label={t('Avg latency')} value='—' />
+        <StatusItem
+          label={t("Today's spend")}
+          value={quota48.isLoading ? '…' : formatQuota(todayUsage)}
+        />
+      </div>
     </div>
   )
 }
@@ -256,36 +329,29 @@ export function CockpitHeader() {
 
 function CockpitCard(props: {
   title: string
-  value: string
-  icon: LucideIcon
+  value: React.ReactNode
   children?: React.ReactNode
-  action?: React.ReactNode
   sparkline?: number[]
   sparklineTone?: 'accent-1' | 'accent-2' | 'accent-3'
 }) {
-  const Icon = props.icon
   return (
     <div className='ds-cockpit-stat bg-card flex min-h-36 flex-col justify-between gap-2 rounded-2xl border p-4 shadow-xs transition-[transform,box-shadow] duration-200'>
       <div className='flex items-start justify-between gap-2'>
-        <span className='text-muted-foreground flex items-center gap-2 text-xs font-medium'>
-          <IconBadge tone='chart-1' size='stat'>
-            <Icon />
-          </IconBadge>
+        <span className='text-muted-foreground text-xs font-medium'>
           {props.title}
         </span>
-        {props.action}
+        {props.sparkline && props.sparkline.some((v) => v > 0) && (
+          <LineSparkline
+            values={props.sparkline}
+            tone={props.sparklineTone ?? 'accent-1'}
+          />
+        )}
       </div>
       <div className='font-mono text-xl font-semibold tracking-tight tabular-nums sm:text-2xl'>
         {props.value}
       </div>
       <div className='flex items-end justify-between gap-2'>
         <div className='flex flex-col gap-0.5'>{props.children}</div>
-        {props.sparkline && (
-          <LineSparkline
-            values={props.sparkline}
-            tone={props.sparklineTone ?? 'accent-1'}
-          />
-        )}
       </div>
     </div>
   )
@@ -296,244 +362,168 @@ export function CockpitStatCards() {
   const user = useAuthStore((state) => state.auth.user)
   const remainQuota = Number(user?.quota ?? 0)
 
-  const range48h = useMemo(() => computeTimeRange(2), [])
-  const monthStartSec = useMemo(() => startOfCurrentMonth(), [])
-  const lastMonthStartSec = useMemo(() => startOfCurrentMonth(-1), [])
-
-  const q48 = useQuery({
-    queryKey: ['cockpit', '48h', range48h.start_timestamp],
+  const { query: quota48, range } = useQuota48h()
+  const tokens = useQuery({
+    queryKey: ['cockpit', 'tokens'],
     queryFn: async () => {
-      const result = await getUserQuotaDates({
-        start_timestamp: range48h.start_timestamp,
-        end_timestamp: range48h.end_timestamp,
-        default_time: 'hour',
-      })
-      return result.success ? (result.data ?? []) : []
-    },
-    staleTime: 60 * 1000,
-  })
-
-  const qMonth = useQuery({
-    queryKey: ['cockpit', 'months', lastMonthStartSec],
-    queryFn: async () => {
-      const result = await getUserQuotaDates({
-        start_timestamp: lastMonthStartSec,
-        end_timestamp: range48h.end_timestamp,
-        default_time: 'day',
-      })
-      return result.success ? (result.data ?? []) : []
+      const result = await getApiKeys({ p: 1, size: 100 })
+      return result.data?.items ?? []
     },
     staleTime: 60 * 1000,
   })
 
   const stats = useMemo(() => {
-    const data48 = q48.data ?? []
-    const dataMonth = qMonth.data ?? []
+    const data48 = quota48.data ?? []
     const startOfToday = toStartOfLocalDay()
     const startOfYesterday = toStartOfLocalDay(-1)
-    const elapsedToday = Math.max(1, range48h.end_timestamp - startOfToday)
+    const elapsedToday = Math.max(1, range.end_timestamp - startOfToday)
 
-    const today = sumBetween(data48, startOfToday, range48h.end_timestamp)
+    const today = sumBetween(data48, startOfToday, range.end_timestamp)
     const yesterday = sumBetween(
       data48,
       startOfYesterday,
       startOfYesterday + elapsedToday
     )
-    const thisMonth = sumBetween(dataMonth, monthStartSec, Number.MAX_SAFE_INTEGER)
-    const lastMonthSame = sumBetween(
-      dataMonth,
-      lastMonthStartSec,
-      lastMonthStartSec + elapsedToday
-    )
-
+    const usage24h = sumBetween(
+      data48,
+      range.end_timestamp - 24 * 3600,
+      range.end_timestamp
+    ).quota
+    const balancePrev = remainQuota + usage24h
     const hourlyBuckets = 12
+
     return {
       todayUsage: today.quota,
       todayDelta: percentDelta(today.quota, yesterday.quota),
       todaySpark: bucketSeries(
         data48,
         startOfToday,
-        range48h.end_timestamp,
-        hourlyBuckets,
-        'quota'
-      ),
-      monthUsage: thisMonth.quota,
-      monthDelta: percentDelta(thisMonth.quota, lastMonthSame.quota),
-      monthSpark: bucketSeries(
-        dataMonth,
-        monthStartSec,
-        range48h.end_timestamp,
+        range.end_timestamp,
         hourlyBuckets,
         'quota'
       ),
       todayRequests: today.count,
       requestDelta: percentDelta(today.count, yesterday.count),
-      requestSpark: bucketSeries(
-        data48,
-        startOfToday,
-        range48h.end_timestamp,
-        hourlyBuckets,
-        'count'
-      ),
-      balanceSpark: balanceSeries(
-        dataMonth,
-        monthStartSec,
-        range48h.end_timestamp,
-        remainQuota
-      ),
+      balanceDelta:
+        balancePrev > 0
+          ? ((remainQuota - balancePrev) / balancePrev) * 100
+          : null,
     }
-  }, [q48.data, qMonth.data, monthStartSec, lastMonthStartSec, range48h.end_timestamp, remainQuota])
+  }, [quota48.data, range.end_timestamp, remainQuota])
+
+  const tokenStats = useMemo(() => {
+    const items = tokens.data ?? []
+    const startOfToday = toStartOfLocalDay()
+    const enabled = items.filter((item) => item.status === 1)
+    const activeToday = enabled.filter(
+      (item) => (Number(item.accessed_time) || 0) >= startOfToday
+    ).length
+    return {
+      active: activeToday,
+      enabled: enabled.length,
+      unusedToday: enabled.length - activeToday,
+    }
+  }, [tokens.data])
+
+  const deltaRow = (delta: React.ReactNode, label: string) => (
+    <div className='flex items-center gap-1.5'>
+      {delta}
+      <span className='text-muted-foreground text-xs'>{label}</span>
+    </div>
+  )
 
   return (
     <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4'>
       <CockpitCard
+        title={t('Current balance')}
+        value={<QuotaValue text={formatQuota(remainQuota)} />}
+      >
+        {deltaRow(
+          <DeltaLine delta={stats.balanceDelta} upIsBad={false} />,
+          t('vs yesterday')
+        )}
+      </CockpitCard>
+
+      <CockpitCard
         title={t("Today's usage")}
-        value={formatQuota(stats.todayUsage)}
-        icon={Flame}
+        value={<QuotaValue text={formatQuota(stats.todayUsage)} />}
         sparkline={stats.todaySpark}
         sparklineTone='accent-1'
       >
-        <span className='text-muted-foreground text-xs'>
-          {t('vs yesterday')}
-        </span>
-        <DeltaLine delta={stats.todayDelta} upIsBad />
+        {deltaRow(
+          <DeltaLine delta={stats.todayDelta} upIsBad badTone='warning' />,
+          t('vs yesterday')
+        )}
       </CockpitCard>
 
       <CockpitCard
-        title={t('Month-to-date usage')}
-        value={formatQuota(stats.monthUsage)}
-        icon={CalendarDays}
-        sparkline={stats.monthSpark}
-        sparklineTone='accent-2'
-      >
-        <span className='text-muted-foreground text-xs'>
-          {t('vs same period last month')}
-        </span>
-        <DeltaLine delta={stats.monthDelta} upIsBad />
-      </CockpitCard>
-
-      <CockpitCard
-        title={t('Requests')}
+        title={t("Today's requests")}
         value={formatNumber(stats.todayRequests)}
-        icon={Activity}
-        sparkline={stats.requestSpark}
-        sparklineTone='accent-3'
       >
-        <span className='text-muted-foreground text-xs'>
-          {t('vs yesterday')}
-        </span>
-        <DeltaLine delta={stats.requestDelta} upIsBad={false} />
+        {deltaRow(
+          <DeltaLine
+            delta={stats.requestDelta}
+            upIsBad={false}
+            badTone='neutral'
+          />,
+          t('vs yesterday')
+        )}
       </CockpitCard>
 
       <CockpitCard
-        title={t('Credit remaining')}
-        value={formatQuota(remainQuota)}
-        icon={Wallet}
-        sparkline={stats.balanceSpark}
-        sparklineTone='accent-1'
-        action={
-          <Button size='sm' render={<Link to='/wallet' />}>
-            {t('Recharge')}
-          </Button>
+        title={t('Active tokens')}
+        value={
+          <>
+            {tokenStats.active}{' '}
+            <span className='text-muted-foreground text-base sm:text-lg'>
+              / {tokenStats.enabled}
+            </span>
+          </>
         }
-      />
-    </div>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// Insights row: call trend + usage share + quick access
-// ---------------------------------------------------------------------------
-
-const QUICK_ACTIONS: Array<{
-  labelKey: string
-  to: string
-  icon: LucideIcon
-}> = [
-  { labelKey: 'Model Square', to: '/pricing', icon: Orbit },
-  { labelKey: 'API Keys', to: '/keys', icon: KeyRound },
-  { labelKey: 'Usage Logs', to: '/usage-logs', icon: FileText },
-  { labelKey: 'Wallet', to: '/wallet', icon: Wallet },
-]
-
-function ModelLegend(props: { data: QuotaDataItem[] }) {
-  const { t } = useTranslation()
-  const otherLabel = t('Other')
-
-  const entries = useMemo(() => {
-    const totals = new Map<string, number>()
-    let total = 0
-    for (const item of props.data) {
-      const model = item.model_name || 'Unknown'
-      const count = Number(item.count) || 0
-      totals.set(model, (totals.get(model) || 0) + count)
-      total += count
-    }
-    if (total <= 0) return []
-
-    // Mirror the color domain used by processChartData: sorted model names
-    // plus the "Other" bucket, colored by the shared ordinal scheme.
-    const sortedModels = [...totals.keys()].sort()
-    const domain = [...new Set([...sortedModels, otherLabel])]
-    const range = getDashboardChartColors(domain.length)
-    const otherColor = range[domain.indexOf(otherLabel)] ?? '#808080'
-
-    const ranked = [...totals.entries()]
-      .map(([model, count]) => ({
-        model,
-        count,
-        share: (count / total) * 100,
-      }))
-      .sort((a, b) => b.count - a.count)
-
-    return ranked.slice(0, 5).map((entry) => ({
-      ...entry,
-      color: domain.includes(entry.model)
-        ? range[domain.indexOf(entry.model)]
-        : otherColor,
-    }))
-  }, [props.data, otherLabel])
-
-  if (!entries.length) return null
-
-  return (
-    <div className='flex flex-col gap-1.5 px-1 pb-1'>
-      {entries.map((entry) => (
-        <div
-          key={entry.model}
-          className='flex items-center justify-between gap-2 text-xs'
-        >
-          <span className='flex min-w-0 items-center gap-2'>
-            <span
-              className='size-2 shrink-0 rounded-full'
-              style={{ backgroundColor: entry.color }}
-              aria-hidden='true'
+      >
+        <div className='flex w-full flex-col gap-1.5'>
+          <div
+            className='bg-muted h-1.5 w-full overflow-hidden rounded-full'
+            role='progressbar'
+            aria-valuemin={0}
+            aria-valuemax={tokenStats.enabled}
+            aria-valuenow={tokenStats.active}
+          >
+            <div
+              className='bg-primary h-full rounded-full'
+              style={{
+                width:
+                  tokenStats.enabled > 0
+                    ? `${(tokenStats.active / tokenStats.enabled) * 100}%`
+                    : '0%',
+              }}
             />
-            <span className='truncate font-medium'>{entry.model}</span>
-          </span>
-          <span className='text-muted-foreground shrink-0 tabular-nums'>
-            {entry.share.toFixed(1)}%
+          </div>
+          <span className='text-muted-foreground text-xs'>
+            {t('{{count}} tokens unused today', {
+              count: tokenStats.unusedToday,
+            })}
           </span>
         </div>
-      ))}
+      </CockpitCard>
     </div>
   )
 }
+
+// ---------------------------------------------------------------------------
+// Insights row: 24h request trend + today usage share
+// ---------------------------------------------------------------------------
 
 export function CockpitInsights() {
   const { t } = useTranslation()
-  const { customization } = useThemeCustomization()
-  const chartRadius = useThemeRadiusPx(
-    '--radius-md',
-    `${customization.preset}:${customization.radius}`
-  )
+  const { query: quota48, range } = useQuota48h()
 
-  const range = useMemo(() => computeTimeRange(7), [])
-  const query = useQuery({
-    queryKey: ['cockpit', 'trend-7d', range.start_timestamp],
+  const todayStartSec = useMemo(() => toStartOfLocalDay(), [])
+  const todayModels = useQuery({
+    queryKey: ['cockpit', 'today-models', todayStartSec],
     queryFn: async () => {
       const result = await getUserQuotaDates({
-        start_timestamp: range.start_timestamp,
+        start_timestamp: todayStartSec,
         end_timestamp: range.end_timestamp,
         default_time: 'day',
       })
@@ -542,67 +532,167 @@ export function CockpitInsights() {
     staleTime: 60 * 1000,
   })
 
-  const chartData = useMemo(
-    () =>
-      processChartData(
-        query.isLoading ? [] : (query.data ?? []),
-        'day',
-        t,
-        chartRadius
-      ),
-    [query.data, query.isLoading, t, chartRadius]
+  // 24 hourly buckets aligned to clock hours, as in the approved mock.
+  const trend = useMemo(() => {
+    const startSec = Math.floor((range.end_timestamp - 24 * 3600) / 3600) * 3600
+    const counts = bucketSeries(
+      quota48.data ?? [],
+      startSec,
+      startSec + 24 * 3600,
+      24,
+      'count'
+    )
+    return {
+      values: counts.map((count, index) => ({
+        time: formatHourLabel(startSec + index * 3600),
+        count,
+        series: 'requests',
+      })),
+      peak: Math.max(0, ...counts),
+    }
+  }, [quota48.data, range.end_timestamp])
+
+  const trendColor = useMemo(() => getDashboardChartColors(3)[0], [])
+  const trendSpec = useMemo(
+    () => ({
+      type: 'area',
+      data: [{ id: 'trend', values: trend.values }],
+      xField: 'time',
+      yField: 'count',
+      seriesField: 'series',
+      stack: false,
+      curveType: 'monotone' as const,
+      color: trendColor,
+      axes: [
+        {
+          orient: 'bottom',
+          label: {
+            formatMethod: (value: string | string[]) =>
+              typeof value === 'string' && Number(value.slice(0, 2)) % 6 === 0
+                ? value
+                : '',
+          },
+        },
+        { orient: 'left' },
+      ],
+      legends: { visible: false },
+    }),
+    [trend.values, trendColor]
+  )
+
+  const donut = useMemo(() => {
+    const totals = new Map<string, number>()
+    let total = 0
+    for (const item of todayModels.data ?? []) {
+      const model = item.model_name || 'Unknown'
+      const quota = Number(item.quota) || 0
+      totals.set(model, (totals.get(model) || 0) + quota)
+      total += quota
+    }
+    const ranked = [...totals.entries()].sort((a, b) => b[1] - a[1])
+    const entries = ranked
+      .slice(0, 7)
+      .map(([model, quota]) => ({ model, quota }))
+    const restQuota = ranked.slice(7).reduce((sum, [, quota]) => sum + quota, 0)
+    if (restQuota > 0) entries.push({ model: t('Other'), quota: restQuota })
+    const domain = entries.map((entry) => entry.model)
+    return {
+      entries,
+      total,
+      domain,
+      colors: getDashboardChartColors(domain.length),
+    }
+  }, [todayModels.data, t])
+
+  const donutSpec = useMemo(
+    () => ({
+      type: 'pie',
+      data: [
+        {
+          id: 'share',
+          values: donut.entries.map((entry) => ({
+            model: entry.model,
+            value: entry.quota,
+          })),
+        },
+      ],
+      categoryField: 'model',
+      valueField: 'value',
+      outerRadius: 0.92,
+      innerRadius: 0.72,
+      color: { type: 'ordinal', domain: donut.domain, range: donut.colors },
+      label: { visible: false },
+      legends: { visible: false },
+    }),
+    [donut]
   )
 
   return (
-    <div className='grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,2.2fr)_minmax(0,1.6fr)_minmax(0,1fr)]'>
+    <div className='grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)]'>
       <div className='ds-cockpit-insight bg-card overflow-hidden rounded-2xl border p-4 shadow-xs transition-[transform,box-shadow] duration-200'>
-        <div className='mb-2 text-sm font-semibold'>
-          {t('Model call trend')}
+        <div className='mb-2 flex flex-wrap items-baseline gap-3'>
+          <span className='text-sm font-semibold'>{t('Request trend')}</span>
+          <span className='text-muted-foreground text-xs'>
+            {t('Last 24 hours · hourly · peak {{peak}} req/h', {
+              peak: formatNumber(trend.peak),
+            })}
+          </span>
         </div>
-        <CockpitChart
-          spec={{
-            ...chartData.spec_area,
-            title: { visible: false },
-            legends: { visible: false },
-          }}
-          height={280}
-        />
+        <CockpitChart spec={trendSpec} height={320} />
       </div>
 
       <div className='ds-cockpit-insight bg-card overflow-hidden rounded-2xl border p-4 shadow-xs transition-[transform,box-shadow] duration-200'>
-        <div className='mb-2 text-sm font-semibold'>
-          {t('Model usage share')}
+        <div className='mb-2 flex items-baseline justify-between gap-2'>
+          <span className='text-sm font-semibold'>
+            {t('Model usage share')}
+          </span>
+          <span className='text-muted-foreground text-xs'>
+            {t('Today · USD')}
+          </span>
         </div>
-        <CockpitChart
-          spec={{
-            ...chartData.spec_pie,
-            title: { visible: false },
-            legends: { visible: false },
-            label: { visible: false },
-          }}
-          height={180}
-        />
-        <ModelLegend data={query.isLoading ? [] : (query.data ?? [])} />
-      </div>
-
-      <div className='bg-card flex flex-col gap-2 rounded-2xl border p-4 shadow-xs'>
-        <div className='text-sm font-semibold'>{t('Quick access')}</div>
-        <div className='grid gap-2'>
-          {QUICK_ACTIONS.map((action) => {
-            const Icon = action.icon
-            return (
-              <Button
-                key={action.to}
-                variant='outline'
-                className='justify-start'
-                render={<Link to={action.to} />}
-              >
-                <Icon data-icon='inline-start' />
-                {t(action.labelKey)}
-              </Button>
-            )
-          })}
-        </div>
+        {donut.total > 0 ? (
+          <>
+            <div className='relative'>
+              <CockpitChart spec={donutSpec} height={210} />
+              <div className='pointer-events-none absolute inset-0 flex flex-col items-center justify-center'>
+                <span className='font-mono text-2xl font-semibold tracking-tight tabular-nums'>
+                  <QuotaValue text={formatQuota(donut.total)} />
+                </span>
+                <span className='text-muted-foreground text-xs'>
+                  {t("Today's usage")}
+                </span>
+              </div>
+            </div>
+            <div className='mt-3 flex flex-col gap-1.5 px-1 pb-1'>
+              {donut.entries.map((entry) => (
+                <div
+                  key={entry.model}
+                  className='flex items-center justify-between gap-2 text-xs'
+                >
+                  <span className='flex min-w-0 items-center gap-2'>
+                    <span
+                      className='size-2 shrink-0 rounded-full'
+                      style={{
+                        backgroundColor:
+                          donut.colors[donut.domain.indexOf(entry.model)] ??
+                          '#808080',
+                      }}
+                      aria-hidden='true'
+                    />
+                    <span className='truncate font-medium'>{entry.model}</span>
+                  </span>
+                  <span className='text-muted-foreground shrink-0 tabular-nums'>
+                    {formatQuota(entry.quota)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className='text-muted-foreground flex h-40 items-center justify-center text-sm'>
+            {t('No usage recorded today')}
+          </div>
+        )}
       </div>
     </div>
   )

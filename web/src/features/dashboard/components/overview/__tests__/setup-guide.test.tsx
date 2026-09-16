@@ -64,6 +64,15 @@ beforeEach(() => {
             },
           },
         }
+      case '/api/token/?p=1&size=100':
+        return {
+          data: {
+            success: true,
+            data: {
+              items: [{ id: 1, name: 'App key', key: 'masked', status: 1 }],
+            },
+          },
+        }
       case '/api/status':
         return {
           data: {
@@ -112,18 +121,14 @@ describe('overview setup guide', () => {
 
     const toggle = await screen.findByRole('button', { name: 'Setup guide' })
     expect(toggle).toHaveAttribute('aria-expanded', 'false')
-    expect(
-      screen.getAllByRole('heading').map((heading) => heading.textContent)
-    ).toEqual(['AI Connects the World · Making Models Work for You'])
+    expect(screen.getAllByRole('heading')[0].textContent).toMatch(
+      /dashboard-user/
+    )
     expect(screen.queryByText('Setup guide complete')).not.toBeInTheDocument()
     expect(screen.queryByText('Setup progress: 3/3')).not.toBeInTheDocument()
     for (const name of ['Channels', 'Pricing']) {
       expect(screen.queryByRole('button', { name })).not.toBeInTheDocument()
     }
-    // Quick access is a permanent cockpit panel, independent of the guide.
-    expect(
-      screen.getAllByRole('button', { name: 'API Keys' }).length
-    ).toBeGreaterThan(0)
     const panel = document.getElementById(
       toggle.getAttribute('aria-controls') ?? ''
     )
