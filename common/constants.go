@@ -70,6 +70,12 @@ var TelegramOAuthEnabled = false
 var TurnstileCheckEnabled = false
 var RegisterEnabled = true
 
+// Default group assigned to newly created users when the registration or
+// admin flow does not specify one. Kept as an option (NewUserDefaultGroup)
+// so deployments can land new users in a real business group; the historical
+// value is "default".
+var NewUserDefaultGroup = "default"
+
 var EmailDomainRestrictionEnabled = false // 是否启用邮箱域名限制
 var EmailAliasRestrictionEnabled = false  // 是否启用邮箱别名限制
 var EmailDomainWhitelist = []string{

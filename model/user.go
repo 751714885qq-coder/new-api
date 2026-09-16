@@ -633,6 +633,12 @@ func (user *User) TransferAffQuotaToQuota(quota int) error {
 
 func (user *User) prepareForInsert(tx *gorm.DB) error {
 	user.Email = NormalizeEmail(user.Email)
+	// New users land in the configured default group (option
+	// NewUserDefaultGroup). An empty option keeps the historical behavior:
+	// the DB column default "default" applies.
+	if user.Group == "" && common.NewUserDefaultGroup != "" {
+		user.Group = common.NewUserDefaultGroup
+	}
 	if err := ensureEmailAvailableWithTx(tx, user.Email, 0); err != nil {
 		return err
 	}
