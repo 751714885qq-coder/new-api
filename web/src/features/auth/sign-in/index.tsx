@@ -32,11 +32,14 @@ export function SignIn() {
 
   return (
     <AuthLayout>
-      <div className='w-full space-y-8'>
+      <div className='ds-auth-signin-panel w-full space-y-8'>
         <div className='space-y-2'>
           <h2 className='text-center text-2xl font-semibold tracking-tight sm:text-left'>
-            {t('Sign in')}
+            {t('Welcome back')}
           </h2>
+          <p className='text-muted-foreground text-left text-sm sm:text-base'>
+            {t('Sign in to manage your API keys, usage and billing')}
+          </p>
           {!status?.self_use_mode_enabled &&
             status?.register_enabled !== false && (
               <p className='text-muted-foreground text-left text-sm sm:text-base'>

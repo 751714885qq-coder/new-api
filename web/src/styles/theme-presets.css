@@ -889,8 +889,10 @@ body[data-theme-preset='deep-space'] {
   /* Match the canvas sky gradient (spec v2) so public pages share the
    * console field. */
   background-color: #020617;
-  background-image: linear-gradient(180deg, #092b55, #061a3a 40%, #020617),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cfilter id='n' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0032 0.006' numOctaves='3' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 0.31  0 0 0 0 0.43  0 0 0 0 1  0 0 0 1 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='gamma' amplitude='0.65' exponent='5' offset='0'/%3E%3C/feComponentTransfer%3E%3CfeGaussianBlur stdDeviation='2'/%3E%3C/filter%3E%3Crect width='1600' height='900' filter='url(%23n)'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='32' cy='48' r='1' opacity='.7'/%3E%3Ccircle cx='118' cy='14' r='.8' opacity='.5'/%3E%3Ccircle cx='207' cy='77' r='1.1' opacity='.8'/%3E%3Ccircle cx='289' cy='33' r='.7' opacity='.4'/%3E%3Ccircle cx='361' cy='102' r='1' opacity='.6'/%3E%3Ccircle cx='76' cy='161' r='.8' opacity='.5'/%3E%3Ccircle cx='173' cy='139' r='1' opacity='.7'/%3E%3Ccircle cx='258' cy='187' r='.7' opacity='.35'/%3E%3Ccircle cx='341' cy='155' r='1.2' opacity='.75'/%3E%3Ccircle cx='402' cy='211' r='.8' opacity='.5'/%3E%3Ccircle cx='19' cy='247' r='1' opacity='.6'/%3E%3Ccircle cx='96' cy='288' r='.7' opacity='.4'/%3E%3Ccircle cx='188' cy='262' r='1.1' opacity='.75'/%3E%3Ccircle cx='277' cy='301' r='.8' opacity='.5'/%3E%3Ccircle cx='352' cy='274' r='1' opacity='.6'/%3E%3Ccircle cx='55' cy='352' r='.8' opacity='.5'/%3E%3Ccircle cx='142' cy='381' r='1' opacity='.7'/%3E%3Ccircle cx='231' cy='356' r='.7' opacity='.35'/%3E%3Ccircle cx='316' cy='392' r='1' opacity='.6'/%3E%3Ccircle cx='393' cy='349' r='.9' opacity='.55'/%3E%3C/g%3E%3C/svg%3E");
+  background-image:
+    linear-gradient(180deg, #092b55, #061a3a 40%, #020617),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cfilter id='n' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0032 0.006' numOctaves='3' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 0.31  0 0 0 0 0.43  0 0 0 0 1  0 0 0 1 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='gamma' amplitude='0.65' exponent='5' offset='0'/%3E%3C/feComponentTransfer%3E%3CfeGaussianBlur stdDeviation='2'/%3E%3C/filter%3E%3Crect width='1600' height='900' filter='url(%23n)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='32' cy='48' r='1' opacity='.7'/%3E%3Ccircle cx='118' cy='14' r='.8' opacity='.5'/%3E%3Ccircle cx='207' cy='77' r='1.1' opacity='.8'/%3E%3Ccircle cx='289' cy='33' r='.7' opacity='.4'/%3E%3Ccircle cx='361' cy='102' r='1' opacity='.6'/%3E%3Ccircle cx='76' cy='161' r='.8' opacity='.5'/%3E%3Ccircle cx='173' cy='139' r='1' opacity='.7'/%3E%3Ccircle cx='258' cy='187' r='.7' opacity='.35'/%3E%3Ccircle cx='341' cy='155' r='1.2' opacity='.75'/%3E%3Ccircle cx='402' cy='211' r='.8' opacity='.5'/%3E%3Ccircle cx='19' cy='247' r='1' opacity='.6'/%3E%3Ccircle cx='96' cy='288' r='.7' opacity='.4'/%3E%3Ccircle cx='188' cy='262' r='1.1' opacity='.75'/%3E%3Ccircle cx='277' cy='301' r='.8' opacity='.5'/%3E%3Ccircle cx='352' cy='274' r='1' opacity='.6'/%3E%3Ccircle cx='55' cy='352' r='.8' opacity='.5'/%3E%3Ccircle cx='142' cy='381' r='1' opacity='.7'/%3E%3Ccircle cx='231' cy='356' r='.7' opacity='.35'/%3E%3Ccircle cx='316' cy='392' r='1' opacity='.6'/%3E%3Ccircle cx='393' cy='349' r='.9' opacity='.55'/%3E%3C/g%3E%3C/svg%3E");
   background-attachment: fixed, fixed, fixed;
 }
 
@@ -933,21 +935,96 @@ body[data-theme-preset='deep-space'] {
     color-mix(in oklch, var(--violet) 40%, transparent) 100%
   );
   box-shadow:
-    inset 0 0 0 1px
-      color-mix(in oklch, var(--primary) 55%, transparent),
+    inset 0 0 0 1px color-mix(in oklch, var(--primary) 55%, transparent),
     0 0 22px -2px color-mix(in oklch, var(--primary) 55%, transparent);
 }
 .dark
   :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='button'].bg-primary {
-  background-image: linear-gradient(
-    135deg,
-    var(--primary),
-    var(--violet) 115%
-  );
+  background-image: linear-gradient(135deg, var(--primary), var(--violet) 115%);
   box-shadow:
     0 0 0 1px color-mix(in oklch, var(--primary) 55%, transparent),
     0 6px 28px -6px color-mix(in oklch, var(--violet) 65%, transparent);
+}
+
+/* Wallet first metric becomes the visual energy core from the rendering
+ * baseline while retaining the existing real balance value. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-wallet-stat='balance'] {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 18% 58%,
+      rgb(0 191 255 / 0.18),
+      transparent 24%
+    ),
+    linear-gradient(135deg, rgb(6 26 58 / 0.72), rgb(3 11 28 / 0.46));
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-wallet-stat='balance']::after {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid rgb(34 211 238 / 0.48);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    rgb(34 211 238 / 0.85),
+    rgb(0 191 255 / 0.28) 42%,
+    rgb(139 92 246 / 0.08) 68%,
+    transparent 70%
+  );
+  box-shadow:
+    0 0 1.25rem rgb(0 191 255 / 0.48),
+    inset 0 0 0.7rem rgb(34 211 238 / 0.4);
+  content: '';
+  animation: ds-energy-pulse 3.8s ease-in-out infinite;
+}
+@keyframes ds-energy-pulse {
+  0%,
+  100% {
+    transform: scale(0.94);
+    opacity: 0.72;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+/* Sign-in card follows the homepage's glass terminal treatment instead of
+ * looking like an unrelated stock form. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-auth-signin-panel {
+  padding: 1.75rem;
+  border: 1px solid rgb(0 191 255 / 0.28);
+  border-radius: 1.25rem;
+  background: rgb(6 26 58 / 0.55);
+  box-shadow:
+    inset 0 1px 0 rgb(232 238 255 / 0.07),
+    0 1rem 3rem rgb(0 8 24 / 0.28);
+  backdrop-filter: blur(20px) saturate(1.15);
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-auth-signin-panel::before {
+  display: block;
+  height: 1px;
+  margin: -0.35rem 0 1rem;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(0 191 255 / 0.8),
+    rgb(139 92 246 / 0.7),
+    transparent
+  );
+  content: '';
 }
 /* Glass cards: top highlight edge + spec-v2 cyan rim rgba(0,180,255,.3). */
 .dark
@@ -1036,13 +1113,6 @@ body[data-theme-preset='deep-space'] {
   box-shadow: 0 0 12px 1px rgba(0, 191, 255, 0.8);
 }
 
-/* Nebula breathing (backdrop SVG layers). */
-.deepspace-nebula-layer {
-  animation: ds-breathe 9s ease-in-out infinite;
-}
-.deepspace-nebula-delay {
-  animation-delay: -4.5s;
-}
 @keyframes ds-breathe {
   0%,
   100% {
@@ -1053,9 +1123,6 @@ body[data-theme-preset='deep-space'] {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .deepspace-nebula-layer {
-    animation: none;
-  }
   .dark
     :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
     [data-slot='card']::after {
@@ -1097,10 +1164,13 @@ body[data-theme-preset='deep-space'] {
 }
 .dark
   :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
-  :is([data-slot='input'], [data-slot='select-trigger'], textarea):focus-visible {
+  :is(
+    [data-slot='input'],
+    [data-slot='select-trigger'],
+    textarea
+  ):focus-visible {
   border-color: color-mix(in oklch, var(--primary) 60%, transparent);
-  box-shadow: 0 0 0 3px
-    color-mix(in oklch, var(--primary) 22%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary) 22%, transparent);
 }
 
 /* Tables: translucent rows, faint blue dividers, blue-tinted hover. */
@@ -1117,7 +1187,8 @@ body[data-theme-preset='deep-space'] {
 }
 .dark
   :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
-  [data-slot='table-body'] [data-slot='table-row']:hover {
+  [data-slot='table-body']
+  [data-slot='table-row']:hover {
   background-color: color-mix(in oklch, var(--primary) 7%, transparent);
 }
 
@@ -1159,12 +1230,12 @@ body[data-theme-preset='deep-space'] {
 
 /* Thin blue scrollbars. */
 .dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space']) * {
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  * {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in oklch, var(--primary) 28%, transparent)
     transparent;
 }
-
 
 /* ── Deep Space cockpit (WO-019 rendering baseline · overview restructure) ──
  * Scoped to .ds-cockpit-* classes rendered by overview-cockpit.tsx; the
@@ -1176,31 +1247,66 @@ body[data-theme-preset='deep-space'] {
   height: 120px;
 }
 
+/* Life planet: scaled-down port of the homepage mc-earth recipe (ocean
+ * body, feTurbulence clouds, atmospheric rim) — keep values in sync with
+ * WO-011 02-draft-homepage-v2.html. */
 .ds-cockpit-planet {
   position: absolute;
-  inset: 18px;
+  inset: 12px;
   border-radius: 9999px;
   background: radial-gradient(
-    circle at 32% 30%,
-    #2a5aa8 0%,
-    #123767 34%,
-    #081c3d 62%,
-    #030a1c 100%
+    circle at 34% 32%,
+    #3f7fd6 0%,
+    #1d3f96 40%,
+    #0a1a44 72%,
+    #040b22 100%
   );
+  filter: brightness(0.92) contrast(1.2) saturate(1.12);
   box-shadow:
-    inset -10px -8px 24px rgba(2, 6, 23, 0.85),
-    0 0 22px rgba(0, 191, 255, 0.28),
-    0 0 48px rgba(0, 191, 255, 0.12);
+    inset -5px -4px 12px rgba(1, 4, 12, 0.55),
+    inset 3px 4px 12px rgba(110, 170, 255, 0.24),
+    0 0 12px rgba(105, 165, 255, 0.45),
+    0 6px 14px -4px rgba(124, 92, 255, 0.2);
   animation: ds-breathe 9s ease-in-out infinite;
 }
 
+/* Cloud deck: same feTurbulence data-URI as homepage .mc-earth-cloud. */
+.ds-cockpit-planet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.008 0.016' numOctaves='4' seed='31'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.88 0 0 0 0 0.94 0 0 0 0 1 0.55 0.55 0.55 0 -0.3'/%3E%3C/filter%3E%3Crect width='800' height='400' filter='url(%23c)'/%3E%3C/svg%3E");
+  background-size: 100px 60px;
+  mix-blend-mode: screen;
+  opacity: 0.45;
+  -webkit-mask-image: radial-gradient(closest-side, #000 60%, transparent 80%);
+  mask-image: radial-gradient(closest-side, #000 60%, transparent 80%);
+  animation: ds-life-cloud 28s linear infinite;
+}
+
+/* Atmospheric rim: inner ring of homepage .mc-earth-glow, expanded past
+ * the sphere edge. */
 .ds-cockpit-planet::after {
   content: '';
   position: absolute;
-  inset: -2px;
+  inset: -4px;
   border-radius: 9999px;
-  border: 1px solid rgba(0, 191, 255, 0.45);
-  box-shadow: 0 0 14px rgba(0, 191, 255, 0.35);
+  background: radial-gradient(
+    closest-side,
+    transparent 80%,
+    rgba(150, 198, 255, 0.62) 83% 85%,
+    rgba(90, 140, 255, 0.12) 88%,
+    transparent 93%
+  );
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+@keyframes ds-life-cloud {
+  to {
+    background-position: 100px 0;
+  }
 }
 
 .ds-cockpit-orbit {
@@ -1229,6 +1335,53 @@ body[data-theme-preset='deep-space'] {
   }
 }
 
+/* ── Deep Space auth decor (WO-019 S1: sign-in page planets) ──
+ * Same life-planet recipe as the cockpit planet, sized for the sign-in
+ * backdrop; the large sphere rescales shadow/cloud/rim values. */
+.ds-auth-planet-lg {
+  position: absolute;
+  top: -150px;
+  right: -110px;
+  width: 430px;
+  height: 430px;
+  pointer-events: none;
+}
+
+.ds-auth-planet-sm {
+  position: absolute;
+  bottom: -90px;
+  left: -80px;
+  width: 230px;
+  height: 230px;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.ds-auth-planet-lg .ds-cockpit-planet {
+  box-shadow:
+    inset -18px -14px 46px rgba(1, 4, 12, 0.55),
+    inset 12px 16px 46px rgba(110, 170, 255, 0.24),
+    0 0 46px rgba(105, 165, 255, 0.4),
+    0 24px 52px -16px rgba(124, 92, 255, 0.2);
+}
+
+.ds-auth-planet-lg .ds-cockpit-planet::before {
+  background-size: 220px 140px;
+  opacity: 0.5;
+  animation: ds-life-cloud-lg 42s linear infinite;
+}
+
+.ds-auth-planet-lg .ds-cockpit-planet::after {
+  inset: -10px;
+  filter: blur(2px);
+}
+
+@keyframes ds-life-cloud-lg {
+  to {
+    background-position: 220px 0;
+  }
+}
+
 /* Card hover: rise + glow (spec v2 motion layer, cockpit cards). */
 .ds-cockpit-stat:hover,
 .ds-cockpit-insight:hover {
@@ -1243,8 +1396,138 @@ body[data-theme-preset='deep-space'] {
   .ds-cockpit-orbit {
     animation: none;
   }
+  .ds-cockpit-planet::before {
+    animation: none;
+  }
   .ds-cockpit-stat:hover,
   .ds-cockpit-insight:hover {
     transform: none;
+  }
+  .ds-auth-planet-lg .ds-cockpit-planet::before {
+    animation: none;
+  }
+}
+
+/* ── Deep Space backdrop (WO-019): approved v6 sky recipe. Sky ramp with
+ * four violet/indigo/cyan glow masses, screen-blended turbulence noise, a
+ * blurred milky-way band, floating glow particles behind the glass, and an
+ * edge vignette. Star tile layers were dropped per review (星野整层删除).
+ * Values are frozen to the v6 mock chrome — retune together with
+ * evidence/WO-019-exec/10-渲染稿-v6-钱包.html, never here alone. ── */
+.ds-sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #020711 0%, #040a1a 55%, #050b1c 100%);
+}
+.ds-sky::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      1100px 680px at 80% -10%,
+      rgba(99, 102, 241, 0.22),
+      transparent 62%
+    ),
+    radial-gradient(
+      900px 640px at -8% 30%,
+      rgba(124, 58, 237, 0.17),
+      transparent 60%
+    ),
+    radial-gradient(
+      700px 520px at 38% 76%,
+      rgba(168, 85, 247, 0.1),
+      transparent 62%
+    ),
+    radial-gradient(
+      1200px 560px at 60% 114%,
+      rgba(34, 211, 238, 0.1),
+      transparent 65%
+    );
+}
+.ds-noise {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: screen;
+  opacity: 0.42;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.005 0.008' numOctaves='4' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.45 0 0 0 0 0.52 0 0 0 0 0.95 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='520' height='520' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 520px 520px;
+}
+.ds-milkyway {
+  position: absolute;
+  left: -12%;
+  top: 6%;
+  width: 132%;
+  height: 300px;
+  transform: rotate(-16deg);
+  background: linear-gradient(
+    90deg,
+    transparent 2%,
+    rgba(120, 140, 255, 0.06) 28%,
+    rgba(170, 190, 255, 0.1) 50%,
+    rgba(120, 140, 255, 0.06) 72%,
+    transparent 98%
+  );
+  filter: blur(26px);
+}
+.ds-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ds-pt {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(215, 240, 255, 0.95) 0%,
+    rgba(140, 200, 255, 0.35) 40%,
+    transparent 70%
+  );
+  box-shadow: 0 0 10px 2px rgba(150, 210, 255, 0.3);
+  opacity: 0;
+  animation: ds-pfloat var(--dur) linear infinite;
+  animation-delay: var(--del);
+}
+.ds-pt.violet {
+  background: radial-gradient(
+    circle,
+    rgba(225, 210, 255, 0.95) 0%,
+    rgba(165, 135, 255, 0.32) 40%,
+    transparent 70%
+  );
+  box-shadow: 0 0 12px 3px rgba(165, 145, 255, 0.28);
+}
+.ds-pt.orb {
+  filter: blur(6px);
+}
+@keyframes ds-pfloat {
+  0% {
+    transform: translate3d(0, 44px, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: var(--po);
+  }
+  85% {
+    opacity: var(--po);
+  }
+  100% {
+    transform: translate3d(var(--sw), -160px, 0);
+    opacity: 0;
+  }
+}
+.ds-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    130% 120% at 50% 42%,
+    transparent 58%,
+    rgba(0, 0, 0, 0.42) 100%
+  );
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-pt {
+    animation: none;
   }
 }

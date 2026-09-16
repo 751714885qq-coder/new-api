@@ -26,13 +26,16 @@ import { useAuthStore } from '@/stores/auth-store'
 
 import { CheckinCalendarCard } from './components/checkin-calendar-card'
 import { LanguagePreferencesCard } from './components/language-preferences-card'
+import { ProfileBasicsCard } from './components/profile-basics-card'
 import { ProfileHeader } from './components/profile-header'
+import { ProfileSecurityLinksCard } from './components/profile-security-links-card'
 import { ProfileSettingsCard } from './components/profile-settings-card'
 import { SidebarModulesCard } from './components/sidebar-modules-card'
 import { useProfile } from './hooks'
 
 export function Profile() {
-  const { profile, loading, refreshProfile } = useProfile()
+  const { profile, loading, updating, refreshProfile, updateProfile } =
+    useProfile()
   const { status } = useStatus()
   const permissions = useAuthStore((s) => s.auth.user?.permissions)
 
@@ -49,6 +52,18 @@ export function Profile() {
         <CardStaggerContainer className='mx-auto flex w-full max-w-7xl flex-col gap-4 sm:gap-6'>
           <CardStaggerItem>
             <ProfileHeader profile={profile} loading={loading} />
+          </CardStaggerItem>
+
+          <CardStaggerItem>
+            <div className='grid gap-4 sm:gap-5 xl:grid-cols-2 xl:items-start'>
+              <ProfileBasicsCard
+                profile={profile}
+                loading={loading}
+                updating={updating}
+                onUpdateProfile={updateProfile}
+              />
+              <ProfileSecurityLinksCard profile={profile} />
+            </div>
           </CardStaggerItem>
 
           <CardStaggerItem>

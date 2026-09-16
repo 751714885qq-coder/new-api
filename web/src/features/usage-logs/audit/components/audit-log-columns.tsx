@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { TruncatedCell } from '@/components/data-table'
 import { StatusBadge } from '@/components/status-badge'
 import dayjs from '@/lib/dayjs'
+import { cn } from '@/lib/utils'
 
 import type { AuditLog } from '../api'
 import { buildAuditDetails } from '../lib/audit-details'
@@ -76,6 +77,15 @@ export function useAuditLogColumns(
             return (
               <div className='min-w-0 space-y-1'>
                 <div className='flex min-w-0 items-baseline gap-1'>
+                  {/* WO-019 rendering baseline: status dot next to the event
+                   * headline (green = success, red = failure). */}
+                  <span
+                    aria-hidden
+                    className={cn(
+                      'h-1.5 w-1.5 shrink-0 self-center rounded-full',
+                      row.original.success ? 'bg-success' : 'bg-destructive'
+                    )}
+                  />
                   <TruncatedCell
                     className='min-w-0 font-medium'
                     tooltipContent={operation.summary}

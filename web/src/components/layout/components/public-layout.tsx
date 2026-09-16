@@ -17,7 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import type { TopNavLink } from '../types'
+import { DeepSpaceBackdrop } from './deep-space-backdrop'
 import { PublicHeader, type PublicHeaderProps } from './public-header'
+import { useThemeCustomization } from '@/context/theme-customization-provider'
 
 type PublicLayoutProps = {
   children: React.ReactNode
@@ -33,8 +35,11 @@ type PublicLayoutProps = {
 }
 
 export function PublicLayout(props: PublicLayoutProps) {
+  const { customization } = useThemeCustomization()
+
   return (
     <div className='bg-background text-foreground relative min-h-svh overflow-x-clip'>
+      {customization.preset === 'deep-space' && <DeepSpaceBackdrop />}
       <PublicHeader
         navContent={props.navContent}
         navLinks={props.navLinks}

@@ -16,80 +16,74 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { useEffect, useRef, useState } from 'react'
+
+import { useEffect, useMemo, useState } from 'react'
+import type { CSSProperties } from 'react'
 
 import { useThemeCustomization } from '@/context/theme-customization-provider'
 
 /**
  * Deep Space console backdrop (WO-019).
  *
- * Renders the WO-008 sky behind the console shell: a layered
- * feTurbulence nebula (SVG, same technique as the approved homepage)
- * plus an animated parallax star field on a 2D canvas. The layer sits at
- * negative z-index so every shell surface painted on top of it decides
- * for itself whether the sky shows through — theme-presets.css turns the
- * sidebar and content inset translucent for this preset (glass look).
+ * Renders the approved v6 sky behind the console shell: sky ramp with
+ * violet/indigo/cyan glow masses, screen-blended turbulence noise, a
+ * blurred milky-way band, floating glow particles and an edge vignette.
+ * Layer visuals live in theme-presets.css (.ds-*) and are frozen to the
+ * v6 mock chrome — retune there first, then mirror here.
  *
  * Dark mode only: the light deep-space variant keeps its own subtle CSS
- * backdrop (single star layer) which reads better on a bright canvas.
+ * backdrop which reads better on a bright canvas.
  */
 
-type Star = {
-  x: number
-  y: number
-  r: number
-  /** Drift velocity and twinkle parameters, per depth layer. */
-  vx: number
-  baseAlpha: number
-  phase: number
-  twinkleSpeed: number
-  tint: string
-}
+type Particle = { className: string; style: CSSProperties }
 
-const STAR_TINTS = [
-  '#e8eeff',
-  '#cfe4ff',
-  '#8fd6ff',
-  '#ffffff',
-  '#b9a8ff',
-  '#22d3ee',
-]
-
-function seedStars(width: number, height: number): Star[] {
-  const stars: Star[] = []
-  // Three depth layers: far/dim/dense -> near/bright/sparse. Densities and
-  // alphas tuned against the rendering baseline (dense visible field).
-  const layers = [
-    { count: 150, rMin: 0.4, rMax: 0.9, alpha: 0.45, vx: -0.004 },
-    { count: 85, rMin: 0.8, rMax: 1.4, alpha: 0.65, vx: -0.009 },
-    { count: 30, rMin: 1.3, rMax: 2.2, alpha: 0.95, vx: -0.016 },
-  ]
-  for (const layer of layers) {
-    for (let i = 0; i < layer.count; i++) {
-      stars.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        r: layer.rMin + Math.random() * (layer.rMax - layer.rMin),
-        vx: layer.vx * (0.6 + Math.random() * 0.8),
-        baseAlpha: layer.alpha * (0.6 + Math.random() * 0.4),
-        phase: Math.random() * Math.PI * 2,
-        twinkleSpeed: 0.0004 + Math.random() * 0.001,
-        tint: STAR_TINTS[Math.floor(Math.random() * STAR_TINTS.length)],
-      })
-    }
+// Deterministic LCG so every mount seeds the same particle field as the
+// approved mock (seed 7, 34 glow points + 5 soft orbs).
+function buildParticles(): Particle[] {
+  let s = 7
+  const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647
+  const particles: Particle[] = []
+  for (let i = 0; i < 34; i++) {
+    particles.push({
+      className: rnd() < 0.3 ? 'ds-pt violet' : 'ds-pt',
+      style: {
+        width: `${(2 + rnd() * 5).toFixed(1)}px`,
+        height: `${(2 + rnd() * 5).toFixed(1)}px`,
+        left: `${(rnd() * 100).toFixed(2)}%`,
+        top: `${(6 + rnd() * 58).toFixed(2)}%`,
+        '--sw': `${Math.round(rnd() * 64 - 32)}px`,
+        '--po': (0.35 + rnd() * 0.55).toFixed(2),
+        '--dur': `${(10 + rnd() * 16).toFixed(1)}s`,
+        '--del': `${(-rnd() * 22).toFixed(1)}s`,
+      } as CSSProperties,
+    })
   }
-  return stars
+  for (let i = 0; i < 5; i++) {
+    particles.push({
+      className: 'ds-pt orb',
+      style: {
+        width: `${(10 + rnd() * 12).toFixed(1)}px`,
+        height: `${(10 + rnd() * 12).toFixed(1)}px`,
+        left: `${(rnd() * 100).toFixed(2)}%`,
+        top: `${(30 + rnd() * 70).toFixed(2)}%`,
+        '--sw': `${Math.round(rnd() * 80 - 40)}px`,
+        '--po': (0.1 + rnd() * 0.12).toFixed(2),
+        '--dur': `${(18 + rnd() * 14).toFixed(1)}s`,
+        '--del': `${(-rnd() * 26).toFixed(1)}s`,
+      } as CSSProperties,
+    })
+  }
+  return particles
 }
 
 function DeepSpaceBackdrop() {
   const { customization } = useThemeCustomization()
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const [isDark, setIsDark] = useState(() =>
     document.documentElement.classList.contains('dark')
   )
 
-  // Track the app's dark class so the canvas re-initializes its palette
-  // when the user flips light/dark without a remount.
+  // Track the app's dark class so the backdrop tracks the user flipping
+  // light/dark without a remount.
   useEffect(() => {
     const observer = new MutationObserver(() => {
       setIsDark(document.documentElement.classList.contains('dark'))
@@ -101,186 +95,22 @@ function DeepSpaceBackdrop() {
     return () => observer.disconnect()
   }, [])
 
-  useEffect(() => {
-    if (!isDark) return
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const reduceMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches
-
-    let stars: Star[] = []
-    let raf = 0
-    let last = performance.now()
-    let running = true
-
-    const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      canvas.width = Math.round(window.innerWidth * dpr)
-      canvas.height = Math.round(window.innerHeight * dpr)
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      stars = seedStars(window.innerWidth, window.innerHeight)
-    }
-
-    const paintFrame = (now: number) => {
-      const w = window.innerWidth
-      const h = window.innerHeight
-      // Spec v2 sky: interstellar blue #092B55 fading into deep-space
-      // black #020617.
-      const sky = ctx.createLinearGradient(0, 0, 0, h)
-      sky.addColorStop(0, '#092b55')
-      sky.addColorStop(0.45, '#061a3a')
-      sky.addColorStop(1, '#020617')
-      ctx.fillStyle = sky
-      ctx.fillRect(0, 0, w, h)
-
-      const dt = Math.min(now - last, 100)
-      last = now
-      for (const s of stars) {
-        if (!reduceMotion) {
-          s.x += s.vx * dt
-          if (s.x < -2) s.x = w + 2
-        }
-        const twinkle = reduceMotion
-          ? 1
-          : 0.62 + 0.38 * Math.sin(now * s.twinkleSpeed + s.phase)
-        ctx.globalAlpha = s.baseAlpha * twinkle
-        ctx.fillStyle = s.tint
-        ctx.beginPath()
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2)
-        ctx.fill()
-      }
-      ctx.globalAlpha = 1
-    }
-
-    const loop = (now: number) => {
-      if (!running) return
-      paintFrame(now)
-      raf = requestAnimationFrame(loop)
-    }
-
-    const onVisibility = () => {
-      running = !document.hidden
-      if (running) {
-        last = performance.now()
-        raf = requestAnimationFrame(loop)
-      } else {
-        cancelAnimationFrame(raf)
-      }
-    }
-
-    resize()
-    window.addEventListener('resize', resize)
-    document.addEventListener('visibilitychange', onVisibility)
-    if (reduceMotion) {
-      paintFrame(performance.now())
-    } else {
-      raf = requestAnimationFrame(loop)
-    }
-
-    return () => {
-      running = false
-      cancelAnimationFrame(raf)
-      window.removeEventListener('resize', resize)
-      document.removeEventListener('visibilitychange', onVisibility)
-    }
-  }, [isDark])
+  const particles = useMemo(buildParticles, [])
 
   if (customization.preset !== 'deep-space') return null
   if (!isDark) return null
 
   return (
     <div aria-hidden className='pointer-events-none fixed inset-0 -z-10'>
-      {/* Canvas paints the opaque sky + stars; the nebula SVG sits above it
-       * (semi-transparent) so stars shine through the clouds. */}
-      <canvas ref={canvasRef} className='absolute inset-0 h-full w-full' />
-      <svg
-        className='absolute inset-0 h-full w-full'
-        viewBox='0 0 1600 900'
-        preserveAspectRatio='xMidYMid slice'
-      >
-        <defs>
-          {/* Distant planet limb, top-right: dark sphere with a thin
-           * quantum-blue atmosphere rim. */}
-          <radialGradient id='deepspace-planet' cx='35%' cy='35%' r='75%'>
-            <stop offset='0%' stopColor='#0e2a55' />
-            <stop offset='55%' stopColor='#061530' />
-            <stop offset='100%' stopColor='#020711' />
-          </radialGradient>
-        </defs>
-        <filter id='deepspace-nebula' x='-20%' y='-20%' width='140%' height='140%'>
-          <feTurbulence
-            type='fractalNoise'
-            baseFrequency='0.0032 0.006'
-            numOctaves='3'
-            seed='11'
-          />
-          {/* Quantum blue #00BFFF cloud body. */}
-          <feColorMatrix
-            values='0 0 0 0 0  0 0 0 0 0.75  0 0 0 0 1  0 0 0 1 0'
-          />
-          {/* Gamma curve: mid-noise maps to ~0 so the sky stays dark and
-           * only turbulence peaks surface as clouds (validated against a
-           * standalone render — discrete/table tables filled the screen). */}
-          <feComponentTransfer>
-            <feFuncA type='gamma' amplitude='0.65' exponent='5' offset='0' />
-          </feComponentTransfer>
-          <feGaussianBlur stdDeviation='2' />
-        </filter>
-        {/* Planet behind the clouds, stars occluded by the sphere. */}
-        <g opacity='0.9'>
-          <circle cx='1430' cy='60' r='210' fill='url(#deepspace-planet)' />
-          <circle
-            cx='1430'
-            cy='60'
-            r='210'
-            fill='none'
-            stroke='#00bfff'
-            strokeOpacity='0.35'
-            strokeWidth='1.5'
-          />
-        </g>
-        {/* Nebula clouds breathe slowly (spec: 光线呼吸效果). */}
-        <rect
-          className='deepspace-nebula-layer'
-          width='1600'
-          height='900'
-          filter='url(#deepspace-nebula)'
-        />
-        {/* Second nebula layer: violet, offset turbulence so the two
-         * clouds interleave like in the concept art. */}
-        <filter
-          id='deepspace-nebula-violet'
-          x='-20%'
-          y='-20%'
-          width='140%'
-          height='140%'
-        >
-          <feTurbulence
-            type='fractalNoise'
-            baseFrequency='0.0024 0.005'
-            numOctaves='3'
-            seed='47'
-          />
-          {/* Energy purple #8B5CF6 cloud body. */}
-          <feColorMatrix
-            values='0 0 0 0 0.545  0 0 0 0 0.361  0 0 0 0 0.965  0 0 0 1 0'
-          />
-          <feComponentTransfer>
-            <feFuncA type='gamma' amplitude='0.55' exponent='5' offset='0' />
-          </feComponentTransfer>
-          <feGaussianBlur stdDeviation='2' />
-        </filter>
-        <rect
-          className='deepspace-nebula-layer deepspace-nebula-delay'
-          width='1600'
-          height='900'
-          filter='url(#deepspace-nebula-violet)'
-        />
-      </svg>
+      <div className='ds-sky' />
+      <div className='ds-noise' />
+      <div className='ds-milkyway' />
+      <div className='ds-particles'>
+        {particles.map((p, index) => (
+          <i key={index} className={p.className} style={p.style} />
+        ))}
+      </div>
+      <div className='ds-vignette' />
     </div>
   )
 }

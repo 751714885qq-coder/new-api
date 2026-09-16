@@ -78,8 +78,12 @@ export function WalletStatsCard(props: WalletStatsCardProps) {
 
   return (
     <div className='grid grid-cols-3 divide-x rounded-lg border'>
-      {stats.map((item) => (
-        <div key={item.label} className='min-w-0 px-2.5 py-2.5 sm:px-5 sm:py-4'>
+      {stats.map((item, index) => (
+        <div
+          key={item.label}
+          data-wallet-stat={index === 0 ? 'balance' : undefined}
+          className='min-w-0 px-2.5 py-2.5 sm:px-5 sm:py-4'
+        >
           <div className='flex items-center gap-1.5 sm:gap-2.5'>
             <IconBadge tone={item.tone} size='stat'>
               <item.icon />

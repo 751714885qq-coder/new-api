@@ -31,6 +31,8 @@ import { PaymentConfirmDialog } from './components/dialogs/payment-confirm-dialo
 import { TransferDialog } from './components/dialogs/transfer-dialog'
 import { RechargeFormCard } from './components/recharge-form-card'
 import { SubscriptionPlansCard } from './components/subscription-plans-card'
+import { WalletBillingPreviewCard } from './components/wallet-billing-preview-card'
+import { WalletConsumptionTrendCard } from './components/wallet-consumption-trend-card'
 import { WalletStatsCard } from './components/wallet-stats-card'
 import { DEFAULT_DISCOUNT_RATE, PAYMENT_TYPES } from './constants'
 import {
@@ -289,6 +291,13 @@ export function Wallet(props: WalletProps) {
         <SectionPageLayout.Content>
           <div className='mx-auto flex w-full max-w-7xl flex-col gap-4 sm:gap-5'>
             <WalletStatsCard user={user} loading={userLoading} />
+
+            <div className='grid gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] xl:items-start'>
+              <WalletConsumptionTrendCard />
+              <WalletBillingPreviewCard
+                onViewAll={() => setBillingDialogOpen(true)}
+              />
+            </div>
 
             <div
               className={
