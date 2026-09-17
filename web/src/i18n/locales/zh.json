@@ -3156,7 +3156,7 @@
     "Model square visibility": "广场展示",
     "Model Tags": "模型标签",
     "Model to use for testing": "用于测试的模型",
-    "Model usage share": "模型使用占比",
+    "Model usage share": "模型消耗占比",
     "Model to use when testing channel connectivity": "测试渠道连接时使用的模型",
     "Model Version *": "模型版本 *",
     "Model-scoped only": "仅模型分流",
@@ -4680,6 +4680,7 @@
     "Search models": "搜索模型",
     "Search models or fields...": "搜索模型或字段...",
     "Search models...": "搜索模型...",
+    "Search models, keys…": "搜索模型、密钥…",
     "Search payment methods...": "搜索付款方式...",
     "Search payment type keys...": "搜索支付处理标识...",
     "Search payment types...": "搜索支付类型...",
@@ -6203,7 +6204,7 @@
     " calling OpenAI, Claude, Gemini, DeepSeek and more.": "调用 OpenAI、Claude、Gemini、DeepSeek 等主流模型。",
     "System operational": "系统运行正常",
     "available": "可用",
-    "Last 24 hours · hourly · peak ": "过去 24 小时 · 每小时聚合 · 峰值 ",
-    " req/h": " 次/时"
+    " req/h": " req/h",
+    "Selected day · hourly · peak ": "所选日期 · 每小时聚合 · 峰值 "
   }
 }

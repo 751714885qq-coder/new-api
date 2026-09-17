@@ -35,8 +35,10 @@ type SystemBrandProps = {
    * Visual layout:
    * - 'sidebar': stacked card style (used inside the sidebar header).
    * - 'inline': compact horizontal pill (used inside the top app bar).
+   * - 'compact': render-verbatim brand row (orb + letter-spaced name) for
+   *   the Deep Space sidebar (WO-019).
    */
-  variant?: 'sidebar' | 'inline'
+  variant?: 'sidebar' | 'inline' | 'compact'
 }
 
 /**
@@ -54,6 +56,19 @@ export function SystemBrand(props: SystemBrandProps) {
   const name = status?.system_name || props.defaultName || 'New API'
   const version =
     status?.version || props.defaultVersion || t('Unknown version')
+
+  if (variant === 'compact') {
+    return (
+      <Link
+        to='/'
+        aria-label={t('Go to home')}
+        className='flex items-center gap-[10px] rounded-md outline-none select-none'
+      >
+        <i aria-hidden='true' className='ds-side-brand-orb' />
+        <span className='ds-side-brand-name'>{name}</span>
+      </Link>
+    )
+  }
 
   if (variant === 'inline') {
     return (

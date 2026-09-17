@@ -4680,6 +4680,7 @@
     "Search models": "Search models",
     "Search models or fields...": "Search models or fields...",
     "Search models...": "Search models...",
+    "Search models, keys…": "Search models, keys…",
     "Search payment methods...": "Search payment methods...",
     "Search payment type keys...": "Search payment type keys...",
     "Search payment types...": "Search payment types...",
@@ -6203,7 +6204,7 @@
     " calling OpenAI, Claude, Gemini, DeepSeek and more.": " calling OpenAI, Claude, Gemini, DeepSeek and more.",
     "System operational": "System operational",
     "available": "available",
-    "Last 24 hours · hourly · peak ": "Last 24 hours · hourly · peak ",
-    " req/h": " req/h"
+    " req/h": " req/h",
+    "Selected day · hourly · peak ": "Selected day · hourly · peak "
   }
 }

@@ -51,6 +51,7 @@ import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
 import { fetchTokenKey, getApiKeys } from '@/features/keys/api'
 import type { ApiKey } from '@/features/keys/types'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { getUserModels } from '@/lib/api'
 import { MOTION_TRANSITION } from '@/lib/motion'
 import { ROLE } from '@/lib/roles'
@@ -61,14 +62,14 @@ import {
   useApiInfo,
   useDashboardContentVisibility,
 } from '../../hooks/use-status-data'
+import { AnnouncementsPanel } from './announcements-panel'
+import { ApiInfoPanel } from './api-info-panel'
+import { FAQPanel } from './faq-panel'
 import {
   CockpitHeader,
   CockpitInsights,
   CockpitStatCards,
 } from './overview-cockpit'
-import { AnnouncementsPanel } from './announcements-panel'
-import { ApiInfoPanel } from './api-info-panel'
-import { FAQPanel } from './faq-panel'
 import { PerformanceHealthPanel } from './performance-health-panel'
 import { UptimePanel } from './uptime-panel'
 
@@ -462,6 +463,7 @@ function CompactQuickAction(props: { action: QuickAction }) {
 
 export function OverviewDashboard() {
   const { t } = useTranslation()
+  const deepSpaceDark = useDeepSpaceDark()
   const setupGuideId = useId()
   const setupGuideToggleRef = useRef<HTMLButtonElement>(null)
   const user = useAuthStore((state) => state.auth.user)
@@ -629,21 +631,23 @@ export function OverviewDashboard() {
 
   return (
     <SectionPageLayout>
-      <SectionPageLayout.Actions>
-        {setupStatusReady && setupComplete && (
-          <Button
-            ref={setupGuideToggleRef}
-            variant='ghost'
-            size='sm'
-            className='text-muted-foreground hover:text-foreground h-auto min-h-7 max-w-[60vw] whitespace-normal'
-            aria-expanded={setupGuideExpanded}
-            aria-controls={setupGuideId}
-            onClick={handleSetupGuideToggle}
-          >
-            {t('Setup guide')}
-          </Button>
-        )}
-      </SectionPageLayout.Actions>
+      {!deepSpaceDark && (
+        <SectionPageLayout.Actions>
+          {setupStatusReady && setupComplete && (
+            <Button
+              ref={setupGuideToggleRef}
+              variant='ghost'
+              size='sm'
+              className='text-muted-foreground hover:text-foreground h-auto min-h-7 max-w-[60vw] whitespace-normal'
+              aria-expanded={setupGuideExpanded}
+              aria-controls={setupGuideId}
+              onClick={handleSetupGuideToggle}
+            >
+              {t('Setup guide')}
+            </Button>
+          )}
+        </SectionPageLayout.Actions>
+      )}
       <SectionPageLayout.Content>
         <div className='flex flex-col gap-4'>
           <CockpitHeader />

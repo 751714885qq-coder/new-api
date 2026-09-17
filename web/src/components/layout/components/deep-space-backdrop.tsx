@@ -17,10 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 
-import { useEffect, useMemo, useState } from 'react'
-import type { CSSProperties } from 'react'
+import { useMemo, type CSSProperties } from 'react'
 
-import { useThemeCustomization } from '@/context/theme-customization-provider'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 
 /**
  * Deep Space console backdrop (WO-019).
@@ -77,37 +76,42 @@ function buildParticles(): Particle[] {
 }
 
 function DeepSpaceBackdrop() {
-  const { customization } = useThemeCustomization()
-  const [isDark, setIsDark] = useState(() =>
-    document.documentElement.classList.contains('dark')
-  )
+  const isDeepSpaceDark = useDeepSpaceDark()
 
-  // Track the app's dark class so the backdrop tracks the user flipping
-  // light/dark without a remount.
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setIsDark(document.documentElement.classList.contains('dark'))
-    })
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class'],
-    })
-    return () => observer.disconnect()
-  }, [])
+  const particles = useMemo(() => buildParticles(), [])
 
-  const particles = useMemo(buildParticles, [])
-
-  if (customization.preset !== 'deep-space') return null
-  if (!isDark) return null
+  if (!isDeepSpaceDark) return null
 
   return (
     <div aria-hidden className='pointer-events-none fixed inset-0 -z-10'>
       <div className='ds-sky' />
-      <div className='ds-noise' />
+      {/* Render lines 210-214 verbatim: one full-bleed turbulence field. */}
+      <svg className='ds-noise' width='100%' height='100%' aria-hidden='true'>
+        <filter id='ds-noise-filter'>
+          <feTurbulence
+            type='fractalNoise'
+            baseFrequency='0.005 0.008'
+            numOctaves='4'
+            seed='11'
+            stitchTiles='stitch'
+          />
+          <feColorMatrix
+            type='matrix'
+            values='0 0 0 0 0.45  0 0 0 0 0.52  0 0 0 0 0.95  0 0 0 0.6 0'
+          />
+        </filter>
+        <rect width='100%' height='100%' filter='url(#ds-noise-filter)' />
+      </svg>
       <div className='ds-milkyway' />
+      <div className='ds-planet' />
+      <div className='ds-horizon' />
       <div className='ds-particles'>
-        {particles.map((p, index) => (
-          <i key={index} className={p.className} style={p.style} />
+        {particles.map((p) => (
+          <i
+            key={`${p.style.left}-${p.style.top}`}
+            className={p.className}
+            style={p.style}
+          />
         ))}
       </div>
       <div className='ds-vignette' />

@@ -799,16 +799,16 @@ body:not([data-theme-preset]),
   --sidebar-border: oklch(0.89 0.03 268);
   --sidebar-ring: oklch(0.659 0.181 261.4);
   /* S-series tokens, light-mode same-family fallbacks (bespoke light pass pending) */
-  --ds-line: rgba(15,23,42,0.08);
-  --ds-t1: rgba(15,23,42,0.92);
-  --ds-t2: rgba(15,23,42,0.72);
-  --ds-t3: rgba(15,23,42,0.5);
-  --ds-card: rgba(255,255,255,0.72);
+  --ds-line: rgba(15, 23, 42, 0.08);
+  --ds-t1: rgba(15, 23, 42, 0.92);
+  --ds-t2: rgba(15, 23, 42, 0.72);
+  --ds-t3: rgba(15, 23, 42, 0.5);
+  --ds-card: rgba(255, 255, 255, 0.72);
   --ds-accent: #0891b2;
   --ds-green: #059669;
   --ds-amber: #d97706;
-  --ds-delta-bad: rgba(15,23,42,0.45);
-  --ds-axis: rgba(15,23,42,0.55);
+  --ds-delta-bad: rgba(15, 23, 42, 0.45);
+  --ds-axis: rgba(15, 23, 42, 0.55);
   --skeleton-base: oklch(0.93 0.02 265);
   --skeleton-highlight: oklch(0.965 0.01 265);
   /* Same html-scope-resolution caveat as the dark block below: table
@@ -864,7 +864,7 @@ body:not([data-theme-preset]),
   --overview-accent-1: var(--chart-1);
   --overview-accent-2: var(--chart-2);
   --overview-accent-3: var(--chart-3);
-  --sidebar: oklch(0.16 0.045 267 / 0.6);
+  --sidebar: transparent;
   --sidebar-foreground: oklch(0.95 0.024 270.3);
   --sidebar-primary: #22d3ee;
   --sidebar-primary-foreground: oklch(1 0 0);
@@ -873,16 +873,16 @@ body:not([data-theme-preset]),
   --sidebar-border: oklch(0.271 0.052 268.8);
   --sidebar-ring: #22d3ee;
   /* S-series v6-01-s1 render tokens, dark values are the render's literals */
-  --ds-line: rgba(255,255,255,0.07);
-  --ds-t1: rgba(255,255,255,0.92);
-  --ds-t2: rgba(255,255,255,0.72);
-  --ds-t3: rgba(255,255,255,0.5);
-  --ds-card: rgba(9,12,22,0.36);
+  --ds-line: rgba(255, 255, 255, 0.07);
+  --ds-t1: rgba(255, 255, 255, 0.92);
+  --ds-t2: rgba(255, 255, 255, 0.72);
+  --ds-t3: rgba(255, 255, 255, 0.5);
+  --ds-card: rgba(9, 12, 22, 0.36);
   --ds-accent: #22d3ee;
   --ds-green: #34d399;
   --ds-amber: #fbbf24;
-  --ds-delta-bad: rgba(255,255,255,0.45);
-  --ds-axis: rgba(255,255,255,0.62);
+  --ds-delta-bad: rgba(255, 255, 255, 0.45);
+  --ds-axis: rgba(255, 255, 255, 0.62);
   --skeleton-base: oklch(0.227 0.06 267.6);
   --skeleton-highlight: oklch(0.271 0.052 268.8);
   /* Table tokens: theme.css mixes these from var() at html scope, which
@@ -908,14 +908,11 @@ body[data-theme-preset='deep-space'] {
 }
 .dark body:not([data-theme-preset]),
 .dark body[data-theme-preset='deep-space'] {
-  /* Match the canvas sky gradient (spec v2) so public pages share the
-   * console field. */
-  background-color: #020617;
-  background-image:
-    linear-gradient(180deg, #092b55, #061a3a 40%, #020617),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cfilter id='n' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0032 0.006' numOctaves='3' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 0.31  0 0 0 0 0.43  0 0 0 0 1  0 0 0 1 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='gamma' amplitude='0.65' exponent='5' offset='0'/%3E%3C/feComponentTransfer%3E%3CfeGaussianBlur stdDeviation='2'/%3E%3C/filter%3E%3Crect width='1600' height='900' filter='url(%23n)'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='32' cy='48' r='1' opacity='.7'/%3E%3Ccircle cx='118' cy='14' r='.8' opacity='.5'/%3E%3Ccircle cx='207' cy='77' r='1.1' opacity='.8'/%3E%3Ccircle cx='289' cy='33' r='.7' opacity='.4'/%3E%3Ccircle cx='361' cy='102' r='1' opacity='.6'/%3E%3Ccircle cx='76' cy='161' r='.8' opacity='.5'/%3E%3Ccircle cx='173' cy='139' r='1' opacity='.7'/%3E%3Ccircle cx='258' cy='187' r='.7' opacity='.35'/%3E%3Ccircle cx='341' cy='155' r='1.2' opacity='.75'/%3E%3Ccircle cx='402' cy='211' r='.8' opacity='.5'/%3E%3Ccircle cx='19' cy='247' r='1' opacity='.6'/%3E%3Ccircle cx='96' cy='288' r='.7' opacity='.4'/%3E%3Ccircle cx='188' cy='262' r='1.1' opacity='.75'/%3E%3Ccircle cx='277' cy='301' r='.8' opacity='.5'/%3E%3Ccircle cx='352' cy='274' r='1' opacity='.6'/%3E%3Ccircle cx='55' cy='352' r='.8' opacity='.5'/%3E%3Ccircle cx='142' cy='381' r='1' opacity='.7'/%3E%3Ccircle cx='231' cy='356' r='.7' opacity='.35'/%3E%3Ccircle cx='316' cy='392' r='1' opacity='.6'/%3E%3Ccircle cx='393' cy='349' r='.9' opacity='.55'/%3E%3C/g%3E%3C/svg%3E");
-  background-attachment: fixed, fixed, fixed;
+  /* v6-01-s1: body carries only the base sky color; the whole atmosphere
+   * (nebula, noise, milky way, planet, horizon, particles, vignette) is
+   * painted by the DeepSpaceBackdrop layers. */
+  background-color: #05060c;
+  background-image: none;
 }
 
 /* ── Deep Space glass surfaces (WO-019 v2) ────────────────────────────── */
@@ -924,6 +921,11 @@ body[data-theme-preset='deep-space'] {
  * glass-over-starfield; light mode gets a fainter frost. */
 :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='sidebar-inset'] {
+  background-color: transparent;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .group\/sidebar-wrapper {
   background-color: transparent;
 }
 /* Public layout root (pricing / home) also paints an opaque page
@@ -935,8 +937,13 @@ body[data-theme-preset='deep-space'] {
 }
 :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='sidebar-inner'] {
-  backdrop-filter: blur(18px) saturate(1.15);
-  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  background: linear-gradient(
+    180deg,
+    rgba(6, 9, 18, 0.3),
+    rgba(5, 8, 16, 0.22)
+  );
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   :is([data-slot='card'], [data-slot='popover-content']) {
@@ -951,14 +958,192 @@ body[data-theme-preset='deep-space'] {
 .dark
   :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='sidebar-menu-button'][data-active='true'] {
-  background-image: linear-gradient(
-    90deg,
-    color-mix(in oklch, var(--primary) 70%, transparent),
-    color-mix(in oklch, var(--violet) 40%, transparent) 100%
+  background: rgba(34, 211, 238, 0.09);
+  box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.22);
+  color: #e9fdff;
+}
+
+/* ── Deep Space console chrome (WO-019 S1 shell, render-verbatim) ─────── */
+/* Sidebar frame: render .side / .logo / .nav-label / .nav-item metrics
+ * (09-渲染稿-v6-s1.html lines 109-128). */
+/* Render .side is flush top-to-bottom on the left edge; the stock container
+ * is offset by --app-header-height and inset-variant padding which only
+ * exist under the old shell. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-container'] {
+  top: 0;
+  height: 100svh;
+  padding: 0;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-inner'] {
+  border-radius: 0;
+  box-shadow: none;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .group\/sidebar-wrapper {
+  --sidebar-width: 232px;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-side-brand {
+  padding: 20px 14px 18px;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-side-brand-orb {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 32% 30%,
+    #9fe8ff 0%,
+    #22d3ee 34%,
+    #3b82f6 72%,
+    #1e2a5e 100%
   );
-  box-shadow:
-    inset 0 0 0 1px color-mix(in oklch, var(--primary) 55%, transparent),
-    0 0 22px -2px color-mix(in oklch, var(--primary) 55%, transparent);
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.45);
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-side-brand-name {
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  font-weight: 600;
+  color: var(--ds-t1);
+  white-space: nowrap;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-group'] {
+  margin-bottom: 18px;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-group-label'] {
+  padding: 0 10px 8px;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  color: var(--ds-t3);
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-menu'] {
+  gap: 2px;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-menu-button'] {
+  height: 34px;
+  gap: 10px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--ds-t2);
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-menu-button']
+  svg {
+  width: 15px;
+  height: 15px;
+  opacity: 0.75;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-menu-button']:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Topbar slots: render .search / .bell / avatar (lines 142-150). */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-search {
+  margin-left: auto;
+  width: 230px;
+  height: 32px;
+  flex: none;
+  border-radius: 8px;
+  border: 1px solid var(--ds-line);
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  color: var(--ds-t3);
+  font-size: 12px;
+  cursor: pointer;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-search:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-search
+  svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-kbd {
+  margin-left: auto;
+  font-size: 10.5px;
+  border: 1px solid var(--ds-line);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-bell {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--ds-line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--ds-t2);
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-bell
+  svg {
+  width: 14px;
+  height: 14px;
+}
+/* Language + theme-settings triggers share the bell's 32px glass recipe. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-icon
+  [data-slot='button'] {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--ds-line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--ds-t2);
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-icon
+  [data-slot='button']
+  svg {
+  width: 14px;
+  height: 14px;
+}
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-avatar
+  [data-slot='avatar'] {
+  width: 30px;
+  height: 30px;
 }
 .dark
   :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
@@ -1463,13 +1648,14 @@ body[data-theme-preset='deep-space'] {
       transparent 65%
     );
 }
+/* Render line 39: single full-bleed SVG turbulence field — never a tiled
+ * background image (tiles show seam lines). The <svg> lives in
+ * deep-space-backdrop.tsx, verbatim from render lines 210-214. */
 .ds-noise {
   position: absolute;
   inset: 0;
   mix-blend-mode: screen;
   opacity: 0.42;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.005 0.008' numOctaves='4' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.45 0 0 0 0 0.52 0 0 0 0 0.95 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='520' height='520' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 520px 520px;
 }
 .ds-milkyway {
   position: absolute;
@@ -1487,6 +1673,99 @@ body[data-theme-preset='deep-space'] {
     transparent 98%
   );
   filter: blur(26px);
+}
+
+/* rising planet, bottom-left, seen through the sidebar glass (v6-01-s1) */
+.ds-planet {
+  position: absolute;
+  width: 880px;
+  height: 880px;
+  left: -420px;
+  bottom: -560px;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      52% 44% at 60% 20%,
+      rgba(150, 190, 255, 0.38),
+      rgba(70, 95, 205, 0.14) 46%,
+      transparent 70%
+    ),
+    radial-gradient(
+      120% 120% at 68% 6%,
+      rgba(190, 220, 255, 0.1),
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 50% 30%,
+      #0e1738 0%,
+      #0c1330 40%,
+      #081026 66%,
+      #04070f 100%
+    );
+  box-shadow:
+    0 -1px 0 0 rgba(170, 205, 255, 0.55),
+    0 -6px 22px -4px rgba(120, 150, 255, 0.4),
+    0 -30px 80px -14px rgba(95, 115, 245, 0.28),
+    0 -100px 220px -50px rgba(80, 95, 230, 0.2),
+    inset 0 26px 60px -28px rgba(160, 195, 255, 0.4),
+    inset -40px -60px 140px rgba(2, 2, 12, 0.65);
+}
+.ds-planet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      34% 10% at 55% 9%,
+      rgba(200, 225, 255, 0.2),
+      transparent 70%
+    ),
+    radial-gradient(
+      50% 12% at 40% 15%,
+      rgba(160, 195, 255, 0.13),
+      transparent 72%
+    ),
+    radial-gradient(
+      40% 9% at 60% 22%,
+      rgba(140, 170, 255, 0.09),
+      transparent 70%
+    ),
+    radial-gradient(
+      30% 8% at 48% 28%,
+      rgba(130, 160, 250, 0.07),
+      transparent 70%
+    );
+  filter: blur(5px);
+}
+.ds-planet::after {
+  content: '';
+  position: absolute;
+  inset: -30px;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    transparent 82%,
+    rgba(145, 125, 255, 0.14) 92%,
+    transparent 100%
+  );
+}
+/* near-flat ground horizon at bottom-right: a thin atmosphere line (v6-01-s1).
+   Render pins top:874px on a 1000px canvas; bottom-anchored here so the same
+   126px arc shows at any viewport height. */
+.ds-horizon {
+  position: absolute;
+  width: 3600px;
+  height: 3600px;
+  left: 32%;
+  bottom: -3474px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #0b1328 0%, #060a18 12%, #04060e 40%);
+  box-shadow:
+    0 -1px 0 0 rgba(130, 190, 255, 0.38),
+    0 -14px 42px -8px rgba(80, 140, 245, 0.28),
+    0 -60px 160px -30px rgba(50, 100, 215, 0.2),
+    inset 0 24px 48px -24px rgba(130, 190, 255, 0.28);
 }
 .ds-particles {
   position: absolute;

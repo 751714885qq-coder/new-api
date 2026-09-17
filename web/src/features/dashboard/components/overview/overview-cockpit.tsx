@@ -17,14 +17,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { useQuery } from '@tanstack/react-query'
-import { useMemo, type CSSProperties, type ReactNode } from 'react'
+import { Calendar as CalendarIcon } from 'lucide-react'
+import { useMemo, useState, type CSSProperties, type ReactNode } from 'react'
+import { enUS, fr, ja, ru, vi, zhCN } from 'react-day-picker/locale'
 import { useTranslation } from 'react-i18next'
 
+import { Calendar } from '@/components/ui/calendar'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import { getUserQuotaDates } from '@/features/dashboard/api'
 import type { QuotaDataItem } from '@/features/dashboard/types'
 import { getApiKeys } from '@/features/keys/api'
 import { getPerfMetricsSummary } from '@/features/performance-metrics/api'
+import { getUserLogs } from '@/features/usage-logs/api'
 import { getUserModels } from '@/lib/api'
+import dayjs from '@/lib/dayjs'
 import { formatNumber, formatQuota } from '@/lib/format'
 import { useAuthStore } from '@/stores/auth-store'
 
@@ -117,8 +127,12 @@ function formatPercent(delta: number): string {
   return `${Math.abs(delta).toFixed(1)}%`
 }
 
-/** Catmull-Rom smoothing, matching the render's soft bezier curves. */
-function smoothPath(points: readonly (readonly [number, number])[]): string {
+/** Catmull-Rom smoothing, matching the render's soft bezier curves. The
+ * maxY clamp keeps the curve from overshooting below the axis baseline. */
+function smoothPath(
+  points: readonly (readonly [number, number])[],
+  maxY?: number
+): string {
   if (points.length === 0) return ''
   let d = `M${points[0][0].toFixed(1)},${points[0][1].toFixed(1)}`
   for (let i = 1; i < points.length; i++) {
@@ -127,9 +141,9 @@ function smoothPath(points: readonly (readonly [number, number])[]): string {
     const p2 = points[i]
     const p3 = points[Math.min(points.length - 1, i + 1)]
     const c1x = p1[0] + (p2[0] - p0[0]) / 6
-    const c1y = p1[1] + (p2[1] - p0[1]) / 6
+    const c1y = Math.min(p1[1] + (p2[1] - p0[1]) / 6, maxY ?? Infinity)
     const c2x = p2[0] - (p3[0] - p1[0]) / 6
-    const c2y = p2[1] - (p3[1] - p1[1]) / 6
+    const c2y = Math.min(p2[1] - (p3[1] - p1[1]) / 6, maxY ?? Infinity)
     d += ` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`
   }
   return d
@@ -304,7 +318,7 @@ export function CockpitHeader() {
           </span>
         </h1>
         <p
-          className='mt-2 max-w-[660px]'
+          className='mt-2 max-w-[820px]'
           style={{
             fontSize: 13.5,
             lineHeight: 1.65,
@@ -686,16 +700,85 @@ export function CockpitStatCards() {
 // Insights row (v6-01-s1 .charts): hand-built SVG trend + donut
 // ---------------------------------------------------------------------------
 
-function TrendChart(props: { counts: number[]; startSec: number }) {
+const calendarLocales = {
+  en: enUS,
+  zh: zhCN,
+  fr,
+  ru,
+  ja,
+  vi,
+} as const
+
+/** Natural-day selector for the trend panel: glass button + calendar
+ * popover, reusing the app's Calendar; future dates disabled. */
+function TrendDayPicker(props: { day: Date; onSelect: (day: Date) => void }) {
+  const { t, i18n } = useTranslation()
+  const locale =
+    calendarLocales[i18n.language as keyof typeof calendarLocales] ?? enUS
+  return (
+    <Popover>
+      <PopoverTrigger
+        render={
+          <button
+            type='button'
+            className='flex items-center gap-1.5'
+            style={{
+              height: 28,
+              padding: '0 10px',
+              borderRadius: 8,
+              border: '1px solid var(--ds-line)',
+              background: 'rgba(255,255,255,0.03)',
+              fontSize: 12,
+              color: 'var(--ds-t2)',
+            }}
+            aria-label={t('Pick a date')}
+          />
+        }
+      >
+        <CalendarIcon size={13} aria-hidden='true' />
+        {dayjs(props.day).format('YYYY-MM-DD')}
+      </PopoverTrigger>
+      <PopoverContent className='w-auto p-0' align='end'>
+        <Calendar
+          mode='single'
+          captionLayout='dropdown'
+          selected={props.day}
+          onSelect={(date) => {
+            if (!date) return
+            const picked = new Date(date)
+            picked.setHours(0, 0, 0, 0)
+            props.onSelect(picked)
+          }}
+          locale={locale}
+          disabled={(date: Date) => date > new Date()}
+        />
+      </PopoverContent>
+    </Popover>
+  )
+}
+
+function TrendChart(props: {
+  counts: number[]
+  errorCounts: number[]
+  startSec: number
+}) {
   const maxV = Math.max(...props.counts, 1)
   const points = props.counts.map(
     (v, i) => [i * (796 / 23), 400 - (v / maxV) * 255] as const
   )
-  const linePath = smoothPath(points)
+  const linePath = smoothPath(points, 400)
   const areaPath = `${linePath} L796,400 L0,400 Z`
+  // Fail line shares the success y-scale so the two curves are directly
+  // comparable — the render draws it thin, white and unlit (line 348).
+  const failPoints = props.errorCounts.map(
+    (v, i) => [i * (796 / 23), 400 - (v / maxV) * 255] as const
+  )
+  const failPath = smoothPath(failPoints, 400)
   const last = points.at(-1) ?? ([0, 400] as const)
+  // Natural-day axis: 00:00 → 24:00 of the selected day, ticks pinned to
+  // the axis dots (0/25/50/75/100% ↔ cx 0/200/400/600/800).
   const labels = [0, 6, 12, 18, 24].map((h) =>
-    formatHour(props.startSec + h * 3600)
+    h === 24 ? '24:00' : formatHour(props.startSec + h * 3600)
   )
 
   return (
@@ -706,7 +789,12 @@ function TrendChart(props: { counts: number[]; startSec: number }) {
         viewBox='0 0 800 420'
         preserveAspectRatio='none'
         className='absolute'
-        style={{ inset: '14px 0 22px', overflow: 'visible' }}
+        style={{
+          inset: '14px 0 22px',
+          width: 'calc(100% - 0px)',
+          height: 'calc(100% - 36px)',
+          overflow: 'visible',
+        }}
         aria-hidden='true'
       >
         <defs>
@@ -741,9 +829,22 @@ function TrendChart(props: { counts: number[]; startSec: number }) {
           strokeLinecap='round'
           filter='url(#ds-glow)'
         />
+        {/* render line 348 verbatim: fail line, thin white, no glow */}
+        <path
+          d={failPath}
+          fill='none'
+          stroke='rgba(255,255,255,0.28)'
+          strokeWidth='0.9'
+          strokeLinecap='round'
+        />
         <g fill='rgba(255,255,255,0.45)'>
           {[0, 200, 400, 600, 800].map((x) => (
-            <circle key={x} cx={x} cy='400' r='1.6' />
+            <g key={x}>
+              {/* dark halo: keeps the dot readable where the success line
+                  runs flat along the baseline */}
+              <circle cx={x} cy='400' r='3.4' fill='rgba(2,6,17,0.75)' />
+              <circle cx={x} cy='400' r='1.6' />
+            </g>
           ))}
         </g>
         <circle cx={last[0]} cy={last[1]} r='4.5' fill='rgba(34,211,238,0.2)' />
@@ -927,10 +1028,33 @@ function DonutChart(props: {
         className='absolute rounded-full'
         style={{
           left: '42%',
-          top: '66%',
+          top: '64%',
           width: 1,
           height: 1,
           background: 'rgba(255,255,255,0.6)',
+        }}
+      />
+      <i
+        aria-hidden='true'
+        className='absolute rounded-full'
+        style={{
+          left: '30%',
+          top: '56%',
+          width: 1,
+          height: 1,
+          background: 'rgba(255,255,255,0.4)',
+        }}
+      />
+      <i
+        aria-hidden='true'
+        className='absolute rounded-full'
+        style={{
+          left: '56%',
+          top: '26%',
+          width: 1,
+          height: 1,
+          background: 'rgba(160,220,255,0.8)',
+          boxShadow: '0 0 4px 1px rgba(120,200,255,0.5)',
         }}
       />
       <div className='absolute inset-0 flex flex-col items-center justify-center'>
@@ -957,7 +1081,18 @@ function DonutChart(props: {
 
 export function CockpitInsights() {
   const { t } = useTranslation()
-  const { query: quota48, range } = useQuota48h()
+  const { range } = useQuota48h()
+
+  // Trend window: the selected natural day, 00:00 → 24:00 (calendar above).
+  const [trendDay, setTrendDay] = useState(() => {
+    const day = new Date()
+    day.setHours(0, 0, 0, 0)
+    return day
+  })
+  const dayStartSec = useMemo(
+    () => Math.floor(trendDay.getTime() / 1000),
+    [trendDay]
+  )
 
   const todayStartSec = useMemo(() => toStartOfLocalDay(), [])
   const todayModels = useQuery({
@@ -973,18 +1108,74 @@ export function CockpitInsights() {
     staleTime: 60 * 1000,
   })
 
-  // 24 hourly buckets aligned to clock hours, as in the approved mock.
+  // 24 hourly buckets over the selected day, aligned to clock hours.
+  const quotaDay = useQuery({
+    queryKey: ['cockpit', 'trend-day', dayStartSec],
+    queryFn: async () => {
+      const result = await getUserQuotaDates({
+        start_timestamp: dayStartSec,
+        end_timestamp: dayStartSec + 24 * 3600,
+        default_time: 'hour',
+      })
+      return result.success ? (result.data ?? []) : []
+    },
+    staleTime: 60 * 1000,
+  })
+
   const trend = useMemo(() => {
-    const startSec = Math.floor((range.end_timestamp - 24 * 3600) / 3600) * 3600
+    const startSec = dayStartSec
     const counts = bucketSeries(
-      quota48.data ?? [],
+      quotaDay.data ?? [],
       startSec,
       startSec + 24 * 3600,
       24,
       'count'
     )
     return { counts, startSec, peak: Math.max(0, ...counts) }
-  }, [quota48.data, range.end_timestamp])
+  }, [quotaDay.data, dayStartSec])
+
+  // Fail-line calculator: real per-hour error counts, aggregated from the
+  // user's own error logs (log type=5) over the same 24h window. Paged
+  // fetch capped at 500 entries — a day of errors beyond that would swamp
+  // the chart anyway.
+  const errorTrend = useQuery({
+    queryKey: ['cockpit', 'errors-day', dayStartSec],
+    queryFn: async () => {
+      const errors: { created_at?: number }[] = []
+      const pageSize = 100
+      for (let page = 1; page <= 5; page++) {
+        const result = await getUserLogs({
+          type: 5,
+          start_timestamp: trend.startSec,
+          end_timestamp: trend.startSec + 24 * 3600,
+          p: page,
+          page_size: pageSize,
+        })
+        if (!result.success) break
+        const items = (result.data?.items ?? []) as { created_at?: number }[]
+        errors.push(...items)
+        const total = result.data?.total ?? 0
+        if (items.length < pageSize || errors.length >= total) break
+      }
+      return errors
+    },
+    staleTime: 60 * 1000,
+  })
+
+  const errorCounts = useMemo(
+    () =>
+      bucketSeries(
+        (errorTrend.data ?? []).map((item) => ({
+          created_at: item.created_at ?? 0,
+          count: 1,
+        })),
+        trend.startSec,
+        trend.startSec + 24 * 3600,
+        24,
+        'count'
+      ),
+    [errorTrend.data, trend.startSec]
+  )
 
   const donut = useMemo(() => {
     const totals = new Map<string, number>()
@@ -1029,7 +1220,7 @@ export function CockpitInsights() {
               {t('Request trend')}
             </span>
             <span style={{ fontSize: 11.5, color: 'var(--ds-t3)' }}>
-              {t('Last 24 hours · hourly · peak ')}
+              {t('Selected day · hourly · peak ')}
               <span
                 className='tabular-nums'
                 style={{ color: '#a5f3fc', fontWeight: 600 }}
@@ -1039,8 +1230,47 @@ export function CockpitInsights() {
               {t(' req/h')}
             </span>
           </div>
+          <div className='flex items-center gap-3'>
+            <TrendDayPicker day={trendDay} onSelect={setTrendDay} />
+            <div
+              className='flex items-center gap-[14px]'
+              style={{ fontSize: 11.5, color: 'var(--ds-t2)' }}
+            >
+              <span className='flex items-center'>
+                <i
+                  aria-hidden='true'
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 2,
+                    marginRight: 6,
+                    background: 'var(--ds-accent)',
+                    boxShadow: '0 0 6px rgba(34,211,238,0.6)',
+                  }}
+                />
+                {t('Success')}
+              </span>
+              <span className='flex items-center'>
+                <i
+                  aria-hidden='true'
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 2,
+                    marginRight: 6,
+                    background: 'rgba(255,255,255,0.28)',
+                  }}
+                />
+                {t('Failed')}
+              </span>
+            </div>
+          </div>
         </div>
-        <TrendChart counts={trend.counts} startSec={trend.startSec} />
+        <TrendChart
+          counts={trend.counts}
+          errorCounts={errorCounts}
+          startSec={trend.startSec}
+        />
       </div>
 
       <div

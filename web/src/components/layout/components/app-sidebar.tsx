@@ -18,13 +18,20 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 
-import { Sidebar, SidebarContent, SidebarRail } from '@/components/ui/sidebar'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarRail,
+} from '@/components/ui/sidebar'
 import { useLayout } from '@/context/layout-provider'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { useSidebarView } from '@/hooks/use-sidebar-view'
 import { MOTION_TRANSITION, MOTION_VARIANTS } from '@/lib/motion'
 
 import { NavGroup } from './nav-group'
 import { SidebarViewHeader } from './sidebar-view-header'
+import { SystemBrand } from './system-brand'
 
 /**
  * Application sidebar.
@@ -47,9 +54,15 @@ export function AppSidebar() {
   const { collapsible, variant } = useLayout()
   const { key, view, navGroups } = useSidebarView()
   const shouldReduce = useReducedMotion()
+  const deepSpaceDark = useDeepSpaceDark()
 
   return (
     <Sidebar collapsible={collapsible} variant={variant}>
+      {deepSpaceDark && (
+        <SidebarHeader className='ds-side-brand'>
+          <SystemBrand variant='compact' />
+        </SidebarHeader>
+      )}
       {view && <SidebarViewHeader view={view} />}
 
       <SidebarContent className='py-2'>
