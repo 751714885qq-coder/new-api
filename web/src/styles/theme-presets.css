@@ -1758,7 +1758,6 @@ body[data-theme-preset='deep-space'] {
     padding: 0 16px;
   }
 }
-}
 
 /* Card hover: rise + glow (spec v2 motion layer, cockpit cards). */
 .ds-cockpit-stat:hover,
