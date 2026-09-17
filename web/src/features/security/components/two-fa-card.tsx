@@ -30,8 +30,10 @@ import {
 } from '@/components/ui/card'
 import { IconBadge } from '@/components/ui/icon-badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { SecureVerificationDialog } from '@/features/auth/secure-verification'
 import { useDialogs } from '@/hooks/use-dialog'
+import { cn } from '@/lib/utils'
 
 import { useTwoFA } from '../hooks/use-two-fa'
 import { useTwoFASetup } from '../hooks/use-two-fa-setup'
@@ -51,6 +53,8 @@ type DialogKey = 'disable' | 'backup'
 
 export function TwoFACard({ loading: pageLoading }: TwoFACardProps) {
   const { t } = useTranslation()
+  // WO-019 render 27: cyan icon squares (.fic) in deep space only.
+  const deepSpaceDark = useDeepSpaceDark()
   const { status, loading, error, refetch } = useTwoFA(!pageLoading)
   const dialogs = useDialogs<DialogKey>()
   const setup = useTwoFASetup(refetch)
@@ -86,13 +90,22 @@ export function TwoFACard({ loading: pageLoading }: TwoFACardProps) {
   return (
     <>
       <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
-        <CardHeader className='p-3 sm:p-5'>
-          <CardTitle className='text-lg tracking-tight sm:text-xl'>
-            {t('Two-Factor Authentication')}
-          </CardTitle>
-          <CardDescription className='text-xs sm:text-sm'>
-            {t('Add an extra layer of security to your account')}
-          </CardDescription>
+        <CardHeader className={cn('p-3 sm:p-5', deepSpaceDark && 'border-b')}>
+          <div className='flex min-w-0 items-start gap-3'>
+            {deepSpaceDark && (
+              <IconBadge size='title' className='ds-fic'>
+                <Shield />
+              </IconBadge>
+            )}
+            <div className='min-w-0'>
+              <CardTitle className='text-lg tracking-tight sm:text-xl'>
+                {t('Two-Factor Authentication')}
+              </CardTitle>
+              <CardDescription className='text-xs sm:text-sm'>
+                {t('Add an extra layer of security to your account')}
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
 
         <CardContent className='p-3 sm:p-5'>
@@ -100,7 +113,11 @@ export function TwoFACard({ loading: pageLoading }: TwoFACardProps) {
             {/* Status Section */}
             <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between xl:flex-col 2xl:flex-row'>
               <div className='flex items-start gap-4'>
-                <IconBadge tone='success' size='sm'>
+                <IconBadge
+                  tone='success'
+                  size='sm'
+                  className={deepSpaceDark ? 'ds-fic' : undefined}
+                >
                   <Shield />
                 </IconBadge>
                 <div className='space-y-1'>

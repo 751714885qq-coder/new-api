@@ -23,6 +23,8 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { IconBadge } from '@/components/ui/icon-badge'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { cn } from '@/lib/utils'
 
 import { ChangePasswordDialog } from './dialogs/change-password-dialog'
 import { DeleteAccountDialog } from './dialogs/delete-account-dialog'
@@ -36,6 +38,10 @@ type AccountActionCardProps = {
 
 export function AccountActionCard(props: AccountActionCardProps) {
   const { t } = useTranslation()
+  // WO-019 render 27: cyan icon square (.fic); the delete card is the
+  // render's danger card (.fcard.danger rose rim + rose title).
+  const deepSpaceDark = useDeepSpaceDark()
+  const isDelete = props.action === 'delete'
   const [open, setOpen] = useState(false)
   const actions = {
     password: {
@@ -60,14 +66,32 @@ export function AccountActionCard(props: AccountActionCardProps) {
     <>
       <Card
         data-card-hover='false'
-        className={`gap-0 py-0 ${props.action === 'delete' ? 'ring-destructive/30' : ''}`}
+        className={cn(
+          'gap-0 py-0',
+          isDelete && (deepSpaceDark ? 'ds-fcard-danger' : 'ring-destructive/30')
+        )}
       >
         <div className='flex items-center gap-3 px-3 py-2.5 sm:px-4'>
-          <IconBadge tone='neutral' size='sm'>
+          <IconBadge
+            tone='neutral'
+            size='sm'
+            className={
+              deepSpaceDark
+                ? cn('ds-fic', isDelete && 'ds-fic-danger')
+                : undefined
+            }
+          >
             <action.icon />
           </IconBadge>
           <div className='min-w-0 flex-1 space-y-0.5'>
-            <p className='text-sm font-medium'>{action.title}</p>
+            <p
+              className={cn(
+                'text-sm font-medium',
+                deepSpaceDark && isDelete && 'text-rose-300'
+              )}
+            >
+              {action.title}
+            </p>
             <p className='text-muted-foreground text-xs'>
               {action.description}
             </p>

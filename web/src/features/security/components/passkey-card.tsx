@@ -16,7 +16,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { AlertTriangle, KeyRound, Loader2, ShieldAlert } from 'lucide-react'
+import {
+  AlertTriangle,
+  Fingerprint,
+  KeyRound,
+  Loader2,
+  ShieldAlert,
+} from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -43,11 +49,13 @@ import {
 } from '@/components/ui/card'
 import { IconBadge } from '@/components/ui/icon-badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { usePasskeyManagement } from '@/features/auth/passkey'
 import {
   SecureVerificationDialog,
   useSecureVerification,
 } from '@/features/auth/secure-verification'
+import { cn } from '@/lib/utils'
 import dayjs from '@/lib/dayjs'
 import { AuthOperationError } from '@/lib/secure-verification'
 
@@ -57,6 +65,8 @@ interface PasskeyCardProps {
 
 export function PasskeyCard({ loading: pageLoading }: PasskeyCardProps) {
   const { t } = useTranslation()
+  // WO-019 render 27: cyan icon squares (.fic) in deep space only.
+  const deepSpaceDark = useDeepSpaceDark()
   const [confirmOpen, setConfirmOpen] = useState(false)
   const {
     status,
@@ -161,20 +171,33 @@ export function PasskeyCard({ loading: pageLoading }: PasskeyCardProps) {
   return (
     <>
       <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
-        <CardHeader className='p-3 sm:p-5'>
-          <CardTitle className='text-lg tracking-tight sm:text-xl'>
-            {t('Passkey Login')}
-          </CardTitle>
-          <CardDescription className='text-xs sm:text-sm'>
-            {t('Use Passkey to sign in without entering your password.')}
-          </CardDescription>
+        <CardHeader className={cn('p-3 sm:p-5', deepSpaceDark && 'border-b')}>
+          <div className='flex min-w-0 items-start gap-3'>
+            {deepSpaceDark && (
+              <IconBadge size='title' className='ds-fic'>
+                <Fingerprint />
+              </IconBadge>
+            )}
+            <div className='min-w-0'>
+              <CardTitle className='text-lg tracking-tight sm:text-xl'>
+                {t('Passkey Login')}
+              </CardTitle>
+              <CardDescription className='text-xs sm:text-sm'>
+                {t('Use Passkey to sign in without entering your password.')}
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
 
         <CardContent className='p-3 sm:p-5'>
           <div className='space-y-6'>
             <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between xl:flex-col 2xl:flex-row'>
               <div className='flex items-start gap-4'>
-                <IconBadge tone='info' size='sm'>
+                <IconBadge
+                  tone='info'
+                  size='sm'
+                  className={deepSpaceDark ? 'ds-fic' : undefined}
+                >
                   <KeyRound />
                 </IconBadge>
                 <div className='space-y-1'>

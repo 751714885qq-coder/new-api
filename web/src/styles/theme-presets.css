@@ -2848,3 +2848,40 @@ body[data-theme-preset='deep-space'] {
 .ds-au-http-bad {
   color: #fca5a5;
 }
+
+/* ── WO-019 render 27 (security & access) ─────────────────────────────── */
+/* Card language from the render: every card carries a cyan-tinted icon
+ * square (.fic) in its header; the danger card swaps the generic cyan rim
+ * for a rose one (.fcard.danger). Classes are hook-gated in JSX so light
+ * mode never receives them. */
+.ds-fic {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: #67e8f9;
+  background: rgba(34, 211, 238, 0.08);
+  border: 1px solid rgba(34, 211, 238, 0.2);
+}
+.ds-fic-danger {
+  color: #fda4af;
+  background: rgba(244, 63, 94, 0.08);
+  border-color: rgba(244, 63, 94, 0.25);
+}
+/* Render .fcard.danger — needs the deep-space card scope so it out-ranks
+ * the generic glass rim rule above. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='card'].ds-fcard-danger {
+  --tw-ring-color: rgba(244, 63, 94, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 0 0 1px rgba(244, 63, 94, 0.28);
+}
+/* Render .gbadge.cy — cyan glass pill for the current-session marker. */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='badge'].ds-gb-cy {
+  border-color: rgba(34, 211, 238, 0.3);
+  background: rgba(34, 211, 238, 0.07);
+  color: #a5f3fc;
+}

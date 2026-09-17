@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TitledCard } from '@/components/ui/titled-card'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { useProfile } from '@/features/profile/hooks/use-profile'
 
 import { AccessTokenCard } from './components/access-token-card'
@@ -42,6 +43,8 @@ import { TwoFACard } from './components/two-fa-card'
 
 export function Security() {
   const { t } = useTranslation()
+  // WO-019 render 27: card language — cyan icon squares (.fic) in headers.
+  const deepSpaceDark = useDeepSpaceDark()
   const { profile, loading, refreshProfile, fetchProfile } = useProfile()
 
   let content: ReactNode
@@ -94,7 +97,11 @@ export function Security() {
               headerClassName='px-3 py-2.5 !pb-2.5 sm:px-4 sm:py-2.5 sm:!pb-2.5'
               contentClassName='p-3 sm:p-3'
               titleClassName='text-sm sm:text-sm'
-              iconClassName='size-7 sm:size-7'
+              iconClassName={
+                deepSpaceDark
+                  ? 'size-7 sm:size-7 ds-fic'
+                  : 'size-7 sm:size-7'
+              }
               disableHoverEffect
             >
               <AccountBindings profile={profile} onUpdate={refreshProfile} />

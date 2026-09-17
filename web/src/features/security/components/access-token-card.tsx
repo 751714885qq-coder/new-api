@@ -16,12 +16,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { KeyRound } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { IconBadge } from '@/components/ui/icon-badge'
 import {
   Sheet,
   SheetClose,
@@ -30,6 +32,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { SecureVerificationDialog } from '@/features/auth/secure-verification'
 import { AuditLogViewer } from '@/features/usage-logs/audit/components/audit-log-viewer'
 import dayjs from '@/lib/dayjs'
@@ -39,6 +42,9 @@ import { AccessTokenDialog } from './dialogs/access-token-dialog'
 
 export function AccessTokenCard() {
   const { t } = useTranslation()
+  // WO-019 render 27: card header gains the cyan icon square (.fic), a
+  // divider (.fcard-h) and the render's description line in deep space only.
+  const deepSpaceDark = useDeepSpaceDark()
   const access = useAccessToken()
   const [confirmation, setConfirmation] = useState<'rotate' | 'revoke' | null>(
     null
@@ -62,7 +68,23 @@ export function AccessTokenCard() {
     <>
       <Card data-card-hover='false' className='gap-3 p-3 sm:p-4'>
         <div className='flex flex-wrap items-center justify-between gap-2'>
-          <h4 className='text-sm font-semibold'>{t('Access Token')}</h4>
+          <div className='flex min-w-0 items-start gap-3'>
+            {deepSpaceDark && (
+              <IconBadge size='title' className='ds-fic'>
+                <KeyRound />
+              </IconBadge>
+            )}
+            <div className='min-w-0'>
+              <h4 className='text-sm font-semibold'>{t('Access Token')}</h4>
+              {deepSpaceDark && (
+                <p className='text-muted-foreground mt-0.5 text-xs'>
+                  {t(
+                    'For security, existing access tokens cannot be displayed. Regenerate only when you need a new token.'
+                  )}
+                </p>
+              )}
+            </div>
+          </div>
           <Button
             size='sm'
             variant='outline'

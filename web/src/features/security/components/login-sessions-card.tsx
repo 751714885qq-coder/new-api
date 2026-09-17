@@ -18,6 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { Logout01Icon, SmartPhone01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { Monitor } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useState, type ReactNode } from 'react'
@@ -40,6 +41,9 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
+import { IconBadge } from '@/components/ui/icon-badge'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { cn } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -57,6 +61,9 @@ const sessionQueryKey = ['profile', 'login-sessions'] as const
 
 export function LoginSessionsCard() {
   const { t } = useTranslation()
+  // WO-019 render 27: card header gains the cyan icon square (.fic) and a
+  // divider (.fcard-h) in deep space only.
+  const deepSpaceDark = useDeepSpaceDark()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [revokeTarget, setRevokeTarget] = useState<LoginSession | null>(null)
@@ -172,11 +179,22 @@ export function LoginSessionsCard() {
   return (
     <>
       <Card data-card-hover='false'>
-        <CardHeader>
-          <CardTitle>{t('Login sessions')}</CardTitle>
-          <CardDescription>
-            {t('Review and sign out devices currently using your account.')}
-          </CardDescription>
+        <CardHeader className={cn(deepSpaceDark && 'border-b')}>
+          <div className='flex min-w-0 items-start gap-3'>
+            {deepSpaceDark && (
+              <IconBadge size='title' className='ds-fic'>
+                <Monitor />
+              </IconBadge>
+            )}
+            <div className='min-w-0'>
+              <CardTitle>{t('Login sessions')}</CardTitle>
+              <CardDescription>
+                {t(
+                  'Review and sign out devices currently using your account.'
+                )}
+              </CardDescription>
+            </div>
+          </div>
           <CardAction>
             <Button
               type='button'
