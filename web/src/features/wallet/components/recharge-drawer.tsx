@@ -38,8 +38,10 @@ import { CreemProductsSection } from './creem-products-section'
 
 const CNY = 'CNY'
 // The card shop is a desktop-width page; the iframe renders it at this
-// logical width and scales it down to fit the drawer column.
-const SHOP_LOGICAL_WIDTH = 1280
+// logical width and scales it down to fit the drawer column. 1152 keeps
+// the shop's desktop grid intact while the zoom stays close to 1:1 on a
+// wide drawer.
+const SHOP_LOGICAL_WIDTH = 1152
 
 function getStandardMethodSubtitle(type: string, t: (key: string) => string) {
   if (type === PAYMENT_TYPES.STRIPE) {
@@ -321,21 +323,11 @@ export function RechargeDrawer(props: {
             )}
           </div>
 
-          {/* right column: card shop embed (render shop-head/notice; the mock
-              wizard is replaced by the iframe per 范围增补二) */}
+          {/* right column: card shop embed (user rework 2026-09-17: the
+              column is titled 充值, the shop branding/meta block is gone) */}
           <div className='ds-rd-col'>
-            <div className='ds-rd-shop-head' style={{ marginTop: 18 }}>
-              <div className='ds-rd-shop-ava'>猫</div>
-              <div>
-                <div className='ds-rd-shop-name'>
-                  {t('Cloud Cat Shop')} <span className='ds-rd-shop-badge'>{t('Auto delivery')}</span>
-                </div>
-                <div className='ds-rd-shop-meta'>
-                  {t(
-                    'Authorized card code shop · 1,284 sold · 99.2% positive rating'
-                  )}
-                </div>
-              </div>
+            <div className='ds-rd-label' style={{ marginTop: 18 }}>
+              {t('Recharge')}
             </div>
 
             {/* Cross-origin embed; see the file-top oxlint-disable note.
@@ -353,7 +345,7 @@ export function RechargeDrawer(props: {
                   transformOrigin: '0 0',
                 }}
                 src={CARD_SHOP_URL}
-                title={t('Cloud Cat Shop')}
+                title={t('Recharge')}
                 sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox'
               />
             </div>

@@ -2366,7 +2366,7 @@ body[data-theme-preset='deep-space'] {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 1180px;
+  width: min(1520px, 96vw);
   max-width: 100vw;
   z-index: 100;
   background: linear-gradient(
@@ -2565,48 +2565,6 @@ body[data-theme-preset='deep-space'] {
   color: var(--ds-t3);
   text-align: center;
   line-height: 1.7;
-}
-.ds-rd-shop-head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: none;
-}
-.ds-rd-shop-ava {
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
-  flex: none;
-  background: linear-gradient(135deg, #134e4a, #0e7490);
-  border: 1px solid rgba(34, 211, 238, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #a5f3fc;
-}
-.ds-rd-shop-name {
-  font-size: 14.5px;
-  font-weight: 650;
-  color: var(--ds-t1);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.ds-rd-shop-badge {
-  font-size: 9.5px;
-  font-weight: 600;
-  color: #a7f3d0;
-  background: rgba(52, 211, 153, 0.1);
-  border: 1px solid rgba(52, 211, 153, 0.3);
-  border-radius: 4px;
-  padding: 1px 6px;
-}
-.ds-rd-shop-meta {
-  font-size: 11px;
-  color: var(--ds-t3);
-  margin-top: 3px;
 }
 .ds-rd-redeem {
   display: flex;
