@@ -1921,7 +1921,10 @@ body[data-theme-preset='deep-space'] {
   position: absolute;
   left: clamp(28px, 6vw, 96px);
   top: clamp(32px, 8vh, 72px);
-  width: 560px;
+  /* shrink the hanging block on narrow viewports so it never crowds the
+     auth card (the card keeps a 64px clearance from this block's right
+     edge — see .ds-auth-card-pos) */
+  width: min(560px, 36vw);
   z-index: 2;
 }
 .ds-auth-brand .logo-row {
@@ -1942,6 +1945,7 @@ body[data-theme-preset='deep-space'] {
   font-weight: 750;
   line-height: 1.1;
   letter-spacing: -0.02em;
+  white-space: nowrap;
   background: linear-gradient(92deg, #a5b8ff 0%, #c9a2ff 45%, #7de3ff 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -1972,7 +1976,7 @@ body[data-theme-preset='deep-space'] {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px 32px;
-  width: 480px;
+  width: min(480px, 100%);
 }
 .ds-auth-feat {
   display: flex;
@@ -1994,14 +1998,41 @@ body[data-theme-preset='deep-space'] {
   }
 }
 
-/* card placement (render line 123); static flow below the mock width */
+/* card placement (render line 123); static flow below the mock width.
+   Adaptive clearance (user rework 2026-09-17): the render's 47% wins on
+   wide viewports; on narrower ones the card is pushed right so its left
+   edge keeps a 64px gap from the hanging brand block instead of stacking
+   on top of it. 280 = 64 gap + 216 (half of the 432px card). */
 .ds-auth-card-pos {
   position: absolute;
-  left: 47%;
+  left: max(
+    47%,
+    calc(clamp(28px, 6vw, 96px) + min(560px, 36vw) + 280px)
+  );
   top: 50%;
   transform: translate(-50%, -52%);
   width: 432px;
   z-index: 2;
+}
+@media (max-width: 1439px) {
+  .ds-auth-brand h1 {
+    font-size: 56px;
+  }
+  .ds-auth-gw {
+    font-size: 13px;
+  }
+  .ds-auth-tl1 {
+    font-size: 22px;
+  }
+  .ds-auth-tl2 {
+    font-size: 15px;
+  }
+  .ds-auth-feat {
+    font-size: 15px;
+  }
+  .ds-auth-feats {
+    margin-top: 28px;
+  }
 }
 @media (max-width: 1023px) {
   .ds-auth-card-pos {
