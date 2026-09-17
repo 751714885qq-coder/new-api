@@ -47,6 +47,9 @@ export function Turnstile({
       try {
         window.turnstile.render(ref.current, {
           sitekey: siteKey,
+          // WO-019: stretch to the card's content width so the widget aligns
+          // with the full-width submit button (render 13 card metrics).
+          size: 'flexible',
           callback: (token: string) => onVerify(token),
           'error-callback': () => onExpire?.(),
           'expired-callback': () => onExpire?.(),
