@@ -20,7 +20,6 @@ import { ExternalLink, Plus } from 'lucide-react'
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DS_PANEL_STYLE } from '@/components/deep-space/ds-kit'
 import { SectionPageLayout } from '@/components/layout'
 import { Button } from '@/components/ui/button'
 import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
@@ -32,6 +31,7 @@ import { AffiliateRewardsCard } from './components/affiliate-rewards-card'
 import { BillingHistoryDialog } from './components/dialogs/billing-history-dialog'
 import { CreemConfirmDialog } from './components/dialogs/creem-confirm-dialog'
 import { PaymentConfirmDialog } from './components/dialogs/payment-confirm-dialog'
+import { RedeemDialog } from './components/dialogs/redeem-dialog'
 import { TransferDialog } from './components/dialogs/transfer-dialog'
 import { RechargeFormCard } from './components/recharge-form-card'
 import { RechargeDrawer } from './components/recharge-drawer'
@@ -88,6 +88,7 @@ export function Wallet(props: WalletProps) {
     useState<CreemProduct | null>(null)
   const [showSubscriptionPanel, setShowSubscriptionPanel] = useState(true)
   const [rechargeDrawerOpen, setRechargeDrawerOpen] = useState(false)
+  const [redeemDialogOpen, setRedeemDialogOpen] = useState(false)
 
   const { status } = useStatus()
   const { currency } = useSystemConfig()
@@ -350,8 +351,9 @@ export function Wallet(props: WalletProps) {
           <div className='mx-auto flex w-full max-w-7xl flex-col gap-4 sm:gap-5'>
             {deepSpaceDark && (
               // Render 10-渲染稿-v6-钱包.html lines 294-302 verbatim: hero row
-              // (title + sub + actions); both buttons open the recharge
-              // drawer (render 11).
+              // (title + sub + actions). User rework 2026-09-17: "Add Funds"
+              // opens the recharge drawer (render 11); "Redeem Card Code"
+              // opens the dedicated redemption dialog instead of the drawer.
               <div className='flex flex-wrap items-start justify-between gap-4'>
                 <div className='min-w-0'>
                   <div
@@ -392,7 +394,7 @@ export function Wallet(props: WalletProps) {
                   <Button
                     variant='outline'
                     className='ds-btn-ghost'
-                    onClick={scrollToAddFunds}
+                    onClick={() => setRedeemDialogOpen(true)}
                   >
                     <ExternalLink data-icon='inline-start' />
                     {t('Redeem Card Code')}
@@ -419,53 +421,18 @@ export function Wallet(props: WalletProps) {
             </div>
 
             {deepSpaceDark && (
-              // Render lines 433-450 verbatim: bottom action cards; the
-              // referral card keeps its live transfer functionality.
-              <div className='grid gap-4 xl:grid-cols-2'>
-                <div
-                  className='flex items-center'
-                  style={{ ...DS_PANEL_STYLE, padding: '20px 22px' }}
-                >
-                  <div className='min-w-0 flex-1'>
-                    <div
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 600,
-                        color: 'var(--ds-t1)',
-                      }}
-                    >
-                      {t('Add Funds')}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 12,
-                        color: 'var(--ds-t2)',
-                        marginTop: 6,
-                        lineHeight: 1.6,
-                      }}
-                    >
-                      {t(
-                        'Supports Alipay, WeChat Pay, and card code redemption. Topups arrive instantly and can be used on all online models.'
-                      )}
-                    </div>
-                  </div>
-                  <Button
-                    className='ds-btn-primary shrink-0'
-                    onClick={scrollToAddFunds}
-                  >
-                    {t('Top Up Now')}
-                  </Button>
-                </div>
-                <AffiliateRewardsCard
-                  user={user}
-                  affiliateLink={affiliateLink}
-                  onTransfer={() => setTransferDialogOpen(true)}
-                  complianceConfirmed={
-                    topupInfo?.payment_compliance_confirmed !== false
-                  }
-                  loading={affiliateLoading}
-                />
-              </div>
+              // User rework 2026-09-17: the bottom "Add Funds" action card is
+              // removed (single recharge entry, top-right hero button only);
+              // the referral card keeps its live transfer functionality.
+              <AffiliateRewardsCard
+                user={user}
+                affiliateLink={affiliateLink}
+                onTransfer={() => setTransferDialogOpen(true)}
+                complianceConfirmed={
+                  topupInfo?.payment_compliance_confirmed !== false
+                }
+                loading={affiliateLoading}
+              />
             )}
 
             {deepSpaceDark ? (
@@ -571,6 +538,15 @@ export function Wallet(props: WalletProps) {
           redeeming={redeeming}
         />
       )}
+
+      <RedeemDialog
+        open={redeemDialogOpen}
+        onOpenChange={setRedeemDialogOpen}
+        code={redemptionCode}
+        onCodeChange={setRedemptionCode}
+        onRedeem={handleRedeem}
+        redeeming={redeeming}
+      />
 
       <PaymentConfirmDialog
         open={confirmDialogOpen}

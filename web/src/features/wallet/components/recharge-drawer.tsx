@@ -21,6 +21,7 @@ For commercial licensing, please contact support@quantumnous.com
 // page access to its own origin's cookies/storage (shop session), without
 // exposing this site's origin; top navigation stays sandboxed.
 import { X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getPaymentIcon } from '../lib'
@@ -36,6 +37,9 @@ import type {
 import { CreemProductsSection } from './creem-products-section'
 
 const CNY = 'CNY'
+// The card shop is a desktop-width page; the iframe renders it at this
+// logical width and scales it down to fit the drawer column.
+const SHOP_LOGICAL_WIDTH = 1280
 
 function getStandardMethodSubtitle(type: string, t: (key: string) => string) {
   if (type === PAYMENT_TYPES.STRIPE) {
@@ -56,6 +60,10 @@ function getStandardMethodSubtitle(type: string, t: (key: string) => string) {
  * - the render has no standalone redemption entry, so the redemption code
  *   row (render step-3 .redeem styling) lives in the left column to keep
  *   the existing redemption function reachable (功能不劣化).
+ *
+ * User visual-review rework (2026-09-17, direct orders overriding the
+ * render): the purchase-notice list and the "open full shop" link are
+ * removed, and the shop iframe is proportionally scaled to fit the column.
  */
 export function RechargeDrawer(props: {
   open: boolean
@@ -82,6 +90,20 @@ export function RechargeDrawer(props: {
 }) {
   const { t } = useTranslation()
   const { topupInfo } = props
+
+  // Proportional zoom for the shop iframe: observe the wrapper width and
+  // scale the fixed-width iframe down so the desktop layout fits whole.
+  const shopWrapRef = useRef<HTMLDivElement | null>(null)
+  const [shopScale, setShopScale] = useState(0)
+  useEffect(() => {
+    const el = shopWrapRef.current
+    if (!el) return
+    const observer = new ResizeObserver(() => {
+      setShopScale(el.clientWidth / SHOP_LOGICAL_WIDTH)
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [props.open])
 
   if (!props.open) {
     return null
@@ -314,43 +336,27 @@ export function RechargeDrawer(props: {
                   )}
                 </div>
               </div>
-              <a
-                className='ds-rd-shop-ext'
-                href={CARD_SHOP_URL}
-                target='_blank'
-                rel='noopener noreferrer'
-              >
-                {t('Open full shop ↗')}
-              </a>
             </div>
 
-            <div className='ds-rd-label' style={{ marginTop: 16 }}>
-              {t('Purchase Notice')}
+            {/* Cross-origin embed; see the file-top oxlint-disable note.
+                The shop page is a desktop-width layout: it is scaled to fit
+                the column (proportional zoom) instead of being squeezed into
+                a narrow mobile-ish viewport. */}
+            <div ref={shopWrapRef} className='ds-rd-iframe-wrap'>
+              <iframe
+                className='ds-rd-iframe'
+                style={{
+                  width: SHOP_LOGICAL_WIDTH,
+                  height: shopScale > 0 ? `${100 / shopScale}%` : '100%',
+                  transform:
+                    shopScale > 0 ? `scale(${shopScale})` : undefined,
+                  transformOrigin: '0 0',
+                }}
+                src={CARD_SHOP_URL}
+                title={t('Cloud Cat Shop')}
+                sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox'
+              />
             </div>
-            <ul className='ds-rd-notice'>
-              <li>
-                {t(
-                  'Card codes are delivered automatically after payment and shown right in this drawer — no redirect needed'
-                )}
-              </li>
-              <li>
-                {t(
-                  'Card codes are valid for 72 hours after delivery — redeem them below promptly'
-                )}
-              </li>
-              <li>
-                {t(
-                  'Face value equals the CNY topup amount; the balance arrives in real time after redemption'
-                )}
-              </li>
-            </ul>
-            {/* Cross-origin embed; see the file-top oxlint-disable note. */}
-            <iframe
-              className='ds-rd-iframe'
-              src={CARD_SHOP_URL}
-              title={t('Cloud Cat Shop')}
-              sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox'
-            />
           </div>
         </div>
       </aside>
