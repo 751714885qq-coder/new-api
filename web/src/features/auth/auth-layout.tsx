@@ -163,40 +163,36 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             />
           </div>
         </div>
-        {/* Render line 123 verbatim: glass login card placement.
-            WO-019 D7: the brand block is a child of the card wrapper so its
-            offset stays relative to the card (render measures brand top =
-            card top - 34px, 30px gap) instead of a fixed top:262px that only
-            lined up on the render's 1600x1000 canvas. */}
-        <div className='ds-auth-card-pos'>
-          {/* Render lines 191-203 verbatim: left brand block. */}
-          <div className='ds-auth-brand'>
-            <Link to='/' className='logo-row'>
-              <div className='ds-auth-logo-orb' />
-              {loading ? (
-                <Skeleton className='h-10 w-44' />
-              ) : (
-                <h1>{displaySystemName}</h1>
-              )}
-            </Link>
-            <div className='ds-auth-gw'>{t('AI Model Gateway')}</div>
-            <div className='ds-auth-tl1'>
-              {t('Global AI models, unified access center')}
-            </div>
-            <div className='ds-auth-tl2'>
-              {t('Smart routing · Cost optimization · Security control')}
-            </div>
-            <div className='ds-auth-feats'>
-              {DS_FEATURES.map((feature) => (
-                <div key={feature.label} className='ds-auth-feat'>
-                  <FeatIcon d={feature.icon} />
-                  {t(feature.label)}
-                </div>
-              ))}
-            </div>
+        {/* User ruling 2026-09-17 (supersedes D7 anchoring): the brand block
+            becomes a top-left hanging intro — enlarged type, anchored to the
+            viewport's upper-left; no vertical alignment with the card. */}
+        <div className='ds-auth-brand'>
+          <Link to='/' className='logo-row'>
+            <div className='ds-auth-logo-orb' />
+            {loading ? (
+              <Skeleton className='h-12 w-56' />
+            ) : (
+              <h1>{displaySystemName}</h1>
+            )}
+          </Link>
+          <div className='ds-auth-gw'>{t('AI Model Gateway')}</div>
+          <div className='ds-auth-tl1'>
+            {t('Global AI models, unified access center')}
           </div>
-          {children}
+          <div className='ds-auth-tl2'>
+            {t('Smart routing · Cost optimization · Security control')}
+          </div>
+          <div className='ds-auth-feats'>
+            {DS_FEATURES.map((feature) => (
+              <div key={feature.label} className='ds-auth-feat'>
+                <FeatIcon d={feature.icon} />
+                {t(feature.label)}
+              </div>
+            ))}
+          </div>
         </div>
+        {/* Render line 123 verbatim: glass login card placement. */}
+        <div className='ds-auth-card-pos'>{children}</div>
       </div>
     )
   }
