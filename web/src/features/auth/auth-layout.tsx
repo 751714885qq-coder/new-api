@@ -23,14 +23,14 @@ import { useTranslation } from 'react-i18next'
 import { DeepSpaceBackdrop } from '@/components/layout/components/deep-space-backdrop'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useThemeCustomization } from '@/context/theme-customization-provider'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { useSystemConfig } from '@/hooks/use-system-config'
 
 type AuthLayoutProps = {
   children: React.ReactNode
 }
 
-// WO-019 rendering baseline: four feature chips under the brand column,
-// copy from the WO-008 approved homepage chip row.
+// Stock (non-deep-space) brand column feature chips.
 const BRAND_FEATURES = [
   { icon: Layers, label: 'Multi-model aggregation' },
   { icon: ShieldCheck, label: 'High availability' },
@@ -38,37 +38,166 @@ const BRAND_FEATURES = [
   { icon: Code2, label: 'Developer-friendly' },
 ] as const
 
+/**
+ * Deep Space login screen (WO-019) — 1:1 port of the approved render
+ * 13-渲染稿-v6-登录.html (lines 58-120, 162-203): atmosphere layers come
+ * from DeepSpaceBackdrop (same frozen v6.1 recipe), the two life planets
+ * and the left brand block are ported verbatim here; only the form itself
+ * stays functional.
+ */
+function CloudSvg(props: {
+  id: string
+  bf: string
+  octaves: number
+  seed: number
+  values: string
+}) {
+  return (
+    <svg aria-hidden='true'>
+      <filter id={props.id}>
+        <feTurbulence
+          type='fractalNoise'
+          baseFrequency={props.bf}
+          numOctaves={props.octaves}
+          seed={props.seed}
+          stitchTiles='stitch'
+        />
+        <feColorMatrix type='matrix' values={props.values} />
+      </filter>
+      <rect width='100%' height='100%' filter={`url(#${props.id})`} />
+    </svg>
+  )
+}
+
+/** Render lines 198-201 verbatim: inline feature icon strokes. */
+function FeatIcon(props: { d: readonly (string | React.ReactNode)[] }) {
+  return (
+    <svg
+      viewBox='0 0 24 24'
+      fill='none'
+      strokeWidth='1.7'
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      aria-hidden='true'
+    >
+      {props.d}
+    </svg>
+  )
+}
+
+const DS_FEATURE_ICONS = {
+  aggregate: [
+    <path key='a' d='M12 2l8 4.5v11L12 22l-8-4.5v-11z' />,
+    <path key='b' d='M12 22V11.5' />,
+    <path key='c' d='M4 6.5l8 5 8-5' />,
+  ],
+  availability: [
+    <path key='a' d='M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z' />,
+    <path key='b' d='M9 12l2 2 4-4' />,
+  ],
+  metered: [
+    <circle key='a' cx='12' cy='12' r='9' />,
+    <path key='b' d='M12 7v5l3 3' />,
+  ],
+  developer: [
+    <path key='a' d='M8 6l-5 6 5 6' />,
+    <path key='b' d='M16 6l5 6-5 6' />,
+  ],
+} as const
+
+const DS_FEATURES = [
+  { icon: DS_FEATURE_ICONS.aggregate, label: 'Multi-model aggregation' },
+  { icon: DS_FEATURE_ICONS.availability, label: 'High availability' },
+  { icon: DS_FEATURE_ICONS.metered, label: 'Metered billing' },
+  { icon: DS_FEATURE_ICONS.developer, label: 'Developer-friendly' },
+] as const
+
 export function AuthLayout({ children }: AuthLayoutProps) {
   const { t } = useTranslation()
   const { systemName, logo, loading } = useSystemConfig()
   const { customization } = useThemeCustomization()
+  const deepSpaceDark = useDeepSpaceDark()
   const isDeepSpace = customization.preset === 'deep-space'
   const displaySystemName =
     isDeepSpace && (!systemName || systemName === 'New API')
       ? 'MindClaw'
       : systemName
 
+  if (deepSpaceDark) {
+    return (
+      <div className='relative h-svh max-w-none overflow-hidden'>
+        <DeepSpaceBackdrop withLandscape={false} />
+        {/* Render lines 162-176 verbatim: large life planet, top-right. */}
+        <div aria-hidden className='ds-earth-big'>
+          <div className='ball' />
+          <div className='clouds'>
+            <CloudSvg
+              id='ds-auth-cl1'
+              bf='0.011 0.019'
+              octaves={4}
+              seed={8}
+              values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'
+            />
+          </div>
+          <div className='clouds2'>
+            <CloudSvg
+              id='ds-auth-cl1b'
+              bf='0.006 0.011'
+              octaves={3}
+              seed={15}
+              values='0 0 0 0 0.75  0 0 0 0 0.88  0 0 0 0 1  0 0 0 0.85 0'
+            />
+          </div>
+          <div className='rim' />
+        </div>
+        {/* Render lines 178-186 verbatim: small life planet, bottom-left. */}
+        <div aria-hidden className='ds-earth-small'>
+          <div className='ball' />
+          <div className='clouds'>
+            <CloudSvg
+              id='ds-auth-cl2'
+              bf='0.013 0.021'
+              octaves={4}
+              seed={4}
+              values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.85 0'
+            />
+          </div>
+        </div>
+        {/* Render lines 191-203 verbatim: left brand block. */}
+        <div className='ds-auth-brand'>
+          <Link to='/' className='logo-row'>
+            <div className='ds-auth-logo-orb' />
+            {loading ? (
+              <Skeleton className='h-10 w-44' />
+            ) : (
+              <h1>{displaySystemName}</h1>
+            )}
+          </Link>
+          <div className='ds-auth-gw'>{t('AI Model Gateway')}</div>
+          <div className='ds-auth-tl1'>
+            {t('Global AI models, unified access center')}
+          </div>
+          <div className='ds-auth-tl2'>
+            {t('Smart routing · Cost optimization · Security control')}
+          </div>
+          <div className='ds-auth-feats'>
+            {DS_FEATURES.map((feature) => (
+              <div key={feature.label} className='ds-auth-feat'>
+                <FeatIcon d={feature.icon} />
+                {t(feature.label)}
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Render line 123 verbatim: glass login card placement. */}
+        <div className='ds-auth-card-pos'>{children}</div>
+      </div>
+    )
+  }
+
   return (
     <div className='relative grid h-svh max-w-none overflow-hidden'>
       {isDeepSpace && <DeepSpaceBackdrop withLandscape={false} />}
-      {isDeepSpace && (
-        <>
-          {/* Sign-in backdrop decor (WO-019 S1): large life planet
-           * top-right + small one bottom-left, dark mode only. */}
-          <div
-            aria-hidden
-            className='ds-auth-planet-lg -z-10 hidden dark:block'
-          >
-            <div className='ds-cockpit-planet' />
-          </div>
-          <div
-            aria-hidden
-            className='ds-auth-planet-sm -z-10 hidden dark:block'
-          >
-            <div className='ds-cockpit-planet' />
-          </div>
-        </>
-      )}
       <Link
         to='/'
         className='absolute top-4 left-4 z-10 flex items-center gap-2 transition-opacity hover:opacity-80 sm:top-8 sm:left-8'
@@ -87,7 +216,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         {loading ? (
           <Skeleton className='h-6 w-24' />
         ) : (
-            <h1 className='text-xl font-medium lg:hidden'>{displaySystemName}</h1>
+          <h1 className='text-xl font-medium lg:hidden'>{displaySystemName}</h1>
         )}
       </Link>
       <div className='absolute top-20 left-4 z-10 hidden max-w-sm space-y-4 sm:top-24 sm:left-8 lg:block'>

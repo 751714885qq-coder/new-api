@@ -1204,32 +1204,25 @@ body[data-theme-preset='deep-space'] {
 
 /* Sign-in card follows the homepage's glass terminal treatment instead of
  * looking like an unrelated stock form. */
+/* Login card: render 13-渲染稿-v6-登录.html lines 123-127 verbatim —
+ * neutral dark glass, no cyan rim, no gradient divider. */
 .dark
   :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-signin-panel {
-  padding: 1.75rem;
-  border: 1px solid rgb(0 191 255 / 0.28);
-  border-radius: 1.25rem;
-  background: rgb(6 26 58 / 0.55);
+  padding: 34px 36px 32px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(9, 13, 24, 0.52);
   box-shadow:
-    inset 0 1px 0 rgb(232 238 255 / 0.07),
-    0 1rem 3rem rgb(0 8 24 / 0.28);
-  backdrop-filter: blur(20px) saturate(1.15);
+    0 18px 60px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
 }
 .dark
   :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
-  .ds-auth-signin-panel::before {
-  display: block;
-  height: 1px;
-  margin: -0.35rem 0 1rem;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgb(0 191 255 / 0.8),
-    rgb(139 92 246 / 0.7),
-    transparent
-  );
-  content: '';
+  .ds-auth-signin-panel h2 {
+  font-size: 23px;
+  font-weight: 650;
 }
 /* Glass cards: top highlight edge + spec-v2 cyan rim rgba(0,180,255,.3). */
 .dark
@@ -1540,51 +1533,231 @@ body[data-theme-preset='deep-space'] {
   }
 }
 
-/* ── Deep Space auth decor (WO-019 S1: sign-in page planets) ──
- * Same life-planet recipe as the cockpit planet, sized for the sign-in
- * backdrop; the large sphere rescales shadow/cloud/rim values. */
-.ds-auth-planet-lg {
-  position: absolute;
-  top: -150px;
-  right: -110px;
-  width: 430px;
-  height: 430px;
-  pointer-events: none;
-}
-
-.ds-auth-planet-sm {
-  position: absolute;
-  bottom: -90px;
-  left: -80px;
-  width: 230px;
-  height: 230px;
-  opacity: 0.8;
-  pointer-events: none;
-}
-
-.ds-auth-planet-lg .ds-cockpit-planet {
-  box-shadow:
-    inset -18px -14px 46px rgba(1, 4, 12, 0.55),
-    inset 12px 16px 46px rgba(110, 170, 255, 0.24),
-    0 0 46px rgba(105, 165, 255, 0.4),
-    0 24px 52px -16px rgba(124, 92, 255, 0.2);
-}
-
-.ds-auth-planet-lg .ds-cockpit-planet::before {
-  background-size: 220px 140px;
-  opacity: 0.5;
-  animation: ds-life-cloud-lg 42s linear infinite;
-}
-
-.ds-auth-planet-lg .ds-cockpit-planet::after {
-  inset: -10px;
-  filter: blur(2px);
-}
-
-@keyframes ds-life-cloud-lg {
+/* ── Deep Space auth decor (WO-019): 13-渲染稿-v6-登录.html lines 58-135
+ * verbatim — planet motion keyframes, two life planets, left brand block,
+ * card placement. ── */
+@keyframes ds-spin {
   to {
-    background-position: 220px 0;
+    transform: rotate(360deg);
   }
+}
+@keyframes ds-spin-rev {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+@keyframes ds-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-earth-big .clouds svg,
+  .ds-earth-big .clouds2 svg,
+  .ds-earth-small .clouds svg,
+  .ds-earth-small {
+    animation: none !important;
+  }
+}
+
+/* large life planet, top-right (render lines 67-88) */
+.ds-earth-big {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  right: -180px;
+  top: -190px;
+  pointer-events: none;
+}
+.ds-earth-big .ball {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(34% 28% at 26% 28%, rgba(200, 240, 255, 0.6), transparent 70%),
+    radial-gradient(60% 50% at 62% 78%, rgba(10, 26, 70, 0.55), transparent 75%),
+    radial-gradient(circle at 30% 28%, #a5d8f8 0%, #57a3e8 24%, #2a68c4 48%, #123680 74%, #071a44 100%);
+  box-shadow:
+    inset -70px -60px 130px rgba(2, 5, 22, 0.78),
+    inset 14px 18px 44px -12px rgba(210, 240, 255, 0.42),
+    0 0 60px rgba(90, 150, 255, 0.4),
+    0 0 170px rgba(60, 110, 240, 0.24);
+}
+.ds-earth-big .clouds {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  opacity: 0.4;
+}
+.ds-earth-big .clouds svg {
+  display: block;
+  width: 150%;
+  height: 150%;
+  margin: -25%;
+  filter: contrast(1.25) brightness(1.04);
+  animation: ds-spin 80s linear infinite;
+}
+.ds-earth-big .clouds2 {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  opacity: 0.2;
+}
+.ds-earth-big .clouds2 svg {
+  display: block;
+  width: 170%;
+  height: 170%;
+  margin: -35%;
+  filter: contrast(1.4) brightness(0.9);
+  animation: ds-spin-rev 150s linear infinite;
+}
+.ds-earth-big .rim {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: inset -8px -12px 40px rgba(90, 140, 255, 0.28);
+}
+
+/* small life planet, bottom-left (render lines 90-104) */
+.ds-earth-small {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  left: -20px;
+  bottom: -24px;
+  animation: ds-bob 9s ease-in-out infinite;
+  pointer-events: none;
+}
+.ds-earth-small .ball {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(30% 24% at 28% 30%, rgba(200, 240, 255, 0.55), transparent 70%),
+    radial-gradient(circle at 32% 30%, #8ecdf6 0%, #4b96e2 30%, #2260b8 60%, #0a245c 88%);
+  box-shadow:
+    inset -18px -16px 34px rgba(2, 5, 22, 0.75),
+    inset 4px 6px 14px -4px rgba(210, 240, 255, 0.4),
+    0 0 24px rgba(80, 140, 255, 0.42);
+}
+.ds-earth-small .clouds {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  opacity: 0.38;
+}
+.ds-earth-small .clouds svg {
+  display: block;
+  width: 150%;
+  height: 150%;
+  margin: -25%;
+  filter: contrast(1.7) brightness(1.02);
+  animation: ds-spin-rev 70s linear infinite;
+}
+
+/* brand block, left (render lines 106-120) */
+.ds-auth-brand {
+  position: absolute;
+  left: 76px;
+  top: 262px;
+  width: 430px;
+  z-index: 2;
+}
+.ds-auth-brand .logo-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ds-auth-logo-orb {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex: none;
+  background: radial-gradient(circle at 32% 30%, #9fe8ff 0%, #22d3ee 34%, #3b82f6 72%, #1e2a5e 100%);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.5);
+}
+.ds-auth-brand h1 {
+  font-size: 42px;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  background: linear-gradient(92deg, #a5b8ff 0%, #c9a2ff 45%, #7de3ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.ds-auth-gw {
+  margin-top: 6px;
+  font-size: 13.5px;
+  font-weight: 650;
+  letter-spacing: 0.34em;
+  color: #7dd3fc;
+}
+.ds-auth-tl1 {
+  margin-top: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ds-t1);
+}
+.ds-auth-tl2 {
+  margin-top: 7px;
+  font-size: 12.5px;
+  color: var(--ds-t3);
+  letter-spacing: 0.04em;
+}
+.ds-auth-feats {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 20px;
+  width: 320px;
+}
+.ds-auth-feat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+  color: var(--ds-t2);
+}
+.ds-auth-feat svg {
+  width: 15px;
+  height: 15px;
+  stroke: #7dd3fc;
+  opacity: 0.9;
+  flex: none;
+}
+@media (max-width: 1023px) {
+  .ds-auth-brand {
+    display: none;
+  }
+}
+
+/* card placement (render line 123); static flow below the mock width */
+.ds-auth-card-pos {
+  position: absolute;
+  left: 47%;
+  top: 50%;
+  transform: translate(-50%, -52%);
+  width: 432px;
+  z-index: 2;
+}
+@media (max-width: 1023px) {
+  .ds-auth-card-pos {
+    position: static;
+    transform: none;
+    width: auto;
+    max-width: 432px;
+    margin: auto;
+    padding: 0 16px;
+  }
+}
 }
 
 /* Card hover: rise + glow (spec v2 motion layer, cockpit cards). */
@@ -1607,9 +1780,6 @@ body[data-theme-preset='deep-space'] {
   .ds-cockpit-stat:hover,
   .ds-cockpit-insight:hover {
     transform: none;
-  }
-  .ds-auth-planet-lg .ds-cockpit-planet::before {
-    animation: none;
   }
 }
 
