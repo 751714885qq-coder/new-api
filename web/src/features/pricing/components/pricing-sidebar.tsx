@@ -28,6 +28,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
 import { getLobeIcon } from '@/lib/lobe-icon'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { cn } from '@/lib/utils'
 
 import {
@@ -74,6 +75,8 @@ export interface PricingSidebarProps {
   models: PricingModel[]
   hasActiveFilters: boolean
   onClearFilters: () => void
+  /** Render 28 .prail glass rail — desktop rail only; the mobile sheet passes no glass. */
+  glassRail?: boolean
   className?: string
 }
 
@@ -97,6 +100,8 @@ function FilterChip(props: {
   active: boolean
   onClick: () => void
 }) {
+  // WO-019 render 28: .pchip / .pchip.on chip language in deep space only.
+  const deepSpaceDark = useDeepSpaceDark()
   return (
     <Button
       type='button'
@@ -104,7 +109,11 @@ function FilterChip(props: {
       size='sm'
       onClick={props.onClick}
       aria-pressed={props.active}
-      className='h-auto max-w-full gap-1.5 px-2 py-1 text-xs'
+      className={cn(
+        'h-auto max-w-full gap-1.5 px-2 py-1 text-xs',
+        deepSpaceDark && 'ds-pchip',
+        deepSpaceDark && props.active && 'ds-pchip-on'
+      )}
       title={props.option.label}
     >
       {props.option.icon && (
@@ -128,13 +137,20 @@ function FilterChip(props: {
 }
 
 function FilterSection(props: FilterSectionProps) {
+  // WO-019 render 28: .psec uppercase-tracked section labels, deep space only.
+  const deepSpaceDark = useDeepSpaceDark()
   return (
     <Collapsible
       defaultOpen
       className='border-border/70 border-b pb-3 last:border-b-0'
     >
       <CollapsibleTrigger className='group flex w-full items-center justify-between py-2.5 text-left'>
-        <span className='text-foreground text-sm font-semibold'>
+        <span
+          className={cn(
+            'text-foreground text-sm font-semibold',
+            deepSpaceDark && 'ds-psec'
+          )}
+        >
           {props.title}
         </span>
         <ChevronDown className='text-muted-foreground size-4 transition-transform group-data-[panel-open]:rotate-180' />
@@ -157,6 +173,8 @@ function FilterSection(props: FilterSectionProps) {
 
 export function PricingSidebar(props: PricingSidebarProps) {
   const { t } = useTranslation()
+  // WO-019 render 28: .prail glass rail, deep space only.
+  const deepSpaceDark = useDeepSpaceDark()
   const quotaTypeLabels = getQuotaTypeLabels(t)
   const endpointTypeLabels = getEndpointTypeLabels(t)
 
@@ -256,7 +274,13 @@ export function PricingSidebar(props: PricingSidebarProps) {
   ]
 
   return (
-    <aside className={cn('bg-card rounded-xl border p-3', props.className)}>
+    <aside
+      className={cn(
+        'bg-card rounded-xl border p-3',
+        deepSpaceDark && props.glassRail && 'ds-panel-glass',
+        props.className
+      )}
+    >
       <div className='mb-2.5 flex items-center justify-between gap-2'>
         <div>
           <h2 className='text-foreground text-sm font-bold'>{t('Filter')}</h2>

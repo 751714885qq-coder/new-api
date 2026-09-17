@@ -2885,3 +2885,28 @@ body[data-theme-preset='deep-space'] {
   background: rgba(34, 211, 238, 0.07);
   color: #a5f3fc;
 }
+
+/* ── WO-019 render 28 (model square) ──────────────────────────────────── */
+/* Filter rail / toolbar reuse .ds-panel-glass; card glass ships via the
+ * global deep-space [data-slot='card'] chrome. Section labels (.psec),
+ * filter chips (.pchip) and the card model name (.pname 13.5px) below. */
+.ds-psec {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ds-t3);
+}
+.ds-pchip {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  color: var(--ds-t2);
+  border-color: var(--ds-line);
+  background: rgba(255, 255, 255, 0.02);
+}
+.ds-pchip-on {
+  color: #67e8f9;
+  border-color: rgba(34, 211, 238, 0.45);
+  background: rgba(34, 211, 238, 0.09);
+}

@@ -24,6 +24,7 @@ import { CopyButton } from '@/components/copy-button'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { getLobeIcon } from '@/lib/lobe-icon'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { cn } from '@/lib/utils'
 
 import { DEFAULT_TOKEN_UNIT } from '../constants'
@@ -55,6 +56,9 @@ export interface ModelCardProps {
 
 export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   const { t, i18n } = useTranslation()
+  // WO-019 render 28: .pname is 13.5px mono in deep space (card glass and rim
+  // ship via the global deep-space card chrome). Light mode keeps 15px.
+  const deepSpaceDark = useDeepSpaceDark()
   const tokenUnit = props.tokenUnit ?? DEFAULT_TOKEN_UNIT
   const priceRate = props.priceRate ?? 1
   const usdExchangeRate = props.usdExchangeRate ?? 1
@@ -228,7 +232,10 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         </div>
         <div className='min-w-0 flex-1'>
           <h3
-            className='line-clamp-2 font-mono text-[15px] leading-snug font-semibold [overflow-wrap:anywhere]'
+            className={cn(
+              'line-clamp-2 font-mono leading-snug font-semibold [overflow-wrap:anywhere]',
+              deepSpaceDark ? 'text-[13.5px]' : 'text-[15px]'
+            )}
             title={props.model.model_name}
           >
             {props.model.model_name}
