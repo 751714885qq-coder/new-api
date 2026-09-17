@@ -1907,11 +1907,18 @@ body[data-theme-preset='deep-space'] {
   animation: ds-spin-rev 70s linear infinite;
 }
 
-/* brand block, left (render lines 106-120) */
+/* brand block, left (render lines 106-120)
+   WO-019 D7: the render pins .brand at top:262px on its fixed 1600x1000
+   canvas; measured there, brand top = card top - 34px with a 30px horizontal
+   gap. On a real viewport the card is centred and its height follows its
+   content, so both offsets are expressed relative to the card (this block
+   lives inside .ds-auth-card-pos) instead of the render's canvas.
+   `max()` keeps the render's fixed 76px left edge on viewports too narrow to
+   fit the 30px gap, which is the pre-D7 behaviour. */
 .ds-auth-brand {
   position: absolute;
-  left: 76px;
-  top: 262px;
+  left: max(-460px, calc(292px - 47vw));
+  top: -34px;
   width: 430px;
   z-index: 2;
 }
