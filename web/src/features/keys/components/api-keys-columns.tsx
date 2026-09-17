@@ -18,6 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { useQuery } from '@tanstack/react-query'
 import type { ColumnDef } from '@tanstack/react-table'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { StatusBadge } from '@/components/status-badge'
@@ -26,11 +27,16 @@ import { useMediaQuery } from '@/hooks'
 import { toIntlLocale } from '@/i18n/languages'
 import { getUserGroups } from '@/lib/api'
 import { getCurrencyDisplay } from '@/lib/currency'
+import { isInjectedOwnGroup } from '@/lib/user-groups'
 import { useSystemConfigStore } from '@/stores/system-config-store'
 
 import { API_KEY_STATUSES } from '../constants'
 import type { ApiKey } from '../types'
 import { ApiKeyGroupCell } from './api-key-group-cell'
+import {
+  ApiKeyGroupQuickSwitch,
+  type QuickSwitchGroup,
+} from './api-key-group-quick-switch'
 import { ApiKeyQuotaCell } from './api-key-quota-cell'
 import {
   ApiKeyActivityCell,
@@ -43,24 +49,37 @@ import {
 } from './api-keys-cells'
 import { DataTableRowActions } from './data-table-row-actions'
 
-function useGroupRatios(): Record<string, number | string> {
+function useUserGroups(): {
+  ratios: Record<string, number | string>
+  // WO-019 R1: drop the injected own group — it has no channel binding, so
+  // switching onto it creates a token that can never reach a channel.
+  switchableGroups: QuickSwitchGroup[]
+} {
   const { data } = useQuery({
     queryKey: ['user-groups'],
     queryFn: getUserGroups,
     staleTime: 0,
-    select: (res) => {
-      if (!res.success || !res.data) return {}
-      const ratios: Record<string, number | string> = {}
-      for (const [group, info] of Object.entries(res.data)) {
-        if (typeof info.ratio === 'number' || typeof info.ratio === 'string') {
-          ratios[group] = info.ratio
-        }
-      }
-      return ratios
-    },
   })
 
-  return data ?? {}
+  // The mapping lives in useMemo, not in `select`: a select that builds a new
+  // object every run re-renders its consumer endlessly (TanStack Query v5
+  // re-runs select on every options change).
+  return useMemo(() => {
+    if (!data?.success || !data.data) {
+      return { ratios: {}, switchableGroups: [] }
+    }
+    const ratios: Record<string, number | string> = {}
+    const switchableGroups: QuickSwitchGroup[] = []
+    for (const [group, info] of Object.entries(data.data)) {
+      if (typeof info.ratio === 'number' || typeof info.ratio === 'string') {
+        ratios[group] = info.ratio
+      }
+      if (!isInjectedOwnGroup(info.desc)) {
+        switchableGroups.push({ value: group, ratio: info.ratio })
+      }
+    }
+    return { ratios, switchableGroups }
+  }, [data])
 }
 
 export function useApiKeysColumns(now: number): ColumnDef<ApiKey>[] {
@@ -68,7 +87,7 @@ export function useApiKeysColumns(now: number): ColumnDef<ApiKey>[] {
   useSystemConfigStore((state) => state.config.currency)
   const { meta: currency } = getCurrencyDisplay()
   const quotaUnit = currency.kind === 'tokens' ? t('Tokens') : currency.symbol
-  const groupRatios = useGroupRatios()
+  const { ratios: groupRatios, switchableGroups } = useUserGroups()
   const shouldReduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
   const locale = toIntlLocale(i18n.resolvedLanguage || i18n.language)
   const justNowLabel = t('Just now')
@@ -146,6 +165,15 @@ export function useApiKeysColumns(now: number): ColumnDef<ApiKey>[] {
       cell: ({ row }) => {
         const apiKey = row.original
         const group = row.getValue('group') as string
+        if (group && group !== 'auto') {
+          return (
+            <ApiKeyGroupQuickSwitch
+              apiKey={apiKey}
+              ratio={groupRatios[group]}
+              groups={switchableGroups}
+            />
+          )
+        }
         return (
           <ApiKeyGroupCell
             group={group}

@@ -2655,3 +2655,100 @@ body[data-theme-preset='deep-space'] {
   border: 0;
   transform-origin: 0 0;
 }
+
+/* API key inline group quick-switch (render 24-渲染稿-v6-API密钥.html):
+ * deep-space capsule trigger and group switch menu; these classes only
+ * exist inside the deep-space branch of the keys feature
+ * (api-key-group-quick-switch.tsx). */
+.ds-gqs-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  background: rgba(34, 211, 238, 0.07);
+  font-size: 11px;
+  font-weight: 400;
+  color: #a5f3fc;
+  cursor: pointer;
+}
+.ds-gqs-trigger:hover {
+  background: rgba(34, 211, 238, 0.12);
+}
+.ds-gqs-trigger svg {
+  width: 11px;
+  height: 11px;
+  opacity: 0.8;
+}
+.ds-gqs-dot {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+}
+.ds-gqs-dot-auto {
+  background: var(--ds-accent);
+  box-shadow: 0 0 6px rgba(34, 211, 238, 0.8);
+}
+.ds-gqs-ratio {
+  font-size: 10px;
+  color: var(--ds-t3);
+}
+.ds-gqs-menu {
+  width: 196px;
+  min-width: 196px;
+  gap: 0;
+  border-radius: 10px;
+  padding: 4px;
+  background: linear-gradient(
+    180deg,
+    rgba(13, 17, 30, 0.97),
+    rgba(9, 12, 22, 0.97)
+  );
+  border: 1px solid var(--ds-line-strong);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+.ds-gqs-title {
+  padding: 5px 8px 3px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--ds-t3);
+}
+.ds-gqs-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  text-align: left;
+  color: var(--ds-t2);
+  cursor: pointer;
+}
+.ds-gqs-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.ds-gqs-item[data-selected='true'] {
+  color: #a5f3fc;
+  background: rgba(34, 211, 238, 0.08);
+}
+.ds-gqs-check {
+  width: 12px;
+  height: 12px;
+  color: var(--ds-accent);
+}
+.ds-gqs-chip {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--ds-t3);
+  border: 1px solid var(--ds-line);
+  border-radius: 4px;
+  padding: 0 5px;
+}

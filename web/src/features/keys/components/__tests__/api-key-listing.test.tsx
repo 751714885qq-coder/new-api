@@ -38,6 +38,7 @@ import {
   waitFor,
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useMemo } from 'react'
 import { createInstance } from 'i18next'
 import { I18nextProvider } from 'react-i18next'
 import { Toaster, toast } from 'sonner'
@@ -524,4 +525,200 @@ it('keeps mobile quota readable and opens complete model and IP restrictions by 
   details = await screen.findByRole('dialog')
   expect(within(details).getByText('192.0.2.1')).toBeVisible()
   expect(within(details).getByText('2001:db8::1')).toBeVisible()
+})
+
+function GroupTable(props: { apiKey: ApiKey }) {
+  // A fresh data array every render makes TanStack Table reset its state on
+  // each pass, which combined with any async update loops forever.
+  const data = useMemo(() => [props.apiKey], [props.apiKey])
+  const columns = useApiKeysColumns(now).filter(
+    (column) =>
+      column.id === 'group' ||
+      (column as { accessorKey?: unknown }).accessorKey === 'group'
+  )
+  const table = useReactTable({
+    columns,
+    data,
+    getCoreRowModel: getCoreRowModel(),
+  })
+  return (
+    <ApiKeysProvider>
+      <table>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </ApiKeysProvider>
+  )
+}
+
+function mockSelfGroups() {
+  vi.mocked(api.get).mockImplementation(async (url) => {
+    if (url === '/api/user/self/groups') {
+      return {
+        data: {
+          success: true,
+          data: {
+            default: { desc: 'Default group', ratio: 1 },
+            vip: { desc: 'VIP group', ratio: 3 },
+            auto: { desc: 'Auto', ratio: 0.9 },
+            own: { desc: '用户分组', ratio: 1 },
+          },
+        },
+      }
+    }
+    return { data: { success: true, data: {} } }
+  })
+}
+
+function renderGroupColumn(apiKey: ApiKey = key) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+  clients.push(client)
+  mockSelfGroups()
+  return render(
+    <I18nextProvider i18n={i18n}>
+      <QueryClientProvider client={client}>
+        <Toaster />
+        <GroupTable apiKey={apiKey} />
+      </QueryClientProvider>
+    </I18nextProvider>
+  )
+}
+
+it('renders the group cell as a quick-switch trigger for real groups only', async () => {
+  renderGroupColumn()
+  const user = userEvent.setup()
+  expect(
+    within(screen.getByRole('button', { name: 'Switch group' })).getByText(
+      'default'
+    )
+  ).toBeInTheDocument()
+  // The ratio arrives with the async user-groups query, and the table
+  // replaces the trigger row content when it lands, so re-query afterwards.
+  await waitFor(() =>
+    expect(
+      screen.getByRole('button', { name: 'Switch group' })
+    ).toHaveTextContent('1x')
+  )
+  const trigger = screen.getByRole('button', { name: 'Switch group' })
+
+  await user.click(trigger)
+  const menu = screen.getByRole('dialog')
+  expect(within(menu).getByText('Switch group')).toBeInTheDocument()
+  expect(within(menu).queryByRole('button', { name: /own/ })).not.toBeInTheDocument()
+  const autoOption = within(menu).getByRole('button', { name: /Cross-group/ })
+  expect(within(autoOption).getByText('0.9x')).toBeInTheDocument()
+  const currentOption = within(menu)
+    .getAllByRole('button')
+    .find((button) => button.textContent?.includes('default'))
+  expect(currentOption).not.toBe(undefined)
+  // The current group keeps its check mark instead of a color dot.
+  expect(currentOption?.querySelector('svg')).not.toBe(null)
+})
+
+it('keeps the read-only group badge for auto and empty groups', () => {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false, enabled: false } },
+  })
+  clients.push(client)
+  const { rerender } = render(
+    <I18nextProvider i18n={i18n}>
+      <QueryClientProvider client={client}>
+        <GroupTable apiKey={{ ...key, group: 'auto' }} />
+      </QueryClientProvider>
+    </I18nextProvider>
+  )
+  expect(
+    screen.queryByRole('button', { name: 'Switch group' })
+  ).not.toBeInTheDocument()
+  expect(screen.getByText('Cross-group')).toBeInTheDocument()
+
+  rerender(
+    <I18nextProvider i18n={i18n}>
+      <QueryClientProvider client={client}>
+        <GroupTable apiKey={{ ...key, group: '' }} />
+      </QueryClientProvider>
+    </I18nextProvider>
+  )
+  expect(
+    screen.queryByRole('button', { name: 'Switch group' })
+  ).not.toBeInTheDocument()
+})
+
+it('switches a group inline while preserving every other token field', async () => {
+  renderGroupColumn()
+  const user = userEvent.setup()
+  const put = vi
+    .spyOn(api, 'put')
+    .mockResolvedValue({ data: { success: true, data: {} } })
+  await waitFor(() =>
+    expect(
+      screen.getByRole('button', { name: 'Switch group' })
+    ).toHaveTextContent('1x')
+  )
+  await user.click(screen.getByRole('button', { name: 'Switch group' }))
+  await user.click(await screen.findByRole('button', { name: /vip/ }))
+  await waitFor(() =>
+    expect(put).toHaveBeenCalledWith('/api/token/', {
+      id: 7,
+      name: 'production',
+      remain_quota: 40_000_000,
+      expired_time: -1,
+      unlimited_quota: false,
+      model_limits_enabled: false,
+      model_limits: '',
+      allow_ips: '',
+      group: 'vip',
+      auto_groups: [],
+      cross_group_retry: false,
+    })
+  )
+  await screen.findByText('API Key updated successfully')
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('button', { name: /vip/ })
+    ).not.toBeInTheDocument()
+  )
+})
+
+it('keeps per-token Auto members when switching onto the auto group', async () => {
+  renderGroupColumn({
+    ...key,
+    group: 'vip',
+    auto_groups: ['default', 'vip'],
+    cross_group_retry: true,
+  })
+  const user = userEvent.setup()
+  const put = vi
+    .spyOn(api, 'put')
+    .mockResolvedValue({ data: { success: true, data: {} } })
+  await waitFor(() =>
+    expect(
+      screen.getByRole('button', { name: 'Switch group' })
+    ).toHaveTextContent('3x')
+  )
+  await user.click(screen.getByRole('button', { name: 'Switch group' }))
+  await user.click(
+    await screen.findByRole('button', { name: /Cross-group/ })
+  )
+  await waitFor(() =>
+    expect(put).toHaveBeenCalledWith(
+      '/api/token/',
+      expect.objectContaining({
+        group: 'auto',
+        auto_groups: ['default', 'vip'],
+        cross_group_retry: true,
+      })
+    )
+  )
 })
