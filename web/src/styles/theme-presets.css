@@ -2291,3 +2291,46 @@ body[data-theme-preset='deep-space'] {
   height: 14px;
   opacity: 0.8;
 }
+
+/* Profile screen (render 12): notification channel tiles + ghost manage
+ * buttons. Unprefixed like the other ds-* helpers; only used inside the
+ * deep-space branch of the profile feature. */
+.ds-ntile {
+  height: 56px;
+  border-radius: 10px;
+  border: 1px solid var(--ds-line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--ds-t3);
+  font-size: 11px;
+  box-shadow: none;
+}
+.ds-ntile svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
+}
+.ds-ntile[data-state='on'] {
+  border-color: rgba(34, 211, 238, 0.5);
+  color: #e9fdff;
+  background: rgba(34, 211, 238, 0.07);
+  box-shadow: 0 0 12px -2px rgba(34, 211, 238, 0.35);
+}
+.ds-ntile[data-state='on'] svg {
+  color: var(--ds-accent);
+  opacity: 1;
+}
+.ds-btn-ghost2 {
+  height: 30px;
+  padding: 0 15px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 550;
+  color: var(--ds-t2);
+  border: 1px solid var(--ds-line-strong);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: none;
+}
+.ds-btn-ghost2:hover {
+  color: var(--ds-t1);
+  border-color: rgba(34, 211, 238, 0.35);
+}

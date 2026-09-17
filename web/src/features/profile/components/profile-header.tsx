@@ -16,14 +16,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import dayjs from 'dayjs'
 import { Activity, BarChart3, WalletCards } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { CopyButton } from '@/components/copy-button'
+import { dsUnitSpan } from '@/components/deep-space/ds-kit'
 import { StatusBadge } from '@/components/status-badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { getUserAvatarFallback, getUserAvatarStyle } from '@/lib/avatar'
 import { formatCompactNumber, formatQuota } from '@/lib/format'
 import { getRoleLabel } from '@/lib/roles'
@@ -42,6 +46,7 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
   const { t } = useTranslation()
+  const deepSpaceDark = useDeepSpaceDark()
 
   if (loading) {
     return (
@@ -84,6 +89,205 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
   const avatarFallback = getUserAvatarFallback(avatarName)
   const avatarFallbackStyle = getUserAvatarStyle(avatarName)
   const roleLabel = getRoleLabel(profile.role)
+  if (deepSpaceDark) {
+    // Render 12-渲染稿-v6-个人资料.html lines 346-373 verbatim: user banner
+    // with avatar, name + group / email-bound tags, meta row (username,
+    // copyable user-id chip, registered date) and three live stat columns.
+    const tagBaseStyle = {
+      fontSize: 10.5,
+      fontWeight: 600,
+      padding: '2px 8px',
+      borderRadius: 6,
+      flex: 'none',
+    } as const
+    return (
+      <div
+        className='flex items-center gap-[18px]'
+        style={{
+          border: '1px solid var(--ds-line)',
+          borderRadius: 14,
+          background: 'var(--ds-card)',
+          backdropFilter: 'blur(16px)',
+          boxShadow:
+            '0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.045)',
+          padding: '14px 22px',
+        }}
+      >
+        <div
+          className='flex flex-none items-center justify-center'
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: '50%',
+            border: '1px solid var(--ds-line-strong)',
+            fontSize: 23,
+            fontWeight: 600,
+            color: '#cdefff',
+            boxShadow:
+              '0 0 0 3px rgba(34,211,238,0.08), 0 6px 22px -6px rgba(56,189,248,0.35)',
+          }}
+        >
+          <Avatar className='h-full w-full rounded-full'>
+            <AvatarFallback
+              className='rounded-full font-semibold'
+              style={avatarFallbackStyle}
+            >
+              {avatarFallback}
+            </AvatarFallback>
+          </Avatar>
+        </div>
+        <div className='min-w-0'>
+          <div
+            className='flex flex-wrap items-center gap-2.5'
+            style={{ fontSize: 20, fontWeight: 650 }}
+          >
+            <span>{displayName}</span>
+            {profile.group && (
+              <span
+                style={{
+                  ...tagBaseStyle,
+                  color: '#a5f3fc',
+                  background: 'rgba(34,211,238,0.08)',
+                  border: '1px solid rgba(34,211,238,0.30)',
+                }}
+              >
+                {t('Group {{name}}', { name: profile.group })}
+              </span>
+            )}
+            {profile.email ? (
+              <span
+                style={{
+                  ...tagBaseStyle,
+                  color: '#6ee7b7',
+                  background: 'rgba(52,211,153,0.08)',
+                  border: '1px solid rgba(52,211,153,0.30)',
+                }}
+              >
+                {t('Email bound')}
+              </span>
+            ) : (
+              <span
+                style={{
+                  ...tagBaseStyle,
+                  color: '#fcd34d',
+                  background: 'rgba(251,191,36,0.08)',
+                  border: '1px solid rgba(251,191,36,0.30)',
+                }}
+              >
+                {t('Email not bound')}
+              </span>
+            )}
+          </div>
+          <div
+            className='mt-2 flex flex-wrap items-center gap-2.5'
+            style={{ fontSize: 12.5, color: 'var(--ds-t3)' }}
+          >
+            <span>@{profile.username}</span>
+            <span
+              className='rounded-full'
+              style={{
+                width: 3,
+                height: 3,
+                background: 'var(--ds-t3)',
+                opacity: 0.6,
+              }}
+            />
+            <span
+              className='inline-flex items-center gap-1.5'
+              style={{
+                height: 22,
+                padding: '0 9px',
+                border: '1px solid var(--ds-line)',
+                borderRadius: 6,
+                background: 'rgba(255,255,255,0.03)',
+                fontSize: 11,
+              }}
+            >
+              {t('User ID')} {profile.id}
+              <CopyButton
+                value={String(profile.id)}
+                variant='ghost'
+                className='h-4 w-4'
+                iconClassName='size-3 text-[#7dd3fc]'
+                aria-label={t('Copy to clipboard')}
+              />
+            </span>
+            <span
+              className='rounded-full'
+              style={{
+                width: 3,
+                height: 3,
+                background: 'var(--ds-t3)',
+                opacity: 0.6,
+              }}
+            />
+            <span>
+              {t('Registered on')}{' '}
+              {profile.created_time
+                ? dayjs(profile.created_time * 1000).format('YYYY-MM-DD')
+                : '--'}
+            </span>
+          </div>
+        </div>
+        <div className='ml-auto hidden lg:flex'>
+          {[
+            {
+              label: t('Current Balance'),
+              desc: t('Remaining quota'),
+              icon: WalletCards,
+              value: formatQuota(profile.quota),
+            },
+            {
+              label: t('Total Usage'),
+              desc: t('Total consumed quota'),
+              icon: BarChart3,
+              value: formatQuota(profile.used_quota),
+            },
+            {
+              label: t('API Requests'),
+              desc: t('Total requests made'),
+              icon: Activity,
+              value: profile.request_count.toLocaleString(),
+            },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className='[&:not(:first-child)]:border-l'
+              style={{ padding: '2px 26px', borderColor: 'var(--ds-line)' }}
+            >
+              <div
+                className='flex items-center gap-1.5'
+                style={{ fontSize: 11, color: 'var(--ds-t3)', height: 15 }}
+              >
+                <stat.icon
+                  className='h-3 w-3 flex-none'
+                  style={{ color: 'var(--ds-accent)', opacity: 0.85 }}
+                />
+                {stat.label}
+              </div>
+              <div
+                className='tracking-[-0.01em] tabular-nums'
+                style={{
+                  marginTop: 5,
+                  fontSize: 20,
+                  fontWeight: 650,
+                  lineHeight: 1.15,
+                }}
+              >
+                {dsUnitSpan(stat.value)}
+              </div>
+              <div
+                style={{ marginTop: 5, fontSize: 10.5, color: 'var(--ds-t3)' }}
+              >
+                {stat.desc}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   const stats: {
     label: string
     value: string

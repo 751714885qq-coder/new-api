@@ -16,6 +16,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+// oxlint-disable react/only-export-components -- shared render primitives:
+// constants, formulas and helpers alongside the DsDeltaLine/DsKpiCard
+// components; fast refresh does not apply to this module.
 import type { CSSProperties, ReactNode } from 'react'
 
 /**

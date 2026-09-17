@@ -6220,6 +6220,15 @@
     "pay as you go": "按量计费",
     "Balance, usage, and topup records sync in real time — ": "余额、消耗与充值记录实时同步 —— ",
     ", deducted per use; tokens are throttled automatically when the balance runs low.": "，用多少扣多少，余额不足时令牌自动限流提醒。",
-    "Supports Alipay, WeChat Pay, and card code redemption. Topups arrive instantly and can be used on all online models.": "支持支付宝、微信支付与卡密兑换，充值实时到账，余额可用于全部在线模型。"
+    "Supports Alipay, WeChat Pay, and card code redemption. Topups arrive instantly and can be used on all online models.": "支持支付宝、微信支付与卡密兑换，充值实时到账，余额可用于全部在线模型。",
+    "Group {{name}}": "分组 {{name}}",
+    "Email bound": "已绑定邮箱",
+    "Email not bound": "邮箱未绑定",
+    "Cannot be changed": "不可修改",
+    "Bind now": "去绑定",
+    "Bound to {{email}}, can be used for login and account recovery": "已绑定 {{email}}，可用于登录与找回密码",
+    "Manage your account identity, security settings, and notification preferences — ": "管理账户身份、安全设置与通知偏好 —— ",
+    "sensitive actions require security verification": "敏感操作需通过安全验证",
+    ", changes take effect immediately.": "，更改即时生效。"
   }
 }

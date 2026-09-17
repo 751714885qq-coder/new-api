@@ -19,9 +19,11 @@ For commercial licensing, please contact support@quantumnous.com
 import { Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { DS_PANEL_STYLE } from '@/components/deep-space/ds-kit'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TitledCard } from '@/components/ui/titled-card'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 
 import type { UserProfile } from '../types'
 import { NotificationTab } from './tabs/notification-tab'
@@ -42,6 +44,7 @@ export function ProfileSettingsCard({
   onProfileUpdate,
 }: ProfileSettingsCardProps) {
   const { t } = useTranslation()
+  const deepSpaceDark = useDeepSpaceDark()
 
   if (loading) {
     return (
@@ -56,6 +59,44 @@ export function ProfileSettingsCard({
           ))}
         </CardContent>
       </Card>
+    )
+  }
+
+  if (deepSpaceDark) {
+    // Render 12-渲染稿-v6-个人资料.html lines 461-514 verbatim: 设置 card
+    // head; the notification / preference fields live in NotificationTab.
+    return (
+      <div className='flex flex-col' style={{ ...DS_PANEL_STYLE, padding: 0 }}>
+        <div
+          className='flex items-center gap-3 border-b px-5 py-3'
+          style={{ borderColor: 'var(--ds-line)' }}
+        >
+          <div
+            className='flex flex-none items-center justify-center'
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: 9,
+              border: '1px solid var(--ds-line)',
+              background: 'rgba(255,255,255,0.03)',
+              color: '#7dd3fc',
+            }}
+          >
+            <Settings className='h-4 w-4' />
+          </div>
+          <div>
+            <div style={{ fontSize: 14.5, fontWeight: 600 }}>
+              {t('Settings')}
+            </div>
+            <div style={{ fontSize: 11.5, color: 'var(--ds-t3)', marginTop: 2 }}>
+              {t('Settings & Preferences')}
+            </div>
+          </div>
+        </div>
+        <div className='px-5 pb-4 pt-3.5'>
+          <NotificationTab profile={profile} onUpdate={onProfileUpdate} />
+        </div>
+      </div>
     )
   }
 

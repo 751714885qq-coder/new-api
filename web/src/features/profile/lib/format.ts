@@ -36,6 +36,17 @@ export function parseUserSettings(settingsJson?: string): UserSettings {
 }
 
 /**
+ * Mask an email for display: keep the first three characters of the local
+ * part, then '***' + the domain (render 12 recipe: cas***@gmail.com).
+ */
+export function maskEmail(email: string): string {
+  const at = email.indexOf('@')
+  if (at <= 0) return email
+  const local = email.slice(0, Math.min(3, at))
+  return `${local}***${email.slice(at)}`
+}
+
+/**
  * Get display name or fallback to username
  */
 export function getDisplayName(user?: UserProfile): string {

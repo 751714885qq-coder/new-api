@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { Bell, Loader2, Mail, Server, Webhook } from 'lucide-react'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { ROLE } from '@/lib/roles'
 
 import { updateUserSettings } from '../../api'
@@ -52,6 +53,7 @@ interface NotificationTabProps {
 
 export function NotificationTab({ profile, onUpdate }: NotificationTabProps) {
   const { t } = useTranslation()
+  const deepSpaceDark = useDeepSpaceDark()
   const isAdmin = (profile?.role ?? 0) >= ROLE.ADMIN
   const [loading, setLoading] = useState(false)
   const [settings, setSettings] = useState(() => normalizeUserSettings())
@@ -93,6 +95,219 @@ export function NotificationTab({ profile, onUpdate }: NotificationTabProps) {
   }
 
   const notifyType = settings.notify_type
+
+  if (deepSpaceDark) {
+    // Render 12-渲染稿-v6-个人资料.html lines 470-510 verbatim: two-column
+    // settings grid — notification channel tiles + threshold / email fields
+    // on the left, preference switches + save button on the right. The
+    // webhook / bark / gotify fields are outside the render and keep their
+    // conditional display styled to match.
+    const finStyle = {
+      height: 38,
+      borderRadius: 9,
+      border: '1px solid var(--ds-line)',
+      background: 'rgba(255,255,255,0.03)',
+      color: 'var(--ds-t1)',
+      fontSize: 13,
+    } as const
+    const fld = (label: string, node: ReactNode) => (
+      <div className='mt-2.5'>
+        <div
+          className='mb-[7px] flex items-center gap-1.5'
+          style={{
+            fontSize: 11,
+            color: 'var(--ds-t3)',
+            fontWeight: 600,
+            letterSpacing: '0.05em',
+          }}
+        >
+          {label}
+        </div>
+        {node}
+      </div>
+    )
+    const prefRow = (
+      title: string,
+      desc: string,
+      id: string,
+      checked: boolean,
+      onCheckedChange: (checked: boolean) => void
+    ) => (
+      <div
+        className='flex items-center gap-3 py-[9px] [&:not(:last-of-type)]:border-b'
+        style={{ borderColor: 'var(--ds-line)' }}
+      >
+        <div>
+          <div className='font-[550]' style={{ fontSize: 12.5, color: 'var(--ds-t1)' }}>
+            {title}
+          </div>
+          <div className='mt-[3px]' style={{ fontSize: 11, color: 'var(--ds-t3)' }}>
+            {desc}
+          </div>
+        </div>
+        <Switch
+          id={id}
+          className='ml-auto shrink-0'
+          checked={checked}
+          onCheckedChange={onCheckedChange}
+        />
+      </div>
+    )
+    const sgLabel = (text: string) => (
+      <div
+        className='mb-[9px] flex items-center gap-2 font-semibold'
+        style={{ fontSize: 12.5, color: 'var(--ds-t2)' }}
+      >
+        {text}
+      </div>
+    )
+    return (
+      <div className='grid gap-6 xl:grid-cols-2'>
+        <div>
+          {sgLabel(t('Notification Method'))}
+          <ToggleGroup
+            value={[notifyType]}
+            onValueChange={(value) => {
+              const nextValue = value.find((item) => item !== notifyType)
+              if (nextValue) updateField('notify_type', nextValue as NotifyType)
+            }}
+            aria-label={t('Notification Method')}
+            variant='outline'
+            size='lg'
+            spacing={2}
+            className='grid w-full grid-cols-2 gap-2.5 sm:grid-cols-4'
+          >
+            {NOTIFICATION_METHODS.map((method) => {
+              const Icon = NOTIFICATION_ICONS[method.value]
+              return (
+                <ToggleGroupItem
+                  key={method.value}
+                  value={method.value}
+                  className='ds-ntile w-full flex-col gap-1.5 px-2 py-3'
+                >
+                  <Icon className='h-4 w-4' />
+                  <span className='max-w-full truncate'>{t(method.label)}</span>
+                </ToggleGroupItem>
+              )
+            })}
+          </ToggleGroup>
+          {fld(
+            `${t('Quota Warning Threshold')} · ${t('Get notified when balance falls below this value')}`,
+            <Input
+              type='number'
+              value={settings.quota_warning_threshold}
+              onChange={(e) =>
+                updateField('quota_warning_threshold', Number(e.target.value))
+              }
+              placeholder={t('Enter threshold')}
+              style={finStyle}
+            />
+          )}
+          {notifyType === 'email' &&
+            fld(
+              `${t('Notification Email')} · ${t('Leave empty to use account email')}`,
+              <Input
+                type='email'
+                value={settings.notification_email}
+                onChange={(e) => updateField('notification_email', e.target.value)}
+                placeholder='you@example.com'
+                style={finStyle}
+              />
+            )}
+          {notifyType === 'webhook' && (
+            <>
+              {fld(
+                t('Webhook URL'),
+                <Input
+                  type='url'
+                  value={settings.webhook_url}
+                  onChange={(e) => updateField('webhook_url', e.target.value)}
+                  placeholder={t('https://example.com/webhook')}
+                  style={finStyle}
+                />
+              )}
+              {fld(
+                t('Webhook Secret'),
+                <PasswordInput
+                  value={settings.webhook_secret}
+                  onChange={(e) => updateField('webhook_secret', e.target.value)}
+                  placeholder={t('Enter secret key')}
+                  style={finStyle}
+                />
+              )}
+            </>
+          )}
+          {notifyType === 'bark' &&
+            fld(
+              t('Bark Push URL'),
+              <Input
+                type='url'
+                value={settings.bark_url}
+                onChange={(e) => updateField('bark_url', e.target.value)}
+                placeholder={t('https://api.day.app/yourkey/{{title}}/{{content}}')}
+                style={finStyle}
+              />
+            )}
+          {notifyType === 'gotify' && (
+            <>
+              {fld(
+                t('Gotify Server URL'),
+                <Input
+                  type='url'
+                  value={settings.gotify_url}
+                  onChange={(e) => updateField('gotify_url', e.target.value)}
+                  placeholder={t('https://gotify.example.com')}
+                  style={finStyle}
+                />
+              )}
+              {fld(
+                t('Gotify Application Token'),
+                <PasswordInput
+                  value={settings.gotify_token}
+                  onChange={(e) => updateField('gotify_token', e.target.value)}
+                  placeholder={t('Enter application token')}
+                  style={finStyle}
+                />
+              )}
+            </>
+          )}
+        </div>
+        <div>
+          {sgLabel(t('Preferences'))}
+          <div>
+            {prefRow(
+              t('Accept Unpriced Models'),
+              t('Allow using models without price configuration'),
+              'acceptUnsetPrice',
+              settings.accept_unset_model_ratio_model,
+              (checked) => updateField('accept_unset_model_ratio_model', checked)
+            )}
+            {isAdmin &&
+              prefRow(
+                t('Receive Upstream Model Update Notifications'),
+                t(
+                  'Only available for admins. When enabled, you will receive a summary notification via your selected method when the scheduled model check detects upstream model changes or check failures.'
+                ),
+                'upstreamModelUpdateNotify',
+                settings.upstream_model_update_notify_enabled,
+                (checked) =>
+                  updateField('upstream_model_update_notify_enabled', checked)
+              )}
+          </div>
+          <div className='mt-2 flex justify-end'>
+            <Button
+              onClick={handleSave}
+              disabled={loading}
+              className='ds-btn-primary'
+              style={{ height: 38, padding: '0 16px', fontSize: 12.5 }}
+            >
+              {loading ? t('Saving...') : t('Save Settings')}
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className='space-y-4 sm:space-y-6'>

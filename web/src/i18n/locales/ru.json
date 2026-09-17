@@ -6220,6 +6220,15 @@
     "pay as you go": "pay as you go",
     "Balance, usage, and topup records sync in real time — ": "Balance, usage, and topup records sync in real time — ",
     ", deducted per use; tokens are throttled automatically when the balance runs low.": ", deducted per use; tokens are throttled automatically when the balance runs low.",
-    "Supports Alipay, WeChat Pay, and card code redemption. Topups arrive instantly and can be used on all online models.": "Supports Alipay, WeChat Pay, and card code redemption. Topups arrive instantly and can be used on all online models."
+    "Supports Alipay, WeChat Pay, and card code redemption. Topups arrive instantly and can be used on all online models.": "Supports Alipay, WeChat Pay, and card code redemption. Topups arrive instantly and can be used on all online models.",
+    "Group {{name}}": "分组 {{name}}",
+    "Email bound": "已绑定邮箱",
+    "Email not bound": "邮箱未绑定",
+    "Cannot be changed": "不可修改",
+    "Bind now": "去绑定",
+    "Bound to {{email}}, can be used for login and account recovery": "已绑定 {{email}}，可用于登录与找回密码",
+    "Manage your account identity, security settings, and notification preferences — ": "管理账户身份、安全设置与通知偏好 —— ",
+    "sensitive actions require security verification": "敏感操作需通过安全验证",
+    ", changes take effect immediately.": "，更改即时生效。"
   }
 }

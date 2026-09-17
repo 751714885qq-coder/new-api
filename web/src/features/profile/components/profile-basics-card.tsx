@@ -16,19 +16,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { UserRound } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import dayjs from 'dayjs'
+import { Lock, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { DS_PANEL_STYLE } from '@/components/deep-space/ds-kit'
 import { StatusBadge } from '@/components/status-badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TitledCard } from '@/components/ui/titled-card'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { getUserAvatarFallback, getUserAvatarStyle } from '@/lib/avatar'
+import { getRoleLabel } from '@/lib/roles'
 
-import { getDisplayName } from '../lib'
+import { getDisplayName, maskEmail } from '../lib'
 import type { UserProfile } from '../types'
 
 // ============================================================================
@@ -49,6 +54,7 @@ export function ProfileBasicsCard({
   onUpdateProfile,
 }: ProfileBasicsCardProps) {
   const { t } = useTranslation()
+  const deepSpaceDark = useDeepSpaceDark()
   // null = untouched, fall back to the profile value while typing.
   const [editedName, setEditedName] = useState<string | null>(null)
 
@@ -82,6 +88,184 @@ export function ProfileBasicsCard({
   const currentName = getDisplayName(profile)
   const displayName = editedName ?? currentName
   const dirty = editedName !== null && editedName !== currentName
+
+  if (deepSpaceDark) {
+    // Render 12-渲染稿-v6-个人资料.html lines 377-413 verbatim: 基本信息
+    // card head (icon / title / sub) and body (identity row, display-name
+    // field, locked username field, email-binding and registered-time rows).
+    const finStyle = {
+      height: 38,
+      borderRadius: 9,
+      border: '1px solid var(--ds-line)',
+      background: 'rgba(255,255,255,0.03)',
+      color: 'var(--ds-t1)',
+      fontSize: 13,
+    } as const
+    const fldLabel = (text: string) => (
+      <div
+        className='mb-[7px] flex items-center gap-1.5'
+        style={{
+          fontSize: 11,
+          color: 'var(--ds-t3)',
+          fontWeight: 600,
+          letterSpacing: '0.05em',
+        }}
+      >
+        {text}
+      </div>
+    )
+    return (
+      <div
+        className='flex flex-col'
+        style={{ ...DS_PANEL_STYLE, padding: 0 }}
+      >
+        <div
+          className='flex items-center gap-3 border-b px-5 py-3'
+          style={{ borderColor: 'var(--ds-line)' }}
+        >
+          <div
+            className='flex flex-none items-center justify-center'
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: 9,
+              border: '1px solid var(--ds-line)',
+              background: 'rgba(255,255,255,0.03)',
+              color: '#7dd3fc',
+            }}
+          >
+            <UserRound className='h-4 w-4' />
+          </div>
+          <div>
+            <div style={{ fontSize: 14.5, fontWeight: 600 }}>
+              {t('Basic Information')}
+            </div>
+            <div
+              style={{ fontSize: 11.5, color: 'var(--ds-t3)', marginTop: 2 }}
+            >
+              {t('Manage your account identity')}
+            </div>
+          </div>
+        </div>
+        <div className='px-5 pb-4 pt-3.5'>
+        <div className='flex items-center gap-4 border-b pb-3' style={{ borderColor: 'var(--ds-line)' }}>
+          <Avatar className='h-[58px] w-[58px] rounded-full'>
+            <AvatarFallback
+              className='rounded-full text-[22px] font-semibold'
+              style={avatarFallbackStyle}
+            >
+              {avatarFallback}
+            </AvatarFallback>
+          </Avatar>
+          <div className='min-w-0'>
+            <div style={{ fontSize: 17, fontWeight: 650 }}>
+              {currentName}
+            </div>
+            <div
+              className='mt-1 flex items-center gap-2.5'
+              style={{ fontSize: 12.5, color: 'var(--ds-t3)' }}
+            >
+              <span>@{profile.username}</span>
+              <span>·</span>
+              <span>{getRoleLabel(profile.role)}</span>
+            </div>
+          </div>
+        </div>
+        <div className='mt-2.5'>
+          {fldLabel(t('Display name'))}
+          <div className='flex items-center gap-2.5'>
+            <Input
+              value={displayName}
+              onChange={(e) => setEditedName(e.target.value)}
+              placeholder={t('Display name')}
+              className='min-w-0 flex-1'
+              style={finStyle}
+            />
+            <Button
+              onClick={() => onUpdateProfile({ display_name: displayName })}
+              disabled={updating || !dirty}
+              className='ds-btn-primary flex-none'
+              style={{ height: 38, padding: '0 16px', fontSize: 12.5 }}
+            >
+              {t('Save')}
+            </Button>
+          </div>
+        </div>
+        <div className='mt-2.5'>
+          {fldLabel(`${t('Username')} · ${t('Cannot be changed')}`)}
+          <div
+            className='flex items-center gap-2'
+            style={{
+              ...finStyle,
+              color: 'var(--ds-t2)',
+              padding: '0 12px',
+            }}
+          >
+            <span className='min-w-0 flex-1 truncate'>@{profile.username}</span>
+            <Lock className='h-3 w-3 flex-none' style={{ color: 'var(--ds-t3)' }} />
+          </div>
+        </div>
+        <div
+          className='mt-2.5 flex items-center justify-between'
+        >
+          <div
+            className='flex items-center gap-2'
+            style={{ fontSize: 12.5, color: 'var(--ds-t3)' }}
+          >
+            {t('Email Binding')}
+          </div>
+          <div className='flex items-center gap-2' style={{ fontSize: 12.5 }}>
+            {profile.email ? (
+              <>
+                <span style={{ color: 'var(--ds-t1)' }}>
+                  {maskEmail(profile.email)}
+                </span>
+                <Button
+                  variant='ghost'
+                  render={<Link to='/security' />}
+                  className='h-auto p-0 text-[11.5px] font-normal'
+                  style={{ color: '#7dd3fc' }}
+                >
+                  {t('Change')} →
+                </Button>
+              </>
+            ) : (
+              <>
+                <span style={{ color: 'var(--ds-amber)', fontSize: 11.5 }}>
+                  {t('Not bound')}
+                </span>
+                <Button
+                  variant='ghost'
+                  render={<Link to='/security' />}
+                  className='h-auto p-0 text-[11.5px] font-normal'
+                  style={{ color: '#7dd3fc' }}
+                >
+                  {t('Bind now')} →
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+        <div className='mt-2.5 flex items-center justify-between'>
+          <div
+            className='flex items-center gap-2'
+            style={{ fontSize: 12.5, color: 'var(--ds-t3)' }}
+          >
+            {t('Registered on')}
+          </div>
+          <div
+            className='tabular-nums'
+            style={{ fontSize: 12.5, color: 'var(--ds-t2)' }}
+          >
+            {profile.created_time
+              ? dayjs(profile.created_time * 1000).format('YYYY-MM-DD HH:mm')
+              : '--'}
+          </div>
+        </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <TitledCard

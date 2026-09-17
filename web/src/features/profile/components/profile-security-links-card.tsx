@@ -26,10 +26,13 @@ import {
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { DS_PANEL_STYLE } from '@/components/deep-space/ds-kit'
 import { Button } from '@/components/ui/button'
 import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
 import { TitledCard } from '@/components/ui/titled-card'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 
+import { maskEmail } from '../lib'
 import type { UserProfile } from '../types'
 
 // ============================================================================
@@ -46,6 +49,7 @@ export function ProfileSecurityLinksCard({
   profile,
 }: ProfileSecurityLinksCardProps) {
   const { t } = useTranslation()
+  const deepSpaceDark = useDeepSpaceDark()
 
   const rows: {
     icon: LucideIcon
@@ -78,6 +82,93 @@ export function ProfileSecurityLinksCard({
       description: t('View and sign out of your active devices'),
     },
   ]
+
+  if (deepSpaceDark) {
+    // Render 12-渲染稿-v6-个人资料.html lines 415-457 verbatim: 安全设置
+    // card head (green shield) and four entry rows with ghost manage buttons
+    // linking to the Security & Access page.
+    return (
+      <div className='flex flex-col' style={{ ...DS_PANEL_STYLE, padding: 0 }}>
+        <div
+          className='flex items-center gap-3 border-b px-5 py-3'
+          style={{ borderColor: 'var(--ds-line)' }}
+        >
+          <div
+            className='flex flex-none items-center justify-center'
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: 9,
+              border: '1px solid var(--ds-line)',
+              background: 'rgba(255,255,255,0.03)',
+              color: '#a7f3d0',
+            }}
+          >
+            <ShieldCheck className='h-4 w-4' />
+          </div>
+          <div>
+            <div style={{ fontSize: 14.5, fontWeight: 600 }}>
+              {t('Safety Settings')}
+            </div>
+            <div style={{ fontSize: 11.5, color: 'var(--ds-t3)', marginTop: 2 }}>
+              {t('Manage security & access')}
+            </div>
+          </div>
+        </div>
+        <div className='px-5 pb-2 pt-1.5'>
+          {rows.map((row) => {
+            const Icon = row.icon
+            return (
+              <div
+                key={row.title}
+                className='flex items-center gap-3.5 py-2.5 [&:not(:last-child)]:border-b'
+                style={{ borderColor: 'var(--ds-line)' }}
+              >
+                <div
+                  className='flex flex-none items-center justify-center rounded-[9px]'
+                  style={{
+                    width: 32,
+                    height: 32,
+                    border: '1px solid var(--ds-line)',
+                    background: 'rgba(255,255,255,0.03)',
+                    color: 'var(--ds-t2)',
+                  }}
+                >
+                  <Icon className='h-3.5 w-3.5' />
+                </div>
+                <div className='min-w-0'>
+                  <div
+                    className='truncate font-[550]'
+                    style={{ fontSize: 13, color: 'var(--ds-t1)' }}
+                  >
+                    {row.title}
+                  </div>
+                  <div
+                    className='mt-[3px] truncate'
+                    style={{ fontSize: 11, color: 'var(--ds-t3)' }}
+                  >
+                    {row.icon === Mail && profile?.email
+                      ? t(
+                          'Bound to {{email}}, can be used for login and account recovery',
+                          { email: maskEmail(profile.email) }
+                        )
+                      : row.description}
+                  </div>
+                </div>
+                <Button
+                  variant='outline'
+                  render={<Link to='/security' />}
+                  className='ds-btn-ghost2 ml-auto flex-none'
+                >
+                  {t('Manage')}
+                </Button>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <TitledCard
