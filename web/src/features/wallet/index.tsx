@@ -16,10 +16,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { ExternalLink, Plus } from 'lucide-react'
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { DS_PANEL_STYLE } from '@/components/deep-space/ds-kit'
 import { SectionPageLayout } from '@/components/layout'
+import { Button } from '@/components/ui/button'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { getSelf } from '@/lib/api'
@@ -63,6 +67,7 @@ interface WalletProps {
 
 export function Wallet(props: WalletProps) {
   const { t } = useTranslation()
+  const deepSpaceDark = useDeepSpaceDark()
   const [user, setUser] = useState<UserWalletData | null>(null)
   const [userLoading, setUserLoading] = useState(true)
   const [topupAmount, setTopupAmount] = useState(0)
@@ -284,20 +289,139 @@ export function Wallet(props: WalletProps) {
     []
   )
 
+  const scrollToAddFunds = () => {
+    document
+      .getElementById('wallet-add-funds')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   return (
     <>
       <SectionPageLayout>
-        <SectionPageLayout.Title>{t('Wallet')}</SectionPageLayout.Title>
+        {!deepSpaceDark && (
+          <SectionPageLayout.Title>{t('Wallet')}</SectionPageLayout.Title>
+        )}
         <SectionPageLayout.Content>
           <div className='mx-auto flex w-full max-w-7xl flex-col gap-4 sm:gap-5'>
-            <WalletStatsCard user={user} loading={userLoading} />
+            {deepSpaceDark && (
+              // Render 10-渲染稿-v6-钱包.html lines 294-302 verbatim: hero row
+              // (title + sub + actions); both buttons anchor to the recharge
+              // form, which stays below as the functional zone.
+              <div className='flex flex-wrap items-start justify-between gap-4'>
+                <div className='min-w-0'>
+                  <div
+                    style={{
+                      fontSize: 29,
+                      fontWeight: 650,
+                      letterSpacing: '-0.02em',
+                      color: 'var(--ds-t1)',
+                    }}
+                  >
+                    {t('Wallet')}
+                  </div>
+                  <div
+                    style={{
+                      marginTop: 8,
+                      fontSize: 13.5,
+                      lineHeight: 1.65,
+                      color: 'var(--ds-t2)',
+                      maxWidth: 660,
+                    }}
+                  >
+                    {t(
+                      'Balance, usage, and topup records sync in real time — '
+                    )}
+                    <span style={{ color: 'var(--ds-t1)' }}>
+                      {t('pay as you go')}
+                    </span>
+                    {t(
+                      ', deducted per use; tokens are throttled automatically when the balance runs low.'
+                    )}
+                  </div>
+                </div>
+                <div className='flex shrink-0 gap-2.5'>
+                  <Button className='ds-btn-primary' onClick={scrollToAddFunds}>
+                    <Plus data-icon='inline-start' />
+                    {t('Add Funds')}
+                  </Button>
+                  <Button
+                    variant='outline'
+                    className='ds-btn-ghost'
+                    onClick={scrollToAddFunds}
+                  >
+                    <ExternalLink data-icon='inline-start' />
+                    {t('Redeem Card Code')}
+                  </Button>
+                </div>
+              </div>
+            )}
 
-            <div className='grid gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] xl:items-start'>
+            <div className={deepSpaceDark ? 'mt-3' : undefined}>
+              <WalletStatsCard user={user} loading={userLoading} />
+            </div>
+
+            <div
+              className={
+                deepSpaceDark
+                  ? 'grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px] xl:items-stretch'
+                  : 'grid gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] xl:items-start'
+              }
+            >
               <WalletConsumptionTrendCard />
               <WalletBillingPreviewCard
                 onViewAll={() => setBillingDialogOpen(true)}
               />
             </div>
+
+            {deepSpaceDark && (
+              // Render lines 433-450 verbatim: bottom action cards; the
+              // referral card keeps its live transfer functionality.
+              <div className='grid gap-4 xl:grid-cols-2'>
+                <div
+                  className='flex items-center'
+                  style={{ ...DS_PANEL_STYLE, padding: '20px 22px' }}
+                >
+                  <div className='min-w-0 flex-1'>
+                    <div
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 600,
+                        color: 'var(--ds-t1)',
+                      }}
+                    >
+                      {t('Add Funds')}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 12,
+                        color: 'var(--ds-t2)',
+                        marginTop: 6,
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      {t(
+                        'Supports Alipay, WeChat Pay, and card code redemption. Topups arrive instantly and can be used on all online models.'
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    className='ds-btn-primary shrink-0'
+                    onClick={scrollToAddFunds}
+                  >
+                    {t('Top Up Now')}
+                  </Button>
+                </div>
+                <AffiliateRewardsCard
+                  user={user}
+                  affiliateLink={affiliateLink}
+                  onTransfer={() => setTransferDialogOpen(true)}
+                  complianceConfirmed={
+                    topupInfo?.payment_compliance_confirmed !== false
+                  }
+                  loading={affiliateLoading}
+                />
+              </div>
+            )}
 
             <div
               className={
@@ -348,15 +472,17 @@ export function Wallet(props: WalletProps) {
               />
             </div>
 
-            <AffiliateRewardsCard
-              user={user}
-              affiliateLink={affiliateLink}
-              onTransfer={() => setTransferDialogOpen(true)}
-              complianceConfirmed={
-                topupInfo?.payment_compliance_confirmed !== false
-              }
-              loading={affiliateLoading}
-            />
+            {!deepSpaceDark && (
+              <AffiliateRewardsCard
+                user={user}
+                affiliateLink={affiliateLink}
+                onTransfer={() => setTransferDialogOpen(true)}
+                complianceConfirmed={
+                  topupInfo?.payment_compliance_confirmed !== false
+                }
+                loading={affiliateLoading}
+              />
+            )}
           </div>
         </SectionPageLayout.Content>
       </SectionPageLayout>

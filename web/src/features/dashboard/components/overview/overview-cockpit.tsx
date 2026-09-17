@@ -18,11 +18,21 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { useQuery } from '@tanstack/react-query'
 import { Calendar as CalendarIcon } from 'lucide-react'
-import { useMemo, useState, type CSSProperties, type ReactNode } from 'react'
+import { useMemo, useState, type CSSProperties } from 'react'
 import { enUS, fr, ja, ru, vi, zhCN } from 'react-day-picker/locale'
 import { useTranslation } from 'react-i18next'
 
 import { Calendar } from '@/components/ui/calendar'
+import {
+  DS_PANEL_STYLE,
+  DsDeltaLine,
+  DsKpiCard,
+  dsUnitSpan,
+  percentDelta,
+  smoothPath,
+  sumQuotaBetween,
+  toStartOfLocalDay,
+} from '@/components/deep-space/ds-kit'
 import {
   Popover,
   PopoverContent,
@@ -73,35 +83,6 @@ const DONUT_SEGMENT_GLOWS = [
 // Helpers
 // ---------------------------------------------------------------------------
 
-function toStartOfLocalDay(offsetDays = 0): number {
-  const day = new Date()
-  day.setHours(0, 0, 0, 0)
-  day.setDate(day.getDate() + offsetDays)
-  return Math.floor(day.getTime() / 1000)
-}
-
-function percentDelta(current: number, previous: number): number | null {
-  if (previous <= 0) return null
-  return ((current - previous) / previous) * 100
-}
-
-function sumBetween(
-  data: QuotaDataItem[],
-  startSec: number,
-  endSec: number
-): { quota: number; count: number } {
-  let quota = 0
-  let count = 0
-  for (const item of data) {
-    const ts = Number(item.created_at) || 0
-    if (ts >= startSec && ts < endSec) {
-      quota += Number(item.quota) || 0
-      count += Number(item.count) || 0
-    }
-  }
-  return { quota, count }
-}
-
 function bucketSeries(
   data: QuotaDataItem[],
   startSec: number,
@@ -121,32 +102,6 @@ function bucketSeries(
     buckets[index] += Number(item[field]) || 0
   }
   return buckets
-}
-
-function formatPercent(delta: number): string {
-  return `${Math.abs(delta).toFixed(1)}%`
-}
-
-/** Catmull-Rom smoothing, matching the render's soft bezier curves. The
- * maxY clamp keeps the curve from overshooting below the axis baseline. */
-function smoothPath(
-  points: readonly (readonly [number, number])[],
-  maxY?: number
-): string {
-  if (points.length === 0) return ''
-  let d = `M${points[0][0].toFixed(1)},${points[0][1].toFixed(1)}`
-  for (let i = 1; i < points.length; i++) {
-    const p0 = points[Math.max(0, i - 2)]
-    const p1 = points[i - 1]
-    const p2 = points[i]
-    const p3 = points[Math.min(points.length - 1, i + 1)]
-    const c1x = p1[0] + (p2[0] - p0[0]) / 6
-    const c1y = Math.min(p1[1] + (p2[1] - p0[1]) / 6, maxY ?? Infinity)
-    const c2x = p2[0] - (p3[0] - p1[0]) / 6
-    const c2y = Math.min(p2[1] - (p3[1] - p1[1]) / 6, maxY ?? Infinity)
-    d += ` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`
-  }
-  return d
 }
 
 function formatHour(sec: number): string {
@@ -236,36 +191,6 @@ function usePerfSummary(): PerfSummary {
 }
 
 // ---------------------------------------------------------------------------
-// Delta indicator (render's .delta classes: green up / white down / amber warn)
-// ---------------------------------------------------------------------------
-
-/** Delta tone: green when favorable, amber for cost warnings, dim otherwise. */
-function deltaColor(good: boolean, badTone: 'warning' | 'neutral'): string {
-  if (good) return 'var(--ds-green)'
-  return badTone === 'warning' ? 'var(--ds-amber)' : 'var(--ds-delta-bad)'
-}
-
-function DeltaLine(props: {
-  delta: number | null
-  upIsBad: boolean
-  badTone: 'warning' | 'neutral'
-}) {
-  if (props.delta === null) {
-    return <span style={{ color: 'var(--ds-t3)' }}>--</span>
-  }
-  if (props.delta === 0) {
-    return <span style={{ color: 'var(--ds-t3)' }}>0.0%</span>
-  }
-  const good = props.upIsBad ? props.delta < 0 : props.delta > 0
-  const color = deltaColor(good, props.badTone)
-  return (
-    <span style={{ color }} className='text-[11.5px] font-medium tabular-nums'>
-      {props.delta < 0 ? '▼' : '▲'} {formatPercent(props.delta)}
-    </span>
-  )
-}
-
-// ---------------------------------------------------------------------------
 // Header: greeting + tagline + service status bar (v6-01-s1 .hero)
 // ---------------------------------------------------------------------------
 
@@ -293,7 +218,7 @@ export function CockpitHeader() {
 
   const todayUsage = useMemo(
     () =>
-      sumBetween(quota48.data ?? [], toStartOfLocalDay(), range.end_timestamp)
+      sumQuotaBetween(quota48.data ?? [], toStartOfLocalDay(), range.end_timestamp)
         .quota,
     [quota48.data, range.end_timestamp]
   )
@@ -413,119 +338,8 @@ export function CockpitHeader() {
 }
 
 // ---------------------------------------------------------------------------
-// Stat cards row (v6-01-s1 .kpis, verbatim card recipe)
+// Stat cards row (v6-01-s1 .kpis, verbatim card recipe via DsKpiCard)
 // ---------------------------------------------------------------------------
-
-function CockpitCard(props: {
-  title: string
-  value: ReactNode
-  children?: ReactNode
-  spark?: number[]
-  delta?: ReactNode
-  deltaChildren?: ReactNode
-  deltaStyle?: CSSProperties
-}) {
-  return (
-    <div
-      className='relative'
-      style={{
-        border: '1px solid var(--ds-line)',
-        borderRadius: 14,
-        background: 'var(--ds-card)',
-        backdropFilter: 'blur(16px)',
-        boxShadow:
-          '0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.045)',
-        padding: '20px 22px 18px',
-      }}
-    >
-      <div
-        style={{
-          fontSize: 11.5,
-          letterSpacing: '0.08em',
-          color: 'var(--ds-t3)',
-          fontWeight: 600,
-        }}
-      >
-        {props.title}
-      </div>
-      {props.spark && props.spark.some((v) => v > 0) && (
-        <svg
-          width='72'
-          height='26'
-          viewBox='0 0 72 26'
-          fill='none'
-          className='absolute top-[20px] right-[18px]'
-          style={{ color: 'var(--ds-accent)', opacity: 0.85 }}
-          aria-hidden='true'
-        >
-          <path
-            d={sparkPath(props.spark)}
-            stroke='currentColor'
-            strokeWidth='1.6'
-            strokeLinecap='round'
-            opacity='0.9'
-          />
-        </svg>
-      )}
-      <div
-        className='tracking-[-0.01em]'
-        style={{
-          marginTop: 12,
-          fontSize: 30,
-          fontWeight: 650,
-          color: 'var(--ds-t1)',
-        }}
-      >
-        {props.value}
-      </div>
-      {props.children}
-      {props.delta !== undefined && (
-        <div
-          className='flex items-center gap-1.5'
-          style={{
-            marginTop: props.deltaStyle?.marginTop ?? 10,
-            fontSize: 11.5,
-            color: 'var(--ds-t3)',
-          }}
-        >
-          {props.delta}
-          {props.deltaChildren}
-        </div>
-      )}
-    </div>
-  )
-}
-
-function sparkPath(values: number[]): string {
-  const n = values.length
-  if (n < 2) return ''
-  const max = Math.max(...values, 1)
-  const points = values.map(
-    (v, i) => [1 + (i * 70) / (n - 1), 24 - (v / max) * 20] as const
-  )
-  return smoothPath(points)
-}
-
-function unitSpan(text: string): ReactNode {
-  const match = text.match(/^[^0-9]*/)
-  const prefix = match ? match[0] : ''
-  if (!prefix) return text
-  return (
-    <>
-      <span
-        style={{
-          fontSize: 16,
-          color: 'var(--ds-t2)',
-          fontWeight: 500,
-          marginRight: 2,
-        }}
-      >
-        {prefix}
-      </span>
-      {text.slice(prefix.length)}
-    </>
-  )
-}
 
 export function CockpitStatCards() {
   const { t } = useTranslation()
@@ -548,13 +362,13 @@ export function CockpitStatCards() {
     const startOfYesterday = toStartOfLocalDay(-1)
     const elapsedToday = Math.max(1, range.end_timestamp - startOfToday)
 
-    const today = sumBetween(data48, startOfToday, range.end_timestamp)
-    const yesterday = sumBetween(
+    const today = sumQuotaBetween(data48, startOfToday, range.end_timestamp)
+    const yesterday = sumQuotaBetween(
       data48,
       startOfYesterday,
       startOfYesterday + elapsedToday
     )
-    const usage24h = sumBetween(
+    const usage24h = sumQuotaBetween(
       data48,
       range.end_timestamp - 24 * 3600,
       range.end_timestamp
@@ -603,11 +417,11 @@ export function CockpitStatCards() {
 
   return (
     <div className='mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4'>
-      <CockpitCard
+      <DsKpiCard
         title={t('Current balance')}
-        value={unitSpan(formatQuota(remainQuota))}
+        value={dsUnitSpan(formatQuota(remainQuota))}
         delta={
-          <DeltaLine
+          <DsDeltaLine
             delta={stats.balanceDelta}
             upIsBad={false}
             badTone='neutral'
@@ -616,19 +430,19 @@ export function CockpitStatCards() {
         deltaChildren={vsYesterday}
       />
 
-      <CockpitCard
+      <DsKpiCard
         title={t("Today's usage")}
-        value={unitSpan(formatQuota(stats.todayUsage))}
+        value={dsUnitSpan(formatQuota(stats.todayUsage))}
         spark={stats.todaySpark}
-        delta={<DeltaLine delta={stats.todayDelta} upIsBad badTone='warning' />}
+        delta={<DsDeltaLine delta={stats.todayDelta} upIsBad badTone='warning' />}
         deltaChildren={vsYesterday}
       />
 
-      <CockpitCard
+      <DsKpiCard
         title={t("Today's requests")}
         value={formatNumber(stats.todayRequests)}
         delta={
-          <DeltaLine
+          <DsDeltaLine
             delta={stats.requestDelta}
             upIsBad={false}
             badTone='neutral'
@@ -637,7 +451,7 @@ export function CockpitStatCards() {
         deltaChildren={vsYesterday}
       />
 
-      <CockpitCard
+      <DsKpiCard
         title={t('Active tokens')}
         value={
           <>
@@ -691,7 +505,7 @@ export function CockpitStatCards() {
             count: tokenStats.unusedToday,
           })}
         </div>
-      </CockpitCard>
+      </DsKpiCard>
     </div>
   )
 }
@@ -1195,15 +1009,7 @@ export function CockpitInsights() {
     return { entries, total }
   }, [todayModels.data, t])
 
-  const panelStyle: CSSProperties = {
-    border: '1px solid var(--ds-line)',
-    borderRadius: 14,
-    background: 'var(--ds-card)',
-    backdropFilter: 'blur(16px)',
-    boxShadow:
-      '0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.045)',
-    padding: '22px 24px 18px',
-  }
+  const panelStyle = DS_PANEL_STYLE
 
   return (
     <div className='grid grid-cols-1 gap-4 xl:h-[clamp(480px,calc(100vh-470px),640px)] xl:grid-cols-[minmax(0,1fr)_380px]'>

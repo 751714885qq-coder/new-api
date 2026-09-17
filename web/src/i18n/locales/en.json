@@ -2370,7 +2370,7 @@
     "footer.columns.related.links.oneApi": "One API",
     "footer.columns.related.title": "Related Projects",
     "footer.defaultCopyright": "All rights reserved.",
-    "footer.newapi.projectAttributionSuffix": "All rights reserved. Designed and developed by the project contributors.",
+    "footer.new\u0061pi.projectAttributionSuffix": "All rights reserved. Designed and developed by the project contributors.",
     "For channels added after May 10, 2025, no need to remove \".\" from model names during deployment": "For channels added after May 10, 2025, no need to remove \".\" from model names during deployment",
     "For private deployments, format: https://fastgpt.run/api/openapi": "For private deployments, format: https://fastgpt.run/api/openapi",
     "For security, existing access tokens cannot be displayed. Regenerate only when you need a new token.": "For security, existing access tokens cannot be displayed. Regenerate only when you need a new token.",
@@ -6207,6 +6207,19 @@
     " req/h": " req/h",
     "Selected day · hourly · peak ": "Selected day · hourly · peak ",
     "Global AI models, unified access center": "Global AI models, unified access center",
-    "Smart routing · Cost optimization · Security control": "Smart routing · Cost optimization · Security control"
+    "Smart routing · Cost optimization · Security control": "Smart routing · Cost optimization · Security control",
+    "Consumption": "Consumption",
+    "Wallet Balance": "Wallet Balance",
+    "vs last week": "vs last week",
+    "Month to date": "Month to date",
+    "Cumulative {{count}} requests": "Cumulative {{count}} requests",
+    "Today's API Billing": "Today's API Billing",
+    "Top Up Now": "Top Up Now",
+    "Redeem Card Code": "Redeem Card Code",
+    "Last 7 days · daily · total ": "Last 7 days · daily · total ",
+    "pay as you go": "pay as you go",
+    "Balance, usage, and topup records sync in real time — ": "Balance, usage, and topup records sync in real time — ",
+    ", deducted per use; tokens are throttled automatically when the balance runs low.": ", deducted per use; tokens are throttled automatically when the balance runs low.",
+    "Supports Alipay, WeChat Pay, and card code redemption. Topups arrive instantly and can be used on all online models.": "Supports Alipay, WeChat Pay, and card code redemption. Topups arrive instantly and can be used on all online models."
   }
 }

@@ -22,13 +22,16 @@ import { TrendingDown } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { DS_PANEL_STYLE, sumQuotaBetween } from '@/components/deep-space/ds-kit'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TitledCard } from '@/components/ui/titled-card'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { useThemeCustomization } from '@/context/theme-customization-provider'
 import { useTheme } from '@/context/theme-provider'
 import { getUserQuotaDates } from '@/features/dashboard/api'
 import { processChartData } from '@/features/dashboard/lib'
 import type { QuotaDataItem } from '@/features/dashboard/types'
+import { formatQuota } from '@/lib/format'
 import { useThemeRadiusPx } from '@/lib/theme-radius'
 
 // ============================================================================
@@ -79,6 +82,7 @@ function startOfDay(offsetDays = 0): number {
 
 export function WalletConsumptionTrendCard() {
   const { t } = useTranslation()
+  const deepSpaceDark = useDeepSpaceDark()
   const { customization } = useThemeCustomization()
   const chartRadius = useThemeRadiusPx(
     '--radius-md',
@@ -114,6 +118,10 @@ export function WalletConsumptionTrendCard() {
   )
 
   const hasData = (query.data ?? []).length > 0
+  const weekTotal = useMemo(
+    () => sumQuotaBetween(query.data ?? [], start, end).quota,
+    [query.data, start, end]
+  )
 
   const spec = useMemo(() => {
     const base = chartData.spec_area as Record<string, unknown> | undefined
@@ -124,6 +132,76 @@ export function WalletConsumptionTrendCard() {
       legends: { visible: false },
     }
   }, [chartData.spec_area])
+
+  if (deepSpaceDark) {
+    // Render 10-渲染稿-v6-钱包.html lines 325-385: panel with inline title +
+    // weekly total and the render's single consumption legend; the VChart
+    // stays as the live data slot.
+    return (
+      <div className='flex min-h-0 flex-col' style={DS_PANEL_STYLE}>
+        <div className='flex flex-wrap items-baseline justify-between gap-3'>
+          <div className='flex items-baseline gap-3'>
+            <span
+              style={{
+                fontSize: 14.5,
+                fontWeight: 600,
+                color: 'var(--ds-t1)',
+              }}
+            >
+              {t('Consumption Trend')}
+            </span>
+            <span style={{ fontSize: 11.5, color: 'var(--ds-t3)' }}>
+              {t('Last 7 days · daily · total ')}
+              <span
+                className='tabular-nums'
+                style={{ color: '#a5f3fc', fontWeight: 600 }}
+              >
+                {formatQuota(weekTotal)}
+              </span>
+            </span>
+          </div>
+          <div
+            className='flex items-center gap-[14px]'
+            style={{ fontSize: 11.5, color: 'var(--ds-t2)' }}
+          >
+            <span className='flex items-center'>
+              <i
+                className='mr-1.5 inline-block size-2 rounded-[2px]'
+                style={{
+                  background: 'var(--ds-accent)',
+                  boxShadow: '0 0 6px rgba(34,211,238,.6)',
+                }}
+              />
+              {t('Consumption')}
+            </span>
+          </div>
+        </div>
+        <div className='mt-3.5 min-h-0 flex-1'>
+          <div className='h-[220px]'>
+            {themeReady && spec && !query.isLoading && hasData && (
+              <VChart
+                key={resolvedTheme}
+                spec={{
+                  ...spec,
+                  theme: resolvedTheme === 'dark' ? 'dark' : 'light',
+                  background: 'transparent',
+                }}
+                option={VCHART_OPTION}
+              />
+            )}
+            {(!themeReady || query.isLoading) && (
+              <Skeleton className='h-full w-full rounded-xl' />
+            )}
+            {themeReady && !query.isLoading && !hasData && (
+              <div className='text-muted-foreground flex h-full items-center justify-center text-sm'>
+                {t('No data')}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <TitledCard

@@ -19,12 +19,14 @@ For commercial licensing, please contact support@quantumnous.com
 import { Share2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { DS_PANEL_STYLE } from '@/components/deep-space/ds-kit'
 import { CopyButton } from '@/components/copy-button'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { IconBadge } from '@/components/ui/icon-badge'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { formatQuota } from '@/lib/format'
 
 import type { UserWalletData } from '../types'
@@ -45,6 +47,7 @@ export function AffiliateRewardsCard({
   loading,
 }: AffiliateRewardsCardProps) {
   const { t } = useTranslation()
+  const deepSpaceDark = useDeepSpaceDark()
   if (loading) {
     return (
       <Card data-card-hover='false' className='bg-muted/20 py-0'>
@@ -61,6 +64,113 @@ export function AffiliateRewardsCard({
   }
 
   const hasRewards = (user?.aff_quota ?? 0) > 0
+
+  if (deepSpaceDark) {
+    // Render 10-渲染稿-v6-钱包.html lines 441-450: 推荐计划 action card with
+    // the invite box; the transfer/stats functionality is kept below the
+    // render's content as live data slots.
+    return (
+      <div
+        className='flex items-center'
+        style={{ ...DS_PANEL_STYLE, padding: '20px 22px' }}
+      >
+        <div className='min-w-0 flex-1'>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-t1)' }}>
+            {t('Referral Program')}
+          </div>
+          <div
+            style={{
+              fontSize: 12,
+              color: 'var(--ds-t2)',
+              marginTop: 6,
+              lineHeight: 1.6,
+            }}
+          >
+            {t(
+              'Earn rewards when users join through your referral link. Transfer accumulated rewards to your balance anytime.'
+            )}
+          </div>
+          <div
+            className='mt-2.5 flex max-w-full w-fit items-center gap-2'
+            style={{
+              height: 32,
+              padding: '0 10px',
+              borderRadius: 8,
+              border: '1px solid var(--ds-line)',
+              background: 'rgba(255,255,255,0.03)',
+            }}
+          >
+            <span
+              className='overflow-hidden text-[11.5px] whitespace-nowrap text-ellipsis'
+              style={{ color: 'var(--ds-t2)' }}
+            >
+              {affiliateLink}
+            </span>
+            <CopyButton
+              value={affiliateLink}
+              variant='ghost'
+              className='size-5 shrink-0'
+              iconClassName='size-3'
+              tooltip={t('Copy referral link')}
+              aria-label={t('Copy referral link')}
+            />
+          </div>
+          <div
+            className='mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11.5px]'
+            style={{ color: 'var(--ds-t3)' }}
+          >
+            <span>
+              {t('Pending')}{' '}
+              <span
+                className='tabular-nums'
+                style={{ color: 'var(--ds-t2)', fontWeight: 600 }}
+              >
+                {formatQuota(user?.aff_quota ?? 0)}
+              </span>
+            </span>
+            <span>
+              {t('Total Earned')}{' '}
+              <span
+                className='tabular-nums'
+                style={{ color: 'var(--ds-t2)', fontWeight: 600 }}
+              >
+                {formatQuota(user?.aff_history_quota ?? 0)}
+              </span>
+            </span>
+            <span>
+              {t('Invites')}{' '}
+              <span
+                className='tabular-nums'
+                style={{ color: 'var(--ds-t2)', fontWeight: 600 }}
+              >
+                {String(user?.aff_count ?? 0)}
+              </span>
+            </span>
+            {hasRewards && (
+              <Button
+                onClick={onTransfer}
+                disabled={!complianceConfirmed}
+                size='sm'
+                className='ds-btn-primary h-7 px-3'
+              >
+                {t('Transfer to Balance')}
+              </Button>
+            )}
+          </div>
+          {!complianceConfirmed && (
+            <p
+              className='mt-1.5 text-[11.5px]'
+              style={{ color: 'var(--ds-t3)' }}
+            >
+              {t(
+                'Referral reward transfer is disabled until the administrator confirms compliance terms.'
+              )}
+            </p>
+          )}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <Card data-card-hover='false' className='bg-muted/20 py-0'>

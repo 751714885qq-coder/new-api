@@ -2250,3 +2250,44 @@ body[data-theme-preset='deep-space'] {
     animation: none;
   }
 }
+
+/* Wallet screen (render 10-渲染稿-v6-钱包.html): the hero/action buttons.
+   Render .btn-primary (lines 161-166) and .btn-ghost (167-171) verbatim;
+   these classes only exist inside the deep-space wallet branch. */
+.ds-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 18px;
+  border-radius: 9px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #06121f;
+  background: linear-gradient(135deg, #67e8f9, #38bdf8 45%, #818cf8);
+  box-shadow:
+    0 4px 18px -4px rgba(56, 189, 248, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.ds-btn-primary svg {
+  width: 14px;
+  height: 14px;
+}
+.ds-btn-ghost {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--ds-t2);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: none;
+}
+.ds-btn-ghost svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.8;
+}

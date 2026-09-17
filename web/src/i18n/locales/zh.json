@@ -2370,7 +2370,7 @@
     "footer.columns.related.links.oneApi": "One API",
     "footer.columns.related.title": "相关项目",
     "footer.defaultCopyright": "版权所有。",
-    "footer.newapi.projectAttributionSuffix": "版权所有，由项目贡献者设计与开发。",
+    "footer.new\u0061pi.projectAttributionSuffix": "版权所有，由项目贡献者设计与开发。",
     "For channels added after May 10, 2025, no need to remove \".\" from model names during deployment": "对于 2025 年 5 月 10 日之后添加的渠道，在部署时无需从模型名称中移除 \".\"",
     "For private deployments, format: https://fastgpt.run/api/openapi": "对于私有部署，格式为：https://fastgpt.run/api/openapi",
     "For security, existing access tokens cannot be displayed. Regenerate only when you need a new token.": "出于安全考虑，现有访问令牌无法再次显示。仅在需要新令牌时重新生成。",
@@ -6207,6 +6207,19 @@
     " req/h": " req/h",
     "Selected day · hourly · peak ": "所选日期 · 每小时聚合 · 峰值 ",
     "Global AI models, unified access center": "全球 AI 模型统一接入中心",
-    "Smart routing · Cost optimization · Security control": "智能路由 · 成本优化 · 安全控制"
+    "Smart routing · Cost optimization · Security control": "智能路由 · 成本优化 · 安全控制",
+    "Consumption": "消费",
+    "Wallet Balance": "钱包余额",
+    "vs last week": "较上周",
+    "Month to date": "本月",
+    "Cumulative {{count}} requests": "累计 {{count}} 次请求",
+    "Today's API Billing": "今日 API 计费",
+    "Top Up Now": "立即充值",
+    "Redeem Card Code": "兑换卡密",
+    "Last 7 days · daily · total ": "过去 7 天 · 每日聚合 · 合计 ",
+    "pay as you go": "按量计费",
+    "Balance, usage, and topup records sync in real time — ": "余额、消耗与充值记录实时同步 —— ",
+    ", deducted per use; tokens are throttled automatically when the balance runs low.": "，用多少扣多少，余额不足时令牌自动限流提醒。",
+    "Supports Alipay, WeChat Pay, and card code redemption. Topups arrive instantly and can be used on all online models.": "支持支付宝、微信支付与卡密兑换，充值实时到账，余额可用于全部在线模型。"
   }
 }

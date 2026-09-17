@@ -16,13 +16,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { Activity, BarChart3, WalletCards } from 'lucide-react'
+import { BarChart3, Activity, WalletCards } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import {
+  DsDeltaLine,
+  DsKpiCard,
+  dsUnitSpan,
+} from '@/components/deep-space/ds-kit'
 import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { formatQuota } from '@/lib/format'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { formatNumber, formatQuota } from '@/lib/format'
 
+import { useWalletUsage } from '../hooks/use-wallet-usage'
 import type { UserWalletData } from '../types'
 
 interface WalletStatsCardProps {
@@ -32,6 +39,9 @@ interface WalletStatsCardProps {
 
 export function WalletStatsCard(props: WalletStatsCardProps) {
   const { t } = useTranslation()
+  const deepSpaceDark = useDeepSpaceDark()
+  const usage = useWalletUsage()
+
   if (props.loading) {
     return (
       <div className='grid grid-cols-3 divide-x rounded-lg border'>
@@ -42,6 +52,55 @@ export function WalletStatsCard(props: WalletStatsCardProps) {
             <Skeleton className='mt-1.5 hidden h-3.5 w-24 md:block' />
           </div>
         ))}
+      </div>
+    )
+  }
+
+  if (deepSpaceDark) {
+    // Render 10-渲染稿-v6-钱包.html lines 305-322: three KPI cards with the
+    // render's label / value / delta rhythm; only the data slots are live.
+    return (
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
+        <DsKpiCard
+          title={t('Wallet Balance')}
+          value={dsUnitSpan(formatQuota(props.user?.quota ?? 0))}
+          delta={
+            <>
+              <DsDeltaLine delta={null} upIsBad={false} badTone='neutral' />
+              {t('vs last week')}
+            </>
+          }
+        />
+        <DsKpiCard
+          title={t('Total Usage')}
+          value={dsUnitSpan(formatQuota(props.user?.used_quota ?? 0))}
+          delta={null}
+          deltaChildren={
+            <>
+              {t('Month to date')}{' '}
+              <span
+                className='tabular-nums'
+                style={{ color: 'var(--ds-t2)', fontWeight: 600 }}
+              >
+                {formatQuota(usage.monthToDate)}
+              </span>{' '}
+              · {t('Cumulative {{count}} requests', {
+                count: formatNumber(props.user?.request_count ?? 0),
+              })}
+            </>
+          }
+        />
+        <DsKpiCard
+          title={t("Today's API Billing")}
+          value={dsUnitSpan(formatQuota(usage.today))}
+          spark={usage.last7}
+          delta={
+            <>
+              <DsDeltaLine delta={usage.todayDelta} upIsBad badTone='warning' />
+              {t('vs yesterday')}
+            </>
+          }
+        />
       </div>
     )
   }
