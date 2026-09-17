@@ -802,6 +802,7 @@ body:not([data-theme-preset]),
   --sidebar-ring: oklch(0.659 0.181 261.4);
   /* S-series tokens, light-mode same-family fallbacks (bespoke light pass pending) */
   --ds-line: rgba(15, 23, 42, 0.08);
+  --ds-line-strong: rgba(15, 23, 42, 0.14);
   --ds-t1: rgba(15, 23, 42, 0.92);
   --ds-t2: rgba(15, 23, 42, 0.72);
   --ds-t3: rgba(15, 23, 42, 0.5);
@@ -876,6 +877,7 @@ body:not([data-theme-preset]),
   --sidebar-ring: #22d3ee;
   /* S-series v6-01-s1 render tokens, dark values are the render's literals */
   --ds-line: rgba(255, 255, 255, 0.07);
+  --ds-line-strong: rgba(255, 255, 255, 0.12);
   --ds-t1: rgba(255, 255, 255, 0.92);
   --ds-t2: rgba(255, 255, 255, 0.72);
   --ds-t3: rgba(255, 255, 255, 0.5);
