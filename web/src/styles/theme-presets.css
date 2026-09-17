@@ -740,7 +740,9 @@ For commercial licensing, please contact support@quantumnous.com
  * page content alike are centered. Only kicks in once the viewport exceeds the
  * clamp value. */
 @media (min-width: 1280px) {
-  [data-theme-content-layout='centered'] [data-slot='sidebar-inset'] > * {
+  [data-theme-content-layout='centered']:not([data-theme-preset])
+    [data-slot='sidebar-inset']
+    > * {
     max-width: var(--max-content-width, 1280px);
     margin-inline: auto;
     width: 100%;

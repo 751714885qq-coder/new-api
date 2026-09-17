@@ -630,6 +630,9 @@ function LayoutConfig() {
 function ContentLayoutConfig() {
   const { t } = useTranslation()
   const { defaults, customization, setContentLayout } = useThemeCustomization()
+  // WO-019: deep-space is a full-width design; the centered clamp is a no-op
+  // there, so hide the dead control instead of offering it.
+  if (customization.preset === 'deep-space') return null
   return (
     <div className='max-md:hidden'>
       <SectionTitle

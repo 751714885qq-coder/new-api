@@ -50,7 +50,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
 
   return (
     <div className='relative grid h-svh max-w-none overflow-hidden'>
-      {isDeepSpace && <DeepSpaceBackdrop />}
+      {isDeepSpace && <DeepSpaceBackdrop withLandscape={false} />}
       {isDeepSpace && (
         <>
           {/* Sign-in backdrop decor (WO-019 S1): large life planet

@@ -75,7 +75,10 @@ function buildParticles(): Particle[] {
   return particles
 }
 
-function DeepSpaceBackdrop() {
+function DeepSpaceBackdrop(props: { withLandscape?: boolean }) {
+  // withLandscape=false for the auth pages: the approved login render has its
+  // own planet pair and no horizon, so the console landscape would double up.
+  const { withLandscape = true } = props
   const isDeepSpaceDark = useDeepSpaceDark()
 
   const particles = useMemo(() => buildParticles(), [])
@@ -103,8 +106,8 @@ function DeepSpaceBackdrop() {
         <rect width='100%' height='100%' filter='url(#ds-noise-filter)' />
       </svg>
       <div className='ds-milkyway' />
-      <div className='ds-planet' />
-      <div className='ds-horizon' />
+      {withLandscape && <div className='ds-planet' />}
+      {withLandscape && <div className='ds-horizon' />}
       <div className='ds-particles'>
         {particles.map((p) => (
           <i
