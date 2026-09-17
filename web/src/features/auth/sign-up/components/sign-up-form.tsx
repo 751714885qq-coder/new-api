@@ -267,7 +267,7 @@ export function SignUpForm({
           control={form.control}
           name='password'
           render={({ field }) => (
-            <FormItem>
+            <FormItem className='ds-auth-pw'>
               <FormLabel>{t('Password')}</FormLabel>
               <FormControl>
                 <PasswordInput
@@ -285,7 +285,7 @@ export function SignUpForm({
           control={form.control}
           name='confirmPassword'
           render={({ field }) => (
-            <FormItem>
+            <FormItem className='ds-auth-pw'>
               <FormLabel>{t('Confirm password')}</FormLabel>
               <FormControl>
                 <PasswordInput placeholder={t('Confirm password')} {...field} />
@@ -320,28 +320,33 @@ export function SignUpForm({
             />
 
             {/* Verification Code Field */}
-            <div className='flex items-end gap-2'>
-              <div className='flex-1'>
+            <div className='grid gap-2'>
+              <Label htmlFor='verification-code'>
+                {t('Verification code')}
+              </Label>
+              <div className='ds-auth-code'>
                 <Input
+                  id='verification-code'
                   placeholder={t('Verification code')}
                   value={verificationCode}
                   onChange={(e) => setVerificationCode(e.target.value)}
                 />
+                <Button
+                  variant='outline'
+                  type='button'
+                  className='ds-auth-send-code'
+                  disabled={
+                    isLoading ||
+                    isSendingCode ||
+                    isActive ||
+                    !emailValue ||
+                    !turnstileReady
+                  }
+                  onClick={handleSendVerificationCode}
+                >
+                  {verificationCodeAction}
+                </Button>
               </div>
-              <Button
-                variant='outline'
-                type='button'
-                disabled={
-                  isLoading ||
-                  isSendingCode ||
-                  isActive ||
-                  !emailValue ||
-                  !turnstileReady
-                }
-                onClick={handleSendVerificationCode}
-              >
-                {verificationCodeAction}
-              </Button>
             </div>
           </>
         )}
@@ -361,7 +366,7 @@ export function SignUpForm({
           status={status}
           checked={agreedToLegal}
           onCheckedChange={setAgreedToLegal}
-          className='mt-1'
+          className='ds-auth-agree'
         />
 
         {/* Submit Button */}

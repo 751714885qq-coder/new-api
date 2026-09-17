@@ -31,20 +31,14 @@ export function SignUp() {
 
   return (
     <AuthLayout>
-      <div className='w-full space-y-8'>
-        <div className='space-y-2'>
+      <div className='ds-auth-panel w-full'>
+        <div>
           <h2 className='text-center text-2xl font-semibold tracking-tight sm:text-left'>
             {t('Create an account')}
           </h2>
-          <p className='text-muted-foreground text-left text-sm sm:text-base'>
+          <p className='ds-auth-reg text-muted-foreground text-left text-sm sm:text-base'>
             {t('Already have an account?')}{' '}
-            <Link
-              to='/sign-in'
-              className='hover:text-primary font-medium underline underline-offset-4'
-            >
-              {t('Sign in')}
-            </Link>
-            .
+            <Link to='/sign-in'>{t('Sign in')}</Link>
           </p>
         </div>
 
@@ -53,7 +47,7 @@ export function SignUp() {
         <TermsFooter
           variant='sign-up'
           status={status}
-          className='text-center'
+          className='ds-auth-terms text-center'
         />
       </div>
     </AuthLayout>

@@ -370,8 +370,13 @@ export function UserAuthForm({
               control={form.control}
               name='password'
               render={({ field }) => (
-                <FormItem className='relative'>
-                  <FormLabel>{t('Password')}</FormLabel>
+                <FormItem className='ds-auth-pw'>
+                  <div className='ds-auth-fl'>
+                    <FormLabel>{t('Password')}</FormLabel>
+                    <Link to='/forgot-password' className='ds-auth-forgot'>
+                      {t('Forgot password?')}
+                    </Link>
+                  </div>
                   <FormControl>
                     <PasswordInput
                       placeholder={t('Enter password')}
@@ -379,12 +384,6 @@ export function UserAuthForm({
                     />
                   </FormControl>
                   <FormMessage />
-                  <Link
-                    to='/forgot-password'
-                    className='text-muted-foreground absolute end-0 -top-0.5 z-10 text-sm font-medium hover:opacity-75'
-                  >
-                    {t('Forgot password?')}
-                  </Link>
                 </FormItem>
               )}
             />
