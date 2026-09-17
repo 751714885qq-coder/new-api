@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 
 import { TruncatedCell } from '@/components/data-table'
 import { StatusBadge } from '@/components/status-badge'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import dayjs from '@/lib/dayjs'
 import { cn } from '@/lib/utils'
 
@@ -33,6 +34,7 @@ export function useAuditLogColumns(
   accessOnly?: boolean
 ): ColumnDef<AuditLog>[] {
   const { t } = useTranslation()
+  const deepSpaceDark = useDeepSpaceDark()
   return useMemo(() => {
     const columns: ColumnDef<AuditLog>[] = [
       {
@@ -93,7 +95,14 @@ export function useAuditLogColumns(
                     {operation.headline}
                   </TruncatedCell>
                   {operation.identifier && (
-                    <span className='shrink-0 whitespace-nowrap'>
+                    <span
+                      className={cn(
+                        'shrink-0 whitespace-nowrap',
+                        // WO-019 render 26: cyan mono identifier chip
+                        // (render .au-ident).
+                        deepSpaceDark && 'ds-au-ident'
+                      )}
+                    >
                       {operation.identifier}
                     </span>
                   )}
@@ -162,7 +171,13 @@ export function useAuditLogColumns(
         header: 'HTTP',
         size: 60,
         cell: ({ row }) => (
-          <span className='font-mono tabular-nums'>
+          <span
+            className={cn(
+              'font-mono tabular-nums',
+              // WO-019 render 26: failed rows dye the HTTP code rose.
+              deepSpaceDark && !row.original.success && 'ds-au-http-bad'
+            )}
+          >
             {row.original.status || '—'}
           </span>
         ),
@@ -191,5 +206,5 @@ export function useAuditLogColumns(
       }
     )
     return columns
-  }, [accessOnly, t])
+  }, [accessOnly, t, deepSpaceDark])
 }

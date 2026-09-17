@@ -21,9 +21,11 @@ import { isAxiosError } from 'axios'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DataTablePage, useDataTable } from '@/components/data-table'
+import { DataTablePage, DataTableRow, useDataTable } from '@/components/data-table'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth-store'
 
 import { getAuditLogs, type AuditFilters, type AuditLog } from '../api'
@@ -39,6 +41,7 @@ export function AuditLogViewer(props: {
   onAccessDenied?: () => Promise<void>
 }) {
   const { t } = useTranslation()
+  const deepSpaceDark = useDeepSpaceDark()
   const userId = useAuthStore((state) => state.auth.user?.id)
   const [filters, setFilters] = useState<AuditFilters>({ p: 1, page_size: 20 })
   const [tokenScope, setTokenScope] = useState('all')
@@ -118,6 +121,18 @@ export function AuditLogViewer(props: {
         className='h-auto min-h-0 flex-1'
         applyHeaderSize
         getColumnClassName={() => 'py-2'}
+        renderRow={(row) => (
+          // WO-019 render 26: failed rows get the rose tint (render tr.err).
+          <DataTableRow
+            key={row.id}
+            row={row}
+            className={cn(
+              'transition-colors',
+              deepSpaceDark && !row.original.success && 'bg-rose-500/[0.05]'
+            )}
+            getColumnClassName={() => 'py-2'}
+          />
+        )}
         tableClassName='[&_[data-slot=table]]:text-[13px] [&_[data-slot=table]_td]:text-[13px] [&_[data-slot=table]_td_*]:text-[13px] [&_[data-slot=table]_th]:text-[13px] [&_[data-slot=table]_th_*]:text-[13px]'
         toolbar={
           <div className='shrink-0 space-y-2'>

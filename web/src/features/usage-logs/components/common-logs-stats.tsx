@@ -21,6 +21,7 @@ import { getRouteApi } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 import { Skeleton } from '@/components/ui/skeleton'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { formatLogQuota } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
@@ -35,10 +36,25 @@ function StatBadge(props: {
   label: string
   value: string | number
   accent: string
+  tone: 'sky' | 'rose' | 'slate'
 }) {
+  // WO-019 render 25: stat chip with a full-height accent bar on the left
+  // (render .stat-chip / .sc-sky / .sc-rose / .sc-slate).
+  const deepSpaceDark = useDeepSpaceDark()
   return (
-    <span className='border-border/60 bg-muted/25 inline-flex h-7 items-center gap-2 rounded-md border px-2.5 text-xs shadow-xs'>
-      <span className={cn('h-3.5 w-0.5 rounded-full', props.accent)} />
+    <span
+      className={cn(
+        'border-border/60 bg-muted/25 inline-flex h-7 items-center gap-2 rounded-md border px-2.5 text-xs shadow-xs',
+        deepSpaceDark && 'ds-stat-chip',
+        deepSpaceDark && `ds-stat-chip-${props.tone}`
+      )}
+    >
+      <span
+        className={cn(
+          'h-3.5 w-0.5 rounded-full',
+          !deepSpaceDark && props.accent
+        )}
+      />
       <span className='text-muted-foreground'>{props.label}</span>
       <span className='text-foreground/85 font-mono font-semibold tabular-nums'>
         {props.value}
@@ -91,16 +107,19 @@ export function CommonLogsStats() {
         label={t('Usage')}
         value={sensitiveVisible ? formatLogQuota(stats?.quota || 0) : '••••'}
         accent='bg-sky-500/70'
+        tone='sky'
       />
       <StatBadge
         label={t('RPM')}
         value={stats?.rpm || 0}
         accent='bg-rose-500/65'
+        tone='rose'
       />
       <StatBadge
         label={t('TPM')}
         value={stats?.tpm || 0}
         accent='bg-slate-400/70'
+        tone='slate'
       />
     </div>
   )

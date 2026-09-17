@@ -45,12 +45,13 @@ import {
   getTaskUsagePriceUnitLabelKey,
 } from '@/features/pricing/lib/dynamic-price'
 import type { BillingUsageSchema } from '@/features/pricing/types'
+import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { getUserAvatarFallback, getUserAvatarStyle } from '@/lib/avatar'
 import { formatBillingCurrencyFromUSD } from '@/lib/currency'
 import { formatLogQuota, formatTimestampToDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
-import { LOG_TYPE_ALL_VALUE } from '../../constants'
+import { LOG_TYPE_ALL_VALUE, LOG_TYPE_ENUM } from '../../constants'
 import type { UsageLog } from '../../data/schema'
 import {
   formatModelName,
@@ -79,6 +80,24 @@ interface DetailSegment {
   muted?: boolean
   danger?: boolean
 }
+
+// WO-019 render 25: six-color log-type badges (render .mini up/cy/pu/dn/
+// info/or). Only the deep-space chrome remaps the stock variant colors to
+// the render literals.
+const deepSpaceLogTypeClass: Record<number, string> = {
+  [LOG_TYPE_ENUM.CONSUME]: 'ds-lt-up',
+  [LOG_TYPE_ENUM.TOPUP]: 'ds-lt-cy',
+  [LOG_TYPE_ENUM.SYSTEM]: 'ds-lt-pu',
+  [LOG_TYPE_ENUM.ERROR]: 'ds-lt-dn',
+  [LOG_TYPE_ENUM.REFUND]: 'ds-lt-info',
+  [LOG_TYPE_ENUM.MANAGE]: 'ds-lt-or',
+}
+
+// Types whose filter entries are marked deprecated (historical logs only).
+const DEPRECATED_LOG_TYPES = new Set<number>([
+  LOG_TYPE_ENUM.MANAGE,
+  LOG_TYPE_ENUM.LOGIN,
+])
 
 function formatRatioCompact(ratio: number | undefined): string {
   if (ratio == null || !Number.isFinite(ratio)) return '-'
@@ -333,6 +352,7 @@ export function useCommonLogsColumns(
   isRoot: boolean
 ): ColumnDef<UsageLog>[] {
   const { t } = useTranslation()
+  const deepSpaceDark = useDeepSpaceDark()
   const columns: ColumnDef<UsageLog>[] = [
     {
       accessorKey: 'created_at',
@@ -352,8 +372,17 @@ export function useCommonLogsColumns(
               variant={config.color as StatusBadgeProps['variant']}
               size='sm'
               copyable={false}
-              className='-ml-1.5 !text-xs [&_span]:!text-xs'
-            />
+              className={
+                deepSpaceDark
+                  ? cn('-ml-1.5', deepSpaceLogTypeClass[log.type])
+                  : '-ml-1.5 !text-xs [&_span]:!text-xs'
+              }
+            >
+              {t(config.label)}
+              {deepSpaceDark && DEPRECATED_LOG_TYPES.has(log.type) && (
+                <span className='opacity-70'>{t('Deprecated')}</span>
+              )}
+            </StatusBadge>
           </div>
         )
       },
