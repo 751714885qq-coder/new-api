@@ -64,3 +64,9 @@ export const DEFAULT_DISCOUNT_RATE = 1.0
  * Default minimum topup amount
  */
 export const DEFAULT_MIN_TOPUP = 1
+
+/**
+ * Card shop storefront embedded in the deep-space recharge drawer
+ * (WO-019 范围增补二, URL backfilled by 总控 2026-09-17)
+ */
+export const CARD_SHOP_URL = 'https://catfk.com/shop/AT2YU4XX'

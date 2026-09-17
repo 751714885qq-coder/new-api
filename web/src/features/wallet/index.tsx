@@ -34,6 +34,7 @@ import { CreemConfirmDialog } from './components/dialogs/creem-confirm-dialog'
 import { PaymentConfirmDialog } from './components/dialogs/payment-confirm-dialog'
 import { TransferDialog } from './components/dialogs/transfer-dialog'
 import { RechargeFormCard } from './components/recharge-form-card'
+import { RechargeDrawer } from './components/recharge-drawer'
 import { SubscriptionPlansCard } from './components/subscription-plans-card'
 import { WalletBillingPreviewCard } from './components/wallet-billing-preview-card'
 import { WalletConsumptionTrendCard } from './components/wallet-consumption-trend-card'
@@ -86,6 +87,7 @@ export function Wallet(props: WalletProps) {
   const [selectedCreemProduct, setSelectedCreemProduct] =
     useState<CreemProduct | null>(null)
   const [showSubscriptionPanel, setShowSubscriptionPanel] = useState(true)
+  const [rechargeDrawerOpen, setRechargeDrawerOpen] = useState(false)
 
   const { status } = useStatus()
   const { currency } = useSystemConfig()
@@ -277,6 +279,49 @@ export function Wallet(props: WalletProps) {
     }
   }
 
+  // Deep-space recharge drawer (render 11): rows only select a method; the
+  // pay button opens the shared confirmation dialog. Creem pays through its
+  // own product list instead of the pay button.
+  const handleDrawerMethodSelect = async (method: PaymentMethod) => {
+    setSelectedPaymentMethod(method)
+    setSelectedWaffoMethodIndex(null)
+    await calculatePaymentAmount(topupAmount, method.type)
+  }
+
+  const handleDrawerWaffoSelect = async (
+    method: WaffoPayMethod,
+    index: number
+  ) => {
+    setSelectedPaymentMethod({
+      name: method.name,
+      type: PAYMENT_TYPES.WAFFO,
+      icon: method.icon,
+    })
+    setSelectedWaffoMethodIndex(index)
+    await calculatePaymentAmount(topupAmount, PAYMENT_TYPES.WAFFO)
+  }
+
+  const handleDrawerPancakeSelect = async () => {
+    setSelectedPaymentMethod({
+      name: 'Waffo Pancake',
+      type: PAYMENT_TYPES.WAFFO_PANCAKE,
+    })
+    setSelectedWaffoMethodIndex(null)
+    await calculatePaymentAmount(topupAmount, PAYMENT_TYPES.WAFFO_PANCAKE)
+  }
+
+  const handleDrawerCreemSelect = () => {
+    setSelectedPaymentMethod({ name: 'Creem', type: PAYMENT_TYPES.CREEM })
+    setSelectedWaffoMethodIndex(null)
+  }
+
+  const handleDrawerPay = async () => {
+    const method = selectedPaymentMethod
+    if (!method || method.type === PAYMENT_TYPES.CREEM) return
+    await calculatePaymentAmount(topupAmount, method.type)
+    setConfirmDialogOpen(true)
+  }
+
   // Get discount rate for current topup amount
   const getDiscountRate = useCallback(() => {
     return topupInfo?.discount?.[topupAmount] || DEFAULT_DISCOUNT_RATE
@@ -290,9 +335,9 @@ export function Wallet(props: WalletProps) {
   )
 
   const scrollToAddFunds = () => {
-    document
-      .getElementById('wallet-add-funds')
-      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    // Deep-space branch: render 11 moves the recharge form into a drawer
+    // (recharge-drawer.tsx), so the entry buttons open it instead.
+    setRechargeDrawerOpen(true)
   }
 
   return (
@@ -305,8 +350,8 @@ export function Wallet(props: WalletProps) {
           <div className='mx-auto flex w-full max-w-7xl flex-col gap-4 sm:gap-5'>
             {deepSpaceDark && (
               // Render 10-渲染稿-v6-钱包.html lines 294-302 verbatim: hero row
-              // (title + sub + actions); both buttons anchor to the recharge
-              // form, which stays below as the functional zone.
+              // (title + sub + actions); both buttons open the recharge
+              // drawer (render 11).
               <div className='flex flex-wrap items-start justify-between gap-4'>
                 <div className='min-w-0'>
                   <div
@@ -423,13 +468,24 @@ export function Wallet(props: WalletProps) {
               </div>
             )}
 
-            <div
-              className={
-                showSubscriptionPanel
-                  ? 'grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] xl:items-start'
-                  : 'grid gap-4'
-              }
-            >
+            {deepSpaceDark ? (
+              // Render 11-渲染稿-v6-钱包-充值抽屉 moves the recharge form into
+              // the drawer (recharge-drawer.tsx); render 10 has no inline
+              // recharge form, so the page keeps only the plans block.
+              <SubscriptionPlansCard
+                topupInfo={topupInfo}
+                onAvailabilityChange={handleSubscriptionAvailabilityChange}
+                userQuota={user?.quota}
+                onPurchaseSuccess={fetchUser}
+              />
+            ) : (
+              <div
+                className={
+                  showSubscriptionPanel
+                    ? 'grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] xl:items-start'
+                    : 'grid gap-4'
+                }
+              >
               <div id='wallet-add-funds' className='scroll-mt-4'>
                 <RechargeFormCard
                   topupInfo={topupInfo}
@@ -470,7 +526,8 @@ export function Wallet(props: WalletProps) {
                 userQuota={user?.quota}
                 onPurchaseSuccess={fetchUser}
               />
-            </div>
+              </div>
+            )}
 
             {!deepSpaceDark && (
               <AffiliateRewardsCard
@@ -486,6 +543,34 @@ export function Wallet(props: WalletProps) {
           </div>
         </SectionPageLayout.Content>
       </SectionPageLayout>
+
+      {deepSpaceDark && (
+        // Render 11-渲染稿-v6-钱包-充值抽屉 (hash-locked f4dcc21de8eecde6):
+        // deep-space topup drawer with the card shop iframe (WO-019 增补二).
+        <RechargeDrawer
+          open={rechargeDrawerOpen}
+          onOpenChange={setRechargeDrawerOpen}
+          topupInfo={topupInfo}
+          presetAmounts={presetAmounts}
+          selectedPreset={selectedPreset}
+          onSelectPreset={handleSelectPreset}
+          topupAmount={topupAmount}
+          paymentAmount={paymentAmount}
+          calculating={calculating}
+          selectedPaymentMethod={selectedPaymentMethod}
+          selectedWaffoMethodIndex={selectedWaffoMethodIndex}
+          onMethodSelect={handleDrawerMethodSelect}
+          onWaffoMethodSelect={handleDrawerWaffoSelect}
+          onPancakeMethodSelect={handleDrawerPancakeSelect}
+          onCreemMethodSelect={handleDrawerCreemSelect}
+          onCreemProductSelect={handleCreemProductSelect}
+          onPay={handleDrawerPay}
+          redemptionCode={redemptionCode}
+          onRedemptionCodeChange={setRedemptionCode}
+          onRedeem={handleRedeem}
+          redeeming={redeeming}
+        />
+      )}
 
       <PaymentConfirmDialog
         open={confirmDialogOpen}
