@@ -45,7 +45,7 @@ const StatusDot = memo(function StatusDot(props: { status: number }) {
   return <span className={cn('inline-block size-2 rounded-full', color)} />
 })
 
-export function UptimePanel() {
+export function UptimePanel(props: { className?: string }) {
   const { t } = useTranslation()
   const [groups, setGroups] = useState<UptimeGroupResult[]>([])
   const [loading, setLoading] = useState(true)
@@ -96,6 +96,7 @@ export function UptimePanel() {
 
   return (
     <PanelWrapper
+      className={props.className}
       title={
         <span className='flex items-center gap-2'>
           <IconBadge tone='success' size='sm'>

@@ -32,7 +32,7 @@ import type { PingStatusMap, ApiInfoItem } from '@/features/dashboard/types'
 import { PanelWrapper } from '../ui/panel-wrapper'
 import { ApiInfoItemComponent } from './api-info-item'
 
-export function ApiInfoPanel() {
+export function ApiInfoPanel(props: { className?: string }) {
   const { t } = useTranslation()
   const { items: list, loading } = useApiInfo()
   const [pingStatus, setPingStatus] = useState<PingStatusMap>({})
@@ -49,6 +49,7 @@ export function ApiInfoPanel() {
 
   return (
     <PanelWrapper
+      className={props.className}
       title={
         <span className='flex items-center gap-2'>
           <IconBadge tone='info' size='sm'>

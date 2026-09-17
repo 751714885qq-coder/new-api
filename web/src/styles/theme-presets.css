@@ -2334,3 +2334,15 @@ body[data-theme-preset='deep-space'] {
   color: var(--ds-t1);
   border-color: rgba(34, 211, 238, 0.35);
 }
+
+/* Overview bottom panels (user ruling 2026-09-17): unified deep-space glass
+ * for the dashboard four-tile grid; only passed from the deep-space branch
+ * of overview-dashboard. */
+.ds-panel-glass {
+  background: var(--ds-card);
+  border-color: var(--ds-line);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}

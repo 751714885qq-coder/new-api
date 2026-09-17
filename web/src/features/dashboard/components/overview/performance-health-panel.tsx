@@ -55,7 +55,7 @@ function simpleAverage(
   return count > 0 ? total / count : Number.NaN
 }
 
-export function PerformanceHealthPanel() {
+export function PerformanceHealthPanel(props: { className?: string }) {
   const { t } = useTranslation()
   const metricsQuery = useQuery({
     queryKey: ['perf-metrics-summary', PERFORMANCE_WINDOW_HOURS],
@@ -92,7 +92,12 @@ export function PerformanceHealthPanel() {
   const hasData = models.length > 0
 
   return (
-    <section className='bg-card h-full overflow-hidden rounded-2xl border shadow-xs'>
+    <section
+      className={cn(
+        'bg-card h-full overflow-hidden rounded-2xl border shadow-xs',
+        props.className
+      )}
+    >
       <div className='flex items-center gap-2 border-b px-4 py-3 sm:px-5'>
         <IconBadge tone='success' size='sm'>
           <HeartPulse />

@@ -793,7 +793,29 @@ export function OverviewDashboard() {
             </CardStaggerContainer>
           )}
 
-          {showContentPanels && (
+          {showContentPanels && deepSpaceDark && (
+            /* User ruling 2026-09-17: bottom area = uniform 2x2 tile grid with
+             * unified deep-space glass; perf health spans full width above. */
+            <div className='flex flex-col gap-4'>
+              {isAdmin && <PerformanceHealthPanel className='ds-panel-glass' />}
+              <div className='grid grid-cols-1 items-stretch gap-4 md:grid-cols-2'>
+                {showApiInfoPanel && (
+                  <ApiInfoPanel className='ds-panel-glass h-full' />
+                )}
+                {showAnnouncementsPanel && (
+                  <AnnouncementsPanel className='ds-panel-glass h-full' />
+                )}
+                {showFAQPanel && (
+                  <FAQPanel className='ds-panel-glass h-full' />
+                )}
+                {showUptimePanel && (
+                  <UptimePanel className='ds-panel-glass h-full' />
+                )}
+              </div>
+            </div>
+          )}
+
+          {showContentPanels && !deepSpaceDark && (
             <CardStaggerContainer
               className={cn(
                 'grid grid-cols-1 gap-4',

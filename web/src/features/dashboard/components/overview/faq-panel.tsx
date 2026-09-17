@@ -33,12 +33,13 @@ import type { FAQItem } from '@/features/dashboard/types'
 
 import { PanelWrapper } from '../ui/panel-wrapper'
 
-export function FAQPanel() {
+export function FAQPanel(props: { className?: string }) {
   const { t } = useTranslation()
   const { items: list, loading } = useFAQ()
 
   return (
     <PanelWrapper
+      className={props.className}
       title={
         <span className='flex items-center gap-2'>
           <IconBadge tone='chart-4' size='sm'>

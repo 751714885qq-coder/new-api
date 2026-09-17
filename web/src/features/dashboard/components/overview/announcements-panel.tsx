@@ -45,7 +45,7 @@ const AnnouncementStatusDot = memo(function AnnouncementStatusDot(props: {
   )
 })
 
-export function AnnouncementsPanel() {
+export function AnnouncementsPanel(props: { className?: string }) {
   const { t } = useTranslation()
   const { items: list, loading } = useAnnouncements()
   const [selectedAnnouncement, setSelectedAnnouncement] =
@@ -59,6 +59,7 @@ export function AnnouncementsPanel() {
 
   return (
     <PanelWrapper
+      className={props.className}
       title={
         <span className='flex items-center gap-2'>
           <IconBadge tone='warning' size='sm'>
