@@ -990,6 +990,20 @@ body[data-theme-preset='deep-space'] {
   backdrop-filter: blur(20px) saturate(1.15);
   -webkit-backdrop-filter: blur(20px) saturate(1.15);
 }
+/* 用户裁决 2026-09-18（三次复走查）：数据表本体补上玻璃底。根因不是某个
+ * 色值——stock 数据表组件的行与格全透明，而深空外壳（sidebar-inset）与
+ * 页面画布都是透出天幕的，天幕在内容区大面积接近纯黑，表格因此成为页面上
+ * 直通天幕的黑洞；表头/吸附列是磨砂亮面，一亮一黑反差即走查所见。钱包/
+ * 充值/资料等屏无此问题，因为渲染稿落库时每块内容都垫了 DS 玻璃面板。
+ * 现给 <table> 本体铺与卡片同族的玻璃，控制台列表、模型广场、弹窗内
+ * 小表一次覆盖，行/格/吸附列/表头全部落在同一块磨砂玻璃上。 */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  table[data-slot='table'] {
+  background-color: var(--ds-card);
+  backdrop-filter: blur(20px) saturate(1.15);
+  -webkit-backdrop-filter: blur(20px) saturate(1.15);
+}
 
 /* Dark: rendering-aligned accents. Active sidebar entry = full gradient
  * capsule with outer glow; primary buttons = blue→violet gradient with
