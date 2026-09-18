@@ -1007,25 +1007,28 @@ body[data-theme-preset='deep-space'] {
 
 /* 用户裁决 2026-09-19（共性）：吸附表头行内容重叠。根因是深空两套预设的
  * --table-header 都是透明基底 tint（color-mix %, transparent），行底色又是
- * transparent，行滚进 sticky thead 下方直接透出。裁决走 Excel 式裁切：表头
- * 不透底，垫不透明画布合成色（--background，亮暗各自解析为实色）+ tint 以
- * background-image 叠其上保持色相，行内容到表头下沿直接不可见。
- * 暗色吸附列的纯磨砂裁决（td/th.sticky）特异性更高会盖掉吸附表头格，另立
- * 一条更高特异性的规则让表头内的吸附格同样不透底；数据行吸附列维持磨砂。 */
+ * transparent，行滚进 sticky thead 下方直接透出。裁决=弹层同族玻璃：表头
+ * 垫 --popover（rgba(9,12,22,0.97)，与弹窗同一悬浮面语言）+ tint 以
+ * background-image 叠其上保持色相 + 同族磨砂，行内容到表头下沿实际不可见
+ * 且无实色带突兀。暗色吸附列的纯磨砂裁决（td/th.sticky）特异性更高会盖掉
+ * 吸附表头格，另立更高特异性规则让表头内的吸附格同族；数据行吸附列维持
+ * 磨砂裁决不变。 */
 :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   thead[data-slot='table-header']
   th {
-  background-color: var(--background);
+  background-color: var(--popover);
   background-image: linear-gradient(
     var(--table-header),
     var(--table-header)
   );
+  backdrop-filter: blur(20px) saturate(1.15);
+  -webkit-backdrop-filter: blur(20px) saturate(1.15);
 }
 .dark
   :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   thead[data-slot='table-header']
   th.sticky {
-  background-color: var(--background);
+  background-color: var(--popover);
   background-image: linear-gradient(
     var(--table-header),
     var(--table-header)
