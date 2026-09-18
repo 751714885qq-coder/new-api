@@ -831,7 +831,11 @@ body:not([data-theme-preset]),
   /* Glass surfaces (WO-019 v2): translucent tokens + backdrop-blur rules
    * in the surfaces block below let the canvas starfield show through. */
   /* Spec v2 card glass: rgba(10,30,60,0.55) + cyan border, blur 20px. */
-  --card: oklch(0.245 0.055 253 / 0.55);
+  /* 用户裁决 2026-09-18：全站窗口底色统一 — bg-card 系（Card/TitledCard/
+   * bg-card 裸 div）与 DS 面板系（DS_PANEL_STYLE/ds-panel-glass/ds-fpanel）
+   * 共用同一暗色玻璃底；此前 --card 亮蓝灰与 --ds-card 暗蓝黑并存，同屏
+   * 卡片深浅不一。 */
+  --card: var(--ds-card);
   --card-foreground: oklch(0.95 0.024 270.3);
   --popover: oklch(0.227 0.06 267.6 / 0.86);
   --popover-foreground: oklch(0.95 0.024 270.3);

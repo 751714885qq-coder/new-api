@@ -32,6 +32,7 @@ import {
   ServerCog,
   Settings,
   ShieldCheck,
+  Store,
   Ticket,
   User,
   Users,
@@ -40,6 +41,8 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import type { SidebarData } from '@/components/layout/types'
+import { useStatus } from '@/hooks/use-status'
+import { parseHeaderNavModulesFromStatus } from '@/lib/nav-modules'
 import { ROLE } from '@/lib/roles'
 
 /**
@@ -50,6 +53,13 @@ import { ROLE } from '@/lib/roles'
  */
 export function useSidebarData(): SidebarData {
   const { t } = useTranslation()
+  const { status } = useStatus()
+
+  // 模型广场入口沿用顶栏同一后端开关（HeaderNavModules.pricing.enabled）。
+  const pricingEnabled =
+    parseHeaderNavModulesFromStatus(
+      status as Record<string, unknown> | null
+    )?.pricing?.enabled !== false
 
   return {
     navGroups: [
@@ -105,6 +115,17 @@ export function useSidebarData(): SidebarData {
             configUrls: ['/usage-logs/drawing', '/usage-logs/task'],
             icon: ListTodo,
           },
+          // 用户裁决 2026-09-18：控制台侧栏补「模型广场」入口（此前仅顶栏有），
+          // 沿用顶栏同一后端开关 HeaderNavModules.pricing.enabled。
+          ...(pricingEnabled
+            ? [
+                {
+                  title: t('Model Square'),
+                  url: '/pricing',
+                  icon: Store,
+                },
+              ]
+            : []),
         ],
       },
       {

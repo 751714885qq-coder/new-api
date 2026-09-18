@@ -111,22 +111,33 @@ export function Profile() {
               />
             </div>
 
-            <div className='mt-4 grid gap-4 xl:grid-cols-2 xl:items-start'>
-              <LanguagePreferencesCard
-                profile={profile}
-                onProfileUpdate={refreshProfile}
-              />
-              <div className='space-y-4'>
-                {checkinEnabled && (
-                  <CheckinCalendarCard
-                    checkinEnabled={checkinEnabled}
-                    turnstileEnabled={turnstileEnabled}
-                    turnstileSiteKey={turnstileSiteKey}
-                  />
-                )}
-                {canConfigureSidebar && <SidebarModulesCard />}
+            {/* 用户裁决 2026-09-18：独占一行的卡片须撑满整行；右列（签到/
+                侧栏模块）为空时语言偏好卡不再锁在半宽列里。 */}
+            {checkinEnabled || canConfigureSidebar ? (
+              <div className='mt-4 grid gap-4 xl:grid-cols-2 xl:items-start'>
+                <LanguagePreferencesCard
+                  profile={profile}
+                  onProfileUpdate={refreshProfile}
+                />
+                <div className='space-y-4'>
+                  {checkinEnabled && (
+                    <CheckinCalendarCard
+                      checkinEnabled={checkinEnabled}
+                      turnstileEnabled={turnstileEnabled}
+                      turnstileSiteKey={turnstileSiteKey}
+                    />
+                  )}
+                  {canConfigureSidebar && <SidebarModulesCard />}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className='mt-4'>
+                <LanguagePreferencesCard
+                  profile={profile}
+                  onProfileUpdate={refreshProfile}
+                />
+              </div>
+            )}
           </div>
         </div>
       </Main>

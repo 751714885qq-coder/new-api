@@ -32,9 +32,10 @@ import {
   ModelCardGrid,
   ModelDetailsDrawer,
 } from './components'
-import { EXCLUDED_GROUPS, VIEW_MODES } from './constants'
+import { VIEW_MODES } from './constants'
 import { useFilters } from './hooks/use-filters'
 import { usePricingData } from './hooks/use-pricing-data'
+import { getGroupsWithModels } from './lib/model-helpers'
 
 export function Pricing() {
   const { t } = useTranslation()
@@ -98,11 +99,8 @@ export function Pricing() {
   )
 
   const availableGroups = useMemo(
-    () =>
-      Object.keys(usableGroup || {}).filter(
-        (g) => !EXCLUDED_GROUPS.includes(g)
-      ),
-    [usableGroup]
+    () => getGroupsWithModels(models || [], usableGroup || {}),
+    [usableGroup, models]
   )
 
   const handleClearAll = useCallback(() => {

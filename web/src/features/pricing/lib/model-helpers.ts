@@ -40,6 +40,27 @@ export function getAvailableGroups(
 }
 
 /**
+ * Get usable groups that host at least one model.
+ *
+ * 用户裁决 2026-09-18（WO-019）：无模型的分组（如仅含用户、无渠道绑定的
+ * 基础分组）不出现在模型广场分组筛选，口径与 API 密钥选分组一致。
+ */
+export function getGroupsWithModels(
+  models: PricingModel[],
+  usableGroup: Record<string, { desc: string; ratio: number }>
+): string[] {
+  const groupsWithModels = new Set(
+    models.flatMap((model) =>
+      Array.isArray(model.enable_groups) ? model.enable_groups : []
+    )
+  )
+
+  return Object.keys(usableGroup)
+    .filter((g) => !EXCLUDED_GROUPS.includes(g))
+    .filter((g) => groupsWithModels.has(g))
+}
+
+/**
  * Read a configured group ratio while preserving valid zero ratios.
  */
 export function getConfiguredGroupRatio(
