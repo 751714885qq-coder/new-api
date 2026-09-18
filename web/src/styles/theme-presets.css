@@ -826,7 +826,12 @@ body:not([data-theme-preset]),
 .dark body:not([data-theme-preset]),
 .dark [data-theme-preset='deep-space'] {
   /* Spec v2 backgrounds: deep-space black #020617 canvas. */
-  --background: oklch(0.165 0.045 265);
+  /* 用户裁决 2026-09-18（复走查返工）：--background 归一到卡片玻璃合成色
+   * （ds-card 0.36 叠加画布 #05060c 的结果）。此前近黑 oklch 值让一切
+   * bg-background 元素——表格吸附列、代码井、浮动工具条、Sheet 抽屉——
+   * 在玻璃卡片上呈现为更暗的色块。页面画布本身由 body #05060c +
+   * DeepSpaceBackdrop 绘制，不经过此 token。 */
+  --background: rgb(6, 8, 16);
   --foreground: oklch(0.95 0.024 270.3);
   /* Glass surfaces (WO-019 v2): translucent tokens + backdrop-blur rules
    * in the surfaces block below let the canvas starfield show through. */
@@ -837,7 +842,11 @@ body:not([data-theme-preset]),
    * 卡片深浅不一。 */
   --card: var(--ds-card);
   --card-foreground: oklch(0.95 0.024 270.3);
-  --popover: oklch(0.227 0.06 267.6 / 0.86);
+  /* 用户裁决 2026-09-18（复走查返工）：弹层底与卡片同族。此前
+   * oklch(0.227 0.06 267.6 / 0.86) 偏亮偏蓝，下拉菜单/Select/Dialog/Sheet
+   * 与玻璃卡片同屏色不一致；现取渲染稿菜单渐变底部同色
+   * （11-渲染稿 ds-rd-drawer / ds-gqs-menu 的 rgba(9,12,22,0.97)）。 */
+  --popover: rgba(9, 12, 22, 0.97);
   --popover-foreground: oklch(0.95 0.024 270.3);
   --primary: #22d3ee;
   --primary-foreground: #06121f;
@@ -2340,7 +2349,9 @@ body[data-theme-preset='deep-space'] {
   height: 56px;
   border-radius: 10px;
   border: 1px solid var(--ds-line);
-  background: rgba(255, 255, 255, 0.03);
+  /* 用户裁决 2026-09-18（复走查返工）：格子不再自带底色——白 3% 叠在
+   * 玻璃面板上必然与面板色不一致；透明即与面板完全同色，边框负责分界。 */
+  background: transparent;
   color: var(--ds-t3);
   font-size: 11px;
   box-shadow: none;
