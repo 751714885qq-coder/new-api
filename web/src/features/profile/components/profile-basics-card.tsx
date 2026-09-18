@@ -31,7 +31,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { TitledCard } from '@/components/ui/titled-card'
 import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { getUserAvatarFallback, getUserAvatarStyle } from '@/lib/avatar'
-import { getRoleLabel } from '@/lib/roles'
 
 import { getDisplayName, maskEmail } from '../lib'
 import type { UserProfile } from '../types'
@@ -148,29 +147,8 @@ export function ProfileBasicsCard({
           </div>
         </div>
         <div className='px-5 pb-4 pt-3.5'>
-        <div className='flex items-center gap-4 border-b pb-3' style={{ borderColor: 'var(--ds-line)' }}>
-          <Avatar className='h-[58px] w-[58px] rounded-full'>
-            <AvatarFallback
-              className='rounded-full text-[22px] font-semibold'
-              style={avatarFallbackStyle}
-            >
-              {avatarFallback}
-            </AvatarFallback>
-          </Avatar>
-          <div className='min-w-0'>
-            <div style={{ fontSize: 17, fontWeight: 650 }}>
-              {currentName}
-            </div>
-            <div
-              className='mt-1 flex items-center gap-2.5'
-              style={{ fontSize: 12.5, color: 'var(--ds-t3)' }}
-            >
-              <span>@{profile.username}</span>
-              <span>·</span>
-              <span>{getRoleLabel(profile.role)}</span>
-            </div>
-          </div>
-        </div>
+        {/* 用户裁决 2026-09-18：hero 横幅已带头像与身份，卡内识别行重复，整行移除
+            （角色信息移至 hero 标签行）；display-name 字段成为卡体首块。 */}
         <div className='mt-2.5'>
           {fldLabel(t('Display name'))}
           <div className='flex items-center gap-2.5'>

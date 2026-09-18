@@ -142,6 +142,16 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
             style={{ fontSize: 20, fontWeight: 650 }}
           >
             <span>{displayName}</span>
+            <span
+              style={{
+                ...tagBaseStyle,
+                color: 'var(--ds-t2)',
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid var(--ds-line)',
+              }}
+            >
+              {roleLabel}
+            </span>
             {profile.group && (
               <span
                 style={{
