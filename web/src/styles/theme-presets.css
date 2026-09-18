@@ -968,6 +968,29 @@ body[data-theme-preset='deep-space'] {
   -webkit-backdrop-filter: blur(20px) saturate(1.15);
 }
 
+/* 用户裁决 2026-09-18（二次复走查）：吸附列彻底不铺实色。行是透出星云的
+ * 玻璃，亮度随位置变化，任何固定实色都追不上（首批 rgb(6,8,16) 在星云亮区
+ * 仍呈更暗竖条）；改纯磨砂——无底色 + backdrop-filter，与相邻单元格完全
+ * 同色，横向滚动的内容在吸附列下被糊化。 */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  :is(td, th).sticky {
+  background-color: transparent;
+  backdrop-filter: blur(20px) saturate(1.15);
+  -webkit-backdrop-filter: blur(20px) saturate(1.15);
+}
+/* 控制台内嵌的 bg-background 井/块（代码编辑器、图标底、分隔芯片等）与
+ * 所在玻璃卡同族磨砂，不再是不透明暗块。弹层类（Sheet/Tooltip 等 portal
+ * 到 body 的）不在控制台子树内，保持不透明弹层面。 */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .group\/sidebar-wrapper
+  .bg-background:not([data-slot='sidebar-inset']):not(.sticky) {
+  background-color: var(--ds-card);
+  backdrop-filter: blur(20px) saturate(1.15);
+  -webkit-backdrop-filter: blur(20px) saturate(1.15);
+}
+
 /* Dark: rendering-aligned accents. Active sidebar entry = full gradient
  * capsule with outer glow; primary buttons = blue→violet gradient with
  * halo; cards get a top highlight edge. Unlayered rules so they win over
