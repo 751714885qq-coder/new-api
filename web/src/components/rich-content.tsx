@@ -27,6 +27,7 @@ interface RichContentProps {
   breaks?: boolean
   className?: string
   htmlVariant?: HtmlContentVariant
+  onShadowContent?: (root: ShadowRoot) => (() => void) | undefined
 }
 
 export function RichContent(props: RichContentProps) {
@@ -36,6 +37,7 @@ export function RichContent(props: RichContentProps) {
         content={props.content}
         className={props.className}
         variant={props.htmlVariant}
+        onShadowContent={props.onShadowContent}
       />
     )
   }

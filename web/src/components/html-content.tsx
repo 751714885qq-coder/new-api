@@ -27,6 +27,12 @@ interface HtmlContentProps {
   content: string
   className?: string
   variant?: HtmlContentVariant
+  /**
+   * Isolated variant only: invoked after the shadow root has been populated
+   * with the sanitized content. Return an optional cleanup (e.g. to unbind
+   * listeners attached to fragment nodes).
+   */
+  onShadowContent?: (root: ShadowRoot) => (() => void) | undefined
 }
 
 const isolatedContentSandbox =
@@ -139,6 +145,7 @@ function syncDarkClass(wrapper: HTMLElement): void {
 function IsolatedHtmlContent(props: {
   className?: string
   html: string
+  onShadowContent?: (root: ShadowRoot) => (() => void) | undefined
 }): React.ReactElement {
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -169,13 +176,21 @@ function IsolatedHtmlContent(props: {
       wrapper
     )
 
+    const unbindShadowContent = props.onShadowContent?.(shadowRoot)
+
     const observer = new MutationObserver(() => syncDarkClass(wrapper))
     observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['class'],
     })
 
-    return () => observer.disconnect()
+    return () => {
+      unbindShadowContent?.()
+      observer.disconnect()
+    }
+    // onShadowContent must be stable across renders (a re-bind would be
+    // harmless but the deps intentionally track the content identity only).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.html])
 
   return (
@@ -191,7 +206,13 @@ export function HtmlContent(props: HtmlContentProps) {
   )
 
   if (variant === 'isolated') {
-    return <IsolatedHtmlContent className={props.className} html={html} />
+    return (
+      <IsolatedHtmlContent
+        className={props.className}
+        html={html}
+        onShadowContent={props.onShadowContent}
+      />
+    )
   }
 
   return (

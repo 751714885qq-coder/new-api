@@ -28,14 +28,32 @@ import { useAuthStore } from '@/stores/auth-store'
 
 import { CTA, Features, Hero, HowItWorks, Stats } from './components'
 import { useHomePageContent } from './hooks'
+import { bindHomePageRuntime } from './home-runtime'
 
 export function Home() {
   const { i18n, t } = useTranslation()
   const iframeRef = useRef<HTMLIFrameElement>(null)
-  const { resolvedTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
   const { auth } = useAuthStore()
   const isAuthenticated = !!auth.user
   const { content, isLoaded, isUrl } = useHomePageContent()
+
+  // WO-011 handover (target 2/3): the isolated HTML home page is rendered
+  // into an open shadow root; bind its inert hooks and light the hidden
+  // theme toggle from here. The ref keeps the toggle callback fresh — the
+  // shadow-content effect only re-runs on content changes, so the callback
+  // captured at bind time would otherwise go stale on theme/auth changes.
+  const toggleThemeRef = useRef<() => void>(() => {})
+  useEffect(() => {
+    toggleThemeRef.current = () => {
+      setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
+    }
+  }, [resolvedTheme, setTheme])
+  const handleShadowContent = useCallback(
+    (root: ShadowRoot) =>
+      bindHomePageRuntime(root, () => toggleThemeRef.current(), isAuthenticated),
+    [isAuthenticated]
+  )
 
   const syncIframePreferences = useCallback(() => {
     try {
@@ -102,6 +120,7 @@ export function Home() {
             htmlVariant='isolated'
             content={content}
             className='custom-home-content'
+            onShadowContent={handleShadowContent}
           />
         </PublicLayout>
       )
