@@ -1005,6 +1005,23 @@ body[data-theme-preset='deep-space'] {
   -webkit-backdrop-filter: blur(20px) saturate(1.15);
 }
 
+/* 用户报告 2026-09-19（共性）：吸附表头滚动时与行内容文字重叠。根因是
+ * 深空两套预设的 --table-header 都是透明基底 tint（color-mix %, transparent），
+ * 行底色又是 transparent，行滚进 sticky thead 下方直接透出。给表头单元格
+ * 垫一层与表格本体同族的 ds-card 玻璃并磨砂，tint 以 background-image 叠
+ * 其上保持原有色相，行内容在表头下被糊化而非透叠。 */
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  thead[data-slot='table-header']
+  th {
+  background-color: var(--ds-card);
+  background-image: linear-gradient(
+    var(--table-header),
+    var(--table-header)
+  );
+  backdrop-filter: blur(20px) saturate(1.15);
+  -webkit-backdrop-filter: blur(20px) saturate(1.15);
+}
+
 /* Dark: rendering-aligned accents. Active sidebar entry = full gradient
  * capsule with outer glow; primary buttons = blue→violet gradient with
  * halo; cards get a top highlight edge. Unlayered rules so they win over
