@@ -22,7 +22,9 @@ For commercial licensing, please contact support@quantumnous.com
 
 // System Configuration Defaults
 export const DEFAULT_SYSTEM_NAME = 'New API'
-export const DEFAULT_LOGO = '/logo.png'
+// Versioned query so browsers/CDNs that cached the pre-relaunch logo.png
+// re-fetch (the favicon cache in particular ignores normal hard reloads).
+export const DEFAULT_LOGO = '/logo.png?v=wanyun'
 
 // LocalStorage Keys
 export const STORAGE_KEYS = {

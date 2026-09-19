@@ -27,6 +27,7 @@ import {
   Copy,
   Link,
   Loader2,
+  PlugZap,
 } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -95,6 +96,38 @@ export function DataTableRowActions<TData>({
 
   const hasChatPresets = chatPresets.length > 0
   const toggleLabel = isEnabled ? t('Disable') : t('Enable')
+
+  const handleImportCCSwitch = useCallback(async () => {
+    const realKey = await resolveRealKey(apiKey.id)
+    if (!realKey) return
+    setResolvedKey(realKey)
+    setCurrentRow(apiKey)
+    setOpen('cc-switch')
+  }, [resolveRealKey, apiKey, setResolvedKey, setCurrentRow, setOpen])
+
+  const [isTestingConnection, setIsTestingConnection] = useState(false)
+  const handleTestConnection = useCallback(async () => {
+    setIsTestingConnection(true)
+    try {
+      const realKey = await resolveRealKey(apiKey.id)
+      if (!realKey) return
+      const base = serverAddress.replace(/\/+$/, '')
+      const started = performance.now()
+      const response = await fetch(`${base}/v1/models`, {
+        headers: { Authorization: `Bearer ${realKey}` },
+      })
+      const elapsedMs = Math.round(performance.now() - started)
+      if (response.ok) {
+        toast.success(`${t('Connection test passed')} · ${elapsedMs}ms`)
+      } else {
+        toast.error(`${t('Connection test failed')} · HTTP ${response.status}`)
+      }
+    } catch {
+      toast.error(t('Connection test failed'))
+    } finally {
+      setIsTestingConnection(false)
+    }
+  }, [resolveRealKey, apiKey.id, serverAddress, t])
 
   const handleOpenChatPreset = useCallback(
     async (preset: ChatPreset) => {
@@ -212,6 +245,44 @@ export function DataTableRowActions<TData>({
           <Edit />
         </TooltipTrigger>
         <TooltipContent>{t('Edit')}</TooltipContent>
+      </Tooltip>
+
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <Button
+              variant='ghost'
+              size='icon-sm'
+              onClick={handleImportCCSwitch}
+              disabled={isRealKeyLoading}
+              aria-label={t('Import to CC Switch')}
+            />
+          }
+        >
+          <ArrowRightLeft />
+        </TooltipTrigger>
+        <TooltipContent>{t('Import to CC Switch')}</TooltipContent>
+      </Tooltip>
+
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <Button
+              variant='ghost'
+              size='icon-sm'
+              onClick={handleTestConnection}
+              disabled={isTestingConnection}
+              aria-label={t('Test Connection')}
+            />
+          }
+        >
+          {isTestingConnection ? (
+            <Loader2 className='size-4 animate-spin' />
+          ) : (
+            <PlugZap />
+          )}
+        </TooltipTrigger>
+        <TooltipContent>{t('Test Connection')}</TooltipContent>
       </Tooltip>
 
       <DataTableRowActionMenu
