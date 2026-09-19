@@ -263,10 +263,22 @@ export function createRefreshRunner(
       }
     }
 
-    runtime.clear(false)
+    // Only a server-issued auth verdict may clear the session. Proxy/WAF
+    // answers (e.g. a 403 challenge page) carry no AUTH_ code and must not
+    // log the user out — the next request simply retries the refresh.
+    const resolvedCode = code ?? 'AUTH_INVALID_REFRESH_RESPONSE'
+    if (resolvedCode.startsWith('AUTH_')) {
+      runtime.clear(false)
+      return {
+        kind: 'out_of_sync',
+        code: resolvedCode,
+      }
+    }
+
+    runtime.markTransient()
     return {
-      kind: 'out_of_sync',
-      code: code ?? 'AUTH_INVALID_REFRESH_RESPONSE',
+      kind: 'transient_error',
+      error: response.error ?? response.data,
     }
   }
 

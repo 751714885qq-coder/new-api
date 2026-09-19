@@ -17,7 +17,10 @@ import (
 )
 
 const (
-	AccessTokenTTL        = 15 * time.Minute
+	// One hour: the dashboard refreshes this token silently, and every request
+	// revalidates the session server-side anyway (revocation stays immediate),
+	// so a shorter TTL only multiplies refresh-round failure opportunities.
+	AccessTokenTTL        = time.Hour
 	SecurityProofTTL      = time.Minute
 	LoginSessionTTL       = 30 * 24 * time.Hour
 	RefreshReplayWindow   = 30 * time.Second
