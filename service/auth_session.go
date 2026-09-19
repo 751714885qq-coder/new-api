@@ -246,7 +246,11 @@ func RefreshLoginSession(rawRefreshToken, expectedSID, ip, userAgent string) (*A
 		return nil, nil, ErrLoginSessionRevoked
 	}
 	nextSecret := deriveNextRefreshSecret(sid, secret)
-	rotated, err := model.RotateUserSessionRefresh(session.UserID, sid, hashRefreshSecret(secret), hashRefreshSecret(nextSecret), time.Now().Unix(), RefreshReplayWindow)
+	// Slide the session window forward on each refresh: active users stay
+	// signed in indefinitely (the refresh cookie follows the new expiry),
+	// idle sessions still die 30 days after their last refresh.
+	slidingExpiry := time.Now().Add(LoginSessionTTL).Unix()
+	rotated, err := model.RotateUserSessionRefresh(session.UserID, sid, hashRefreshSecret(secret), hashRefreshSecret(nextSecret), time.Now().Unix(), RefreshReplayWindow, slidingExpiry)
 	if err != nil {
 		if errors.Is(err, model.ErrUserSessionRefreshRace) && rotated != nil &&
 			hashRefreshSecret(nextSecret) == rotated.RefreshHash {

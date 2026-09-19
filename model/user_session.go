@@ -456,7 +456,10 @@ func ListActiveUserSessions(userID int, currentSID string, now int64) ([]UserSes
 // no-op, has the same single-winner behavior as MySQL and PostgreSQL. Only a
 // recognized previous digest outside its grace window is treated as reuse;
 // an unknown secret never revokes the victim session.
-func RotateUserSessionRefresh(userID int, sid, presentedHash, nextHash string, now int64, grace time.Duration) (*UserSession, error) {
+// expiresAt slides forward on every rotation so an actively used session
+// stays signed in (standard sliding session); idle sessions still expire 30
+// days after their last refresh. Pass 0 to keep the current expiry.
+func RotateUserSessionRefresh(userID int, sid, presentedHash, nextHash string, now int64, grace time.Duration, expiresAt int64) (*UserSession, error) {
 	if userID <= 0 || sid == "" || presentedHash == "" || nextHash == "" || hmac.Equal([]byte(presentedHash), []byte(nextHash)) {
 		return nil, ErrUserSessionInvalid
 	}
@@ -478,15 +481,19 @@ func RotateUserSessionRefresh(userID int, sid, presentedHash, nextHash string, n
 		}
 
 		if hmac.Equal([]byte(session.RefreshHash), []byte(presentedHash)) {
+			updates := map[string]any{
+				"previous_refresh_hash": session.RefreshHash,
+				"previous_valid_until":  now + graceSeconds,
+				"refresh_hash":          nextHash,
+				"last_active_at":        now,
+			}
+			if expiresAt > now {
+				updates["expires_at"] = expiresAt
+			}
 			result := DB.Model(&UserSession{}).
 				Where("sid = ? AND user_id = ? AND status = ? AND revoked_at = ? AND expires_at > ? AND refresh_hash = ?",
 					sid, userID, UserSessionStatusActive, 0, now, presentedHash).
-				Updates(map[string]any{
-					"previous_refresh_hash": session.RefreshHash,
-					"previous_valid_until":  now + graceSeconds,
-					"refresh_hash":          nextHash,
-					"last_active_at":        now,
-				})
+				Updates(updates)
 			if result.Error != nil {
 				return nil, result.Error
 			}
@@ -497,6 +504,9 @@ func RotateUserSessionRefresh(userID int, sid, presentedHash, nextHash string, n
 			session.PreviousValidUntil = now + graceSeconds
 			session.RefreshHash = nextHash
 			session.LastActiveAt = now
+			if expiresAt > now {
+				session.ExpiresAt = expiresAt
+			}
 			if err := writeUserSessionCache(session.cacheEntry(), cacheDeadline); err != nil {
 				if errors.Is(err, errUserSessionCacheObservationStale) {
 					if confirmErr := confirmUserSessionActiveSnapshot(&session); confirmErr != nil {
