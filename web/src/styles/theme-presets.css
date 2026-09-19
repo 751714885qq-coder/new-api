@@ -1091,6 +1091,87 @@ html:not(.dark)
 }
 
 /* ── Deep Space console chrome (WO-019 S1 shell, render-verbatim) ─────── */
+
+.wanyun-brand {
+  display: inline-flex;
+  align-items: center;
+  color: var(--ds-t1);
+  --wanyun-gradient-start: #22d3ee;
+  --wanyun-gradient-middle: #818cf8;
+  --wanyun-gradient-end: #a78bfa;
+  white-space: nowrap;
+}
+.wanyun-mark {
+  display: block;
+  flex: none;
+}
+.wanyun-brand__copy {
+  display: inline-flex;
+  min-width: 0;
+}
+.wanyun-brand__wordmark {
+  /* Typographic system inherited from the approved deep-space auth h1
+     (72px / 750 / -0.02em, pastel gradient below) — the brand wordmark
+     replaces that h1 verbatim, sans the ShuHei CJK display face. */
+  font-family: inherit;
+  font-weight: 750;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.wanyun-brand--hero {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+.wanyun-brand--hero .wanyun-mark {
+  width: 88px;
+  height: 88px;
+}
+.wanyun-brand--hero .wanyun-brand__copy {
+  align-items: baseline;
+  flex-direction: column;
+  gap: 12px;
+}
+.wanyun-brand--hero .wanyun-brand__wordmark {
+  font-size: 72px;
+  white-space: nowrap;
+}
+.wanyun-brand--compact {
+  gap: 10px;
+}
+.wanyun-brand--compact .wanyun-mark {
+  width: 22px;
+  height: 22px;
+}
+.wanyun-brand--compact .wanyun-brand__copy {
+  align-items: center;
+}
+.wanyun-brand--compact .wanyun-brand__wordmark {
+  font-size: 17px;
+}
+.wanyun-brand--inline {
+  gap: 8px;
+}
+.wanyun-brand--inline .wanyun-mark {
+  width: 24px;
+  height: 24px;
+}
+.wanyun-brand--inline .wanyun-brand__copy {
+  align-items: baseline;
+  gap: 8px;
+}
+.wanyun-brand--inline .wanyun-brand__wordmark {
+  font-size: 17px;
+}
+.wanyun-brand--mono .wanyun-brand__wordmark {
+  color: currentColor;
+}
+html:not(.dark) .wanyun-brand {
+  --wanyun-gradient-start: #0891b2;
+  --wanyun-gradient-middle: #4338ca;
+  --wanyun-gradient-end: #7c3aed;
+}
 /* Sidebar frame: render .side / .logo / .nav-label / .nav-item metrics
  * (09-渲染稿-v6-s1.html lines 109-128). */
 /* Render .side is flush top-to-bottom on the left edge; the stock container
@@ -1114,22 +1195,6 @@ html:not(.dark)
 :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-side-brand {
   padding: 20px 14px 18px;
-}
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
-  .ds-side-brand-orb {
-  width: 22px;
-  height: 22px;
-  flex: none;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 32% 30%,
-    #9fe8ff 0%,
-    #22d3ee 34%,
-    #3b82f6 72%,
-    #1e2a5e 100%
-  );
-  box-shadow: 0 0 12px rgba(34, 211, 238, 0.45);
 }
 :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-side-brand-name {
@@ -1276,17 +1341,6 @@ html:not(.dark)
   :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='sidebar-menu-button']:hover {
   background: rgba(15, 35, 70, 0.04);
-}
-html:not(.dark)
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
-  .ds-side-brand-orb {
-  background: radial-gradient(
-    circle at 32% 30%,
-    #a5f3fc 0%,
-    #22d3ee 34%,
-    #3b82f6 72%,
-    #1e40af 100%
-  );
 }
 html:not(.dark)
   :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
@@ -2086,23 +2140,9 @@ html:not(.dark)
 }
 .ds-auth-brand .logo-row {
   display: flex;
-  align-items: center;
-  gap: 14px;
+  align-items: flex-start;
 }
-.ds-auth-logo-orb {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  flex: none;
-  background: radial-gradient(circle at 32% 30%, #9fe8ff 0%, #22d3ee 34%, #3b82f6 72%, #1e2a5e 100%);
-  box-shadow: 0 0 16px rgba(34, 211, 238, 0.5);
-}
-.ds-auth-brand h1 {
-  font-size: 72px;
-  font-weight: 750;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
+.ds-auth-brand .wanyun-brand--hero .wanyun-brand__wordmark {
   background: linear-gradient(92deg, #a5b8ff 0%, #c9a2ff 45%, #7de3ff 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -2172,7 +2212,11 @@ html:not(.dark)
   z-index: 2;
 }
 @media (max-width: 1439px) {
-  .ds-auth-brand h1 {
+  .ds-auth-brand .wanyun-brand--hero .wanyun-mark {
+    width: 76px;
+    height: 76px;
+  }
+  .ds-auth-brand .wanyun-brand--hero .wanyun-brand__wordmark {
     font-size: 56px;
   }
   .ds-auth-gw {
@@ -3295,7 +3339,7 @@ html:not(.dark)
   a {
   color: #0e7490;
 }
-html:not(.dark) .ds-auth-brand h1 {
+html:not(.dark) .ds-auth-brand .wanyun-brand--hero .wanyun-brand__wordmark {
   background: linear-gradient(92deg, #4353d9 0%, #7c3aed 45%, #0e7490 100%);
   -webkit-background-clip: text;
   background-clip: text;

@@ -21,6 +21,7 @@ import { Code2, Gauge, Layers, ShieldCheck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { DeepSpaceBackdrop } from '@/components/layout/components/deep-space-backdrop'
+import { WanyunBrand } from '@/components/brand/wanyun-brand'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useThemeCustomization } from '@/context/theme-customization-provider'
 import { useDeepSpace } from '@/hooks/use-deep-space'
@@ -123,7 +124,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
   const isDeepSpace = customization.preset === 'deep-space'
   const displaySystemName =
     isDeepSpace && (!systemName || systemName === 'New API')
-      ? 'MindClaw'
+      ? 'WanYun'
       : systemName
 
   if (deepSpace) {
@@ -170,13 +171,8 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             becomes a top-left hanging intro — enlarged type, anchored to the
             viewport's upper-left; no vertical alignment with the card. */}
         <div className='ds-auth-brand'>
-          <Link to='/' className='logo-row'>
-            <div className='ds-auth-logo-orb' />
-            {loading ? (
-              <Skeleton className='h-12 w-56' />
-            ) : (
-              <h1>{displaySystemName}</h1>
-            )}
+          <Link to='/' className='logo-row' aria-label='WanYun'>
+            <WanyunBrand variant='hero' />
           </Link>
           <div className='ds-auth-gw'>{t('AI Model Gateway')}</div>
           <div className='ds-auth-tl1'>

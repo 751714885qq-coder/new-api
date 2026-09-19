@@ -19,6 +19,7 @@ For commercial licensing, please contact support@quantumnous.com
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
+import { WanyunBrand } from '@/components/brand/wanyun-brand'
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -62,10 +63,9 @@ export function SystemBrand(props: SystemBrandProps) {
       <Link
         to='/'
         aria-label={t('Go to home')}
-        className='flex items-center gap-[10px] rounded-md outline-none select-none'
+        className='flex items-center rounded-md outline-none select-none'
       >
-        <i aria-hidden='true' className='ds-side-brand-orb' />
-        <span className='ds-side-brand-name'>{name}</span>
+        <WanyunBrand variant='compact' />
       </Link>
     )
   }
