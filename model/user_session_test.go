@@ -257,12 +257,6 @@ func TestRotateUserSessionRefreshRaceAndReuse(t *testing.T) {
 	assert.Equal(t, now+40, rotated.PreviousValidUntil)
 	assert.Equal(t, session.ExpiresAt, rotated.ExpiresAt)
 
-	// A positive expiry slides the session window forward (sliding session).
-	slidExpiry := now + 90*24*60*60
-	slid, err := RotateUserSessionRefresh(1002, session.SID, "next-hash", "next-hash-2", now+20, 30*time.Second, slidExpiry)
-	require.NoError(t, err)
-	assert.Equal(t, slidExpiry, slid.ExpiresAt)
-
 	_, err = RotateUserSessionRefresh(1002, session.SID, session.RefreshHash, "unused-hash", now+20, 30*time.Second, 0)
 	assert.ErrorIs(t, err, ErrUserSessionRefreshRace)
 	_, err = RotateUserSessionRefresh(1002, session.SID, "unknown-hash", "unused-hash", now+20, 30*time.Second, 0)
@@ -277,6 +271,30 @@ func TestRotateUserSessionRefreshRaceAndReuse(t *testing.T) {
 	require.NoError(t, getErr)
 	assert.Equal(t, UserSessionStatusRevoked, stored.Status)
 	assert.Equal(t, "refresh_reuse", stored.RevokedReason)
+}
+
+func TestRotateUserSessionRefreshSlidesExpiry(t *testing.T) {
+	setupUserSessionTest(t)
+	now := time.Now().Unix()
+	createUserSessionTestUser(t, 1003, 1)
+	session := newTestUserSession("slide-session", 1003, now)
+	require.NoError(t, CreateUserSession(session))
+
+	// Zero keeps the current expiry (previous semantics).
+	kept, err := RotateUserSessionRefresh(1003, session.SID, session.RefreshHash, "slide-hash-1", now+10, 30*time.Second, 0)
+	require.NoError(t, err)
+	assert.Equal(t, session.ExpiresAt, kept.ExpiresAt)
+
+	// A positive expiry slides the session window forward.
+	slidExpiry := now + 90*24*60*60
+	slid, err := RotateUserSessionRefresh(1003, session.SID, "slide-hash-1", "slide-hash-2", now+20, 30*time.Second, slidExpiry)
+	require.NoError(t, err)
+	assert.Equal(t, slidExpiry, slid.ExpiresAt)
+
+	stored, getErr := GetUserSessionBySID(session.SID)
+	require.NoError(t, getErr)
+	assert.Equal(t, slidExpiry, stored.ExpiresAt)
+	assert.Equal(t, UserSessionStatusActive, stored.Status)
 }
 
 func TestUserSessionPreviousRefreshHashNormalizesLegacyPadding(t *testing.T) {
