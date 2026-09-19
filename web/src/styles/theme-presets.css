@@ -1419,8 +1419,7 @@ html:not(.dark)
 /* Card shell: renders 13-渲染稿-v6-登录.html lines 123-127 and
  * 13b-渲染稿-v6-注册.html lines 123-127 verbatim (the two are byte-identical)
  * — neutral dark glass, no cyan rim, no gradient divider. */
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel {
   padding: 34px 36px 32px;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -1431,8 +1430,7 @@ html:not(.dark)
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(20px);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel h2 {
   font-size: 23px;
   font-weight: 650;
@@ -1440,77 +1438,65 @@ html:not(.dark)
 /* Card interior: render 13 lines 129-149 / 13b lines 128-155 verbatim.
  * `.csub` and `.reg` keep their render geometry; `.fld`'s 20px rhythm is
  * carried by the form's row gap. */
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel form {
   margin-top: 20px;
   gap: 20px;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-terms {
   margin-top: 20px;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-csub {
   margin-top: 9px;
   font-size: 13px;
   color: var(--ds-t2);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-reg {
   margin-top: 9px;
   font-size: 12.5px;
   color: var(--ds-t3);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-reg a {
   color: #7dd3fc;
   text-decoration: none;
   cursor: pointer;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-reg a:hover {
   text-decoration: underline;
 }
 /* `.fld .fl` — label row, with the forgot-password link on the baseline. */
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-fl {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel [data-slot='form-label'],
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel [data-slot='label'] {
   font-size: 12px;
   font-weight: 550;
   color: var(--ds-t2);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-forgot {
   font-size: 11.5px;
   font-weight: 400;
   color: #7dd3fc;
   cursor: pointer;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-forgot:hover {
   text-decoration: underline;
 }
 /* `.fin` — 42px glass field with the cyan focus ring. */
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel [data-slot='input'] {
   height: 42px;
   border-radius: 10px;
@@ -1520,25 +1506,21 @@ html:not(.dark)
   font-size: 13.5px;
   color: var(--ds-t1);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel [data-slot='input']::placeholder {
   color: var(--ds-t3);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel [data-slot='input']:focus {
   border-color: rgba(34, 211, 238, 0.45);
   box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.08);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-pw [data-slot='input'] {
   padding-right: 38px;
 }
 /* `.fin .eye` — password visibility toggle. */
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel
   [data-slot='button'][aria-label='Toggle password visibility']
   svg {
@@ -1549,8 +1531,7 @@ html:not(.dark)
 /* `.fin .send-code` — verification-code field carries the chip inside its own
  * glass box, so the field shell moves onto the wrapper and the input becomes
  * borderless. Must stay after the generic `[data-slot='input']` rule above. */
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-code {
   display: flex;
   align-items: center;
@@ -1561,14 +1542,12 @@ html:not(.dark)
   background: rgba(255, 255, 255, 0.04);
   padding: 0 13px;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-code:focus-within {
   border-color: rgba(34, 211, 238, 0.45);
   box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.08);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-code [data-slot='input'] {
   flex: 1;
   min-width: 0;
@@ -1578,14 +1557,12 @@ html:not(.dark)
   background: none;
   padding: 0;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-code [data-slot='input']:focus {
   border: none;
   box-shadow: none;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-send-code {
   flex: none;
   height: auto;
@@ -1599,14 +1576,12 @@ html:not(.dark)
   background: none;
   box-shadow: none;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-send-code:disabled {
   opacity: 0.5;
 }
 /* `.btn-login` — 44px blue→indigo→violet submit. */
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel [data-slot='button'][type='submit'] {
   margin-top: 26px;
   width: 100%;
@@ -1622,16 +1597,14 @@ html:not(.dark)
     0 8px 26px -6px rgba(99, 102, 241, 0.55),
     inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel [data-slot='button'][type='submit']
   svg {
   width: 15px;
   height: 15px;
 }
 /* `.agree` — inline consent line (13b lines 152-155). */
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-agree {
   margin-top: 18px;
   display: flex;
@@ -1643,8 +1616,7 @@ html:not(.dark)
   font-size: 11.5px;
   color: var(--ds-t3);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-agree [data-slot='label'] {
   align-items: baseline;
   font-size: 11.5px;
@@ -1652,30 +1624,26 @@ html:not(.dark)
   line-height: 1.4;
   color: var(--ds-t3);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-agree [data-slot='checkbox'] {
   width: 15px;
   height: 15px;
   margin-top: 0;
   border-radius: 4px;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-agree [data-slot='checkbox'][data-checked] {
   background: rgba(34, 211, 238, 0.75);
   border: 1px solid rgba(34, 211, 238, 0.6);
   color: #06121f;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-agree [data-slot='checkbox-indicator']
   svg {
   width: 10px;
   height: 10px;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-auth-panel .ds-auth-agree a {
   color: #7dd3fc;
   cursor: pointer;

@@ -163,7 +163,9 @@ export const CONTENT_LAYOUT_VALUES: ReadonlySet<ContentLayout> = new Set([
 ])
 
 export const THEME_COOKIE_KEYS = {
-  preset: 'theme_preset',
+  // -v2 suffix orphans pre-relaunch preset cookies so returning visitors
+  // re-land on the deep-space default (same rationale as vite-ui-theme-v2).
+  preset: 'theme_preset-v2',
   font: 'theme_font',
   radius: 'theme_radius',
   scale: 'theme_scale',

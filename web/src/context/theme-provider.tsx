@@ -32,8 +32,10 @@ type ResolvedTheme = Exclude<Theme, 'system'>
 
 // WO-019: deep-space preset is the approved console default and its styling
 // lives under the dark scope, so first-time visitors must land on dark.
+// The -v2 suffix orphans cookies written before the relaunch (visitors who
+// toggled the theme earlier would otherwise keep overriding the default).
 const DEFAULT_THEME = 'dark'
-const THEME_COOKIE_NAME = 'vite-ui-theme'
+const THEME_COOKIE_NAME = 'vite-ui-theme-v2'
 const THEME_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 // 1 year
 const THEMES = new Set<Theme>(['dark', 'light', 'system'])
 
