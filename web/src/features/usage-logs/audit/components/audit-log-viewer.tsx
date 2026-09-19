@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next'
 import { DataTablePage, DataTableRow, useDataTable } from '@/components/data-table'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth-store'
 
@@ -41,7 +41,10 @@ export function AuditLogViewer(props: {
   onAccessDenied?: () => Promise<void>
 }) {
   const { t } = useTranslation()
-  const deepSpaceDark = useDeepSpaceDark()
+  // Failed-row tint is structural (draft 40 tr.err keeps it in light); the
+  // ds-au-row-err values live in theme-presets.css (dark = the approved rose
+  // 5%, light = draft 40's rgba(220,38,38,0.05) verbatim).
+  const deepSpace = useDeepSpace()
   const userId = useAuthStore((state) => state.auth.user?.id)
   const [filters, setFilters] = useState<AuditFilters>({ p: 1, page_size: 20 })
   const [tokenScope, setTokenScope] = useState('all')
@@ -128,7 +131,7 @@ export function AuditLogViewer(props: {
             row={row}
             className={cn(
               'transition-colors',
-              deepSpaceDark && !row.original.success && 'bg-rose-500/[0.05]'
+              deepSpace && !row.original.success && 'ds-au-row-err'
             )}
             getColumnClassName={() => 'py-2'}
           />

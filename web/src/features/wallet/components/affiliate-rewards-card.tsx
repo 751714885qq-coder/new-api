@@ -26,7 +26,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { IconBadge } from '@/components/ui/icon-badge'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { formatQuota } from '@/lib/format'
 
 import type { UserWalletData } from '../types'
@@ -47,7 +47,9 @@ export function AffiliateRewardsCard({
   loading,
 }: AffiliateRewardsCardProps) {
   const { t } = useTranslation()
-  const deepSpaceDark = useDeepSpaceDark()
+  // Referral card frame is structural (draft 34 keeps it in light); the
+  // invite box glass comes from --ds-glass per mode.
+  const deepSpace = useDeepSpace()
   if (loading) {
     return (
       <Card data-card-hover='false' className='bg-muted/20 py-0'>
@@ -65,7 +67,7 @@ export function AffiliateRewardsCard({
 
   const hasRewards = (user?.aff_quota ?? 0) > 0
 
-  if (deepSpaceDark) {
+  if (deepSpace) {
     // Render 10-渲染稿-v6-钱包.html lines 441-450: 推荐计划 action card with
     // the invite box; the transfer/stats functionality is kept below the
     // render's content as live data slots.
@@ -97,7 +99,7 @@ export function AffiliateRewardsCard({
               padding: '0 10px',
               borderRadius: 8,
               border: '1px solid var(--ds-line)',
-              background: 'rgba(255,255,255,0.03)',
+              background: 'var(--ds-glass)',
             }}
           >
             <span

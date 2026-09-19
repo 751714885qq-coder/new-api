@@ -49,7 +49,7 @@ import {
 } from '@/components/ui/card'
 import { IconBadge } from '@/components/ui/icon-badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { usePasskeyManagement } from '@/features/auth/passkey'
 import {
   SecureVerificationDialog,
@@ -66,7 +66,10 @@ interface PasskeyCardProps {
 export function PasskeyCard({ loading: pageLoading }: PasskeyCardProps) {
   const { t } = useTranslation()
   // WO-019 render 27: cyan icon squares (.fic) in deep space only.
-  const deepSpaceDark = useDeepSpaceDark()
+  // WO-019 render 27 / light draft 41: header icon + divider and the status
+  // icon square are structural; the icon's light values live in the
+  // html:not(.dark) CSS.
+  const deepSpace = useDeepSpace()
   const [confirmOpen, setConfirmOpen] = useState(false)
   const {
     status,
@@ -171,9 +174,9 @@ export function PasskeyCard({ loading: pageLoading }: PasskeyCardProps) {
   return (
     <>
       <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
-        <CardHeader className={cn('p-3 sm:p-5', deepSpaceDark && 'border-b')}>
+        <CardHeader className={cn('p-3 sm:p-5', deepSpace && 'border-b')}>
           <div className='flex min-w-0 items-start gap-3'>
-            {deepSpaceDark && (
+            {deepSpace && (
               <IconBadge size='title' className='ds-fic'>
                 <Fingerprint />
               </IconBadge>
@@ -196,7 +199,7 @@ export function PasskeyCard({ loading: pageLoading }: PasskeyCardProps) {
                 <IconBadge
                   tone='info'
                   size='sm'
-                  className={deepSpaceDark ? 'ds-fic' : undefined}
+                  className={deepSpace ? 'ds-fic' : undefined}
                 >
                   <KeyRound />
                 </IconBadge>

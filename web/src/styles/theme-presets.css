@@ -754,8 +754,8 @@ For commercial licensing, please contact support@quantumnous.com
  * visual system (feTurbulence nebula, --mc-* token family). Like
  * `anthropic`, this preset defines its own full surface set instead of
  * relying on the primary-mix semantic bridge, so it is opted out below.
- * Light mode is an original design in the same color family (no mockup
- * baseline exists for light); subject to user visual review. */
+ * Light mode follows the approved light-pass renders (drafts 32–42):
+ * cold indigo-violet nebula on a #e9ecfa canvas, dark-navy ink family. */
 /* Deep Space is the shipped default preset (WO-019). The provider REMOVES
  * `data-theme-preset` when the active preset equals the default
  * (theme-customization-provider.tsx applyAttribute), so every deep-space
@@ -764,56 +764,75 @@ For commercial licensing, please contact support@quantumnous.com
  * via cookie when the user re-picks it from the drawer. */
 body:not([data-theme-preset]),
 [data-theme-preset='deep-space'] {
-  --background: oklch(0.966 0.016 262.8);
-  --foreground: oklch(0.249 0.043 271.4);
-  --card: oklch(0.982 0.008 265 / 0.8);
-  --card-foreground: oklch(0.249 0.043 271.4);
-  --popover: oklch(0.99 0.005 265 / 0.92);
-  --popover-foreground: oklch(0.249 0.043 271.4);
-  --primary: oklch(0.659 0.181 261.4);
-  --primary-foreground: oklch(1 0 0);
-  --violet: oklch(0.606 0.25 292.7);
-  --secondary: oklch(0.92 0.038 271);
-  --secondary-foreground: oklch(0.249 0.043 271.4);
-  --muted: oklch(0.94 0.02 265);
-  --muted-foreground: oklch(0.531 0.07 267.1);
-  --accent: oklch(0.92 0.038 271);
-  --accent-foreground: oklch(0.249 0.043 271.4);
-  --success: oklch(0.627 0.146 163.8);
-  --success-foreground: oklch(1 0 0);
-  --border: oklch(0.89 0.03 268);
-  --input: oklch(0.86 0.035 268);
-  --ring: oklch(0.659 0.181 261.4);
-  --chart-1: oklch(0.659 0.181 261.4);
-  --chart-2: oklch(0.599 0.23 286.2);
-  --chart-3: oklch(0.68 0.12 234.7);
-  --chart-4: oklch(0.75 0.15 74.9);
-  --chart-5: oklch(0.627 0.146 163.8);
+  /* Light pass tokens: draft 33 (:root) verbatim literals. --background is
+   * the composite of --ds-card glass over the #e9ecfa canvas (same rule as
+   * the dark block below), so bg-background surfaces blend on the glass. */
+  --background: rgb(247, 248, 252);
+  --foreground: #1b2450;
+  --card: var(--ds-card);
+  --card-foreground: #1b2450;
+  --popover: rgba(255, 255, 255, 0.97);
+  --popover-foreground: #1b2450;
+  --primary: #0891b2;
+  --primary-foreground: #ffffff;
+  --violet: #6d28d9;
+  --secondary: rgba(27, 36, 80, 0.06);
+  --secondary-foreground: #1b2450;
+  --muted: rgba(27, 36, 80, 0.06);
+  --muted-foreground: rgba(27, 36, 80, 0.72);
+  --accent: rgba(27, 36, 80, 0.06);
+  --accent-foreground: #1b2450;
+  --success: #059669;
+  --success-foreground: #ffffff;
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --info: #1d4ed8;
+  --info-foreground: #ffffff;
+  --neutral: rgba(27, 36, 80, 0.72);
+  --neutral-foreground: #ffffff;
+  --border: rgba(30, 35, 90, 0.1);
+  --input: rgba(30, 35, 90, 0.16);
+  --ring: #0891b2;
+  --chart-1: #0891b2;
+  --chart-2: #6d28d9;
+  --chart-3: #1d4ed8;
+  --chart-4: #0ea5e9;
+  --chart-5: #059669;
   --overview-accent-1: var(--chart-1);
   --overview-accent-2: var(--chart-2);
   --overview-accent-3: var(--chart-3);
-  --sidebar: oklch(0.945 0.02 264 / 0.72);
-  --sidebar-foreground: oklch(0.249 0.043 271.4);
-  --sidebar-primary: oklch(0.659 0.181 261.4);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.92 0.038 271);
-  --sidebar-accent-foreground: oklch(0.249 0.043 271.4);
-  --sidebar-border: oklch(0.89 0.03 268);
-  --sidebar-ring: oklch(0.659 0.181 261.4);
-  /* S-series tokens, light-mode same-family fallbacks (bespoke light pass pending) */
-  --ds-line: rgba(15, 23, 42, 0.08);
-  --ds-line-strong: rgba(15, 23, 42, 0.14);
-  --ds-t1: rgba(15, 23, 42, 0.92);
-  --ds-t2: rgba(15, 23, 42, 0.72);
-  --ds-t3: rgba(15, 23, 42, 0.5);
-  --ds-card: rgba(255, 255, 255, 0.72);
+  --sidebar: rgba(255, 255, 255, 0.35);
+  --sidebar-foreground: #1b2450;
+  --sidebar-primary: #0891b2;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(15, 35, 70, 0.04);
+  --sidebar-accent-foreground: #1b2450;
+  --sidebar-border: rgba(30, 35, 90, 0.1);
+  --sidebar-ring: #0891b2;
+  /* S-series tokens, light values from draft 33 :root + component rules */
+  --ds-line: rgba(30, 35, 90, 0.1);
+  --ds-line-strong: rgba(30, 35, 90, 0.16);
+  --ds-t1: #1b2450;
+  --ds-t2: rgba(27, 36, 80, 0.72);
+  --ds-t3: rgba(27, 36, 80, 0.48);
+  --ds-card: rgba(255, 255, 255, 0.62);
+  /* Draft 33/34 :root --glass verbatim: chips, ghost buttons, icon boxes. */
+  --ds-glass: rgba(255, 255, 255, 0.55);
+  /* Draft 34 .card shadow verbatim; DS_PANEL_STYLE/DsKpiCard consume it so
+   * the shared primitives stay render-verbatim in both modes. */
+  --ds-panel-shadow: 0 4px 24px rgba(30, 60, 120, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
   --ds-accent: #0891b2;
+  --ds-accent-bright: #0ea5e9;
   --ds-green: #059669;
   --ds-amber: #d97706;
-  --ds-delta-bad: rgba(15, 23, 42, 0.45);
-  --ds-axis: rgba(15, 23, 42, 0.55);
-  --skeleton-base: oklch(0.93 0.02 265);
-  --skeleton-highlight: oklch(0.965 0.01 265);
+  --ds-red: #dc2626;
+  --ds-delta-bad: rgba(27, 36, 80, 0.45);
+  --ds-axis: rgba(27, 36, 80, 0.55);
+  --skeleton-base: rgba(27, 36, 80, 0.08);
+  --skeleton-highlight: rgba(27, 36, 80, 0.04);
   /* Same html-scope-resolution caveat as the dark block below: table
    * tokens must be local or they render with the stock palette. */
   --table-row: transparent;
@@ -895,6 +914,8 @@ body:not([data-theme-preset]),
   --ds-t2: rgba(255, 255, 255, 0.72);
   --ds-t3: rgba(255, 255, 255, 0.5);
   --ds-card: rgba(9, 12, 22, 0.36);
+  --ds-panel-shadow: 0 4px 24px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
   --ds-accent: #22d3ee;
   --ds-green: #34d399;
   --ds-amber: #fbbf24;
@@ -931,6 +952,14 @@ body[data-theme-preset='deep-space'] {
   background-color: #05060c;
   background-image: none;
 }
+html:not(.dark) body:not([data-theme-preset]),
+html:not(.dark) body[data-theme-preset='deep-space'] {
+  /* Light pass (draft 33): flat #e9ecfa canvas; the dark-navy stars are
+   * .ds-lstarfield elements painted by DeepSpaceBackdrop, so the white
+   * star tile above must not run here. */
+  background-color: #e9ecfa;
+  background-image: none;
+}
 
 /* ── Deep Space glass surfaces (WO-019 v2) ────────────────────────────── */
 /* The DeepSpaceBackdrop canvas renders the animated sky at negative
@@ -952,12 +981,26 @@ body[data-theme-preset='deep-space'] {
   div.bg-background.min-h-svh {
   background-color: transparent;
 }
-:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+/* Sidebar glass: dark tint per v6-01-s1 .side; light tint per draft 33
+ * .side (white frost over the nebula canvas). */
+.dark
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='sidebar-inner'] {
   background: linear-gradient(
     180deg,
     rgba(6, 9, 18, 0.3),
     rgba(5, 8, 16, 0.22)
+  );
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-inner'] {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.42),
+    rgba(255, 255, 255, 0.28)
   );
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -1053,26 +1096,22 @@ body[data-theme-preset='deep-space'] {
 /* Render .side is flush top-to-bottom on the left edge; the stock container
  * is offset by --app-header-height and inset-variant padding which only
  * exist under the old shell. */
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='sidebar-container'] {
   top: 0;
   height: 100svh;
   padding: 0;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='sidebar-inner'] {
   border-radius: 0;
   box-shadow: none;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .group\/sidebar-wrapper {
   --sidebar-width: 232px;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-side-brand {
   padding: 20px 14px 18px;
 }
@@ -1092,8 +1131,7 @@ body[data-theme-preset='deep-space'] {
   );
   box-shadow: 0 0 12px rgba(34, 211, 238, 0.45);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-side-brand-name {
   font-size: 12px;
   letter-spacing: 0.22em;
@@ -1101,13 +1139,11 @@ body[data-theme-preset='deep-space'] {
   color: var(--ds-t1);
   white-space: nowrap;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='sidebar-group'] {
   margin-bottom: 18px;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='sidebar-group-label'] {
   padding: 0 10px 8px;
   font-size: 10.5px;
@@ -1115,13 +1151,11 @@ body[data-theme-preset='deep-space'] {
   font-weight: 600;
   color: var(--ds-t3);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='sidebar-menu'] {
   gap: 2px;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='sidebar-menu-button'] {
   height: 34px;
   gap: 10px;
@@ -1130,8 +1164,7 @@ body[data-theme-preset='deep-space'] {
   font-size: 13px;
   color: var(--ds-t2);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   [data-slot='sidebar-menu-button']
   svg {
   width: 15px;
@@ -1145,8 +1178,7 @@ body[data-theme-preset='deep-space'] {
 }
 
 /* Topbar slots: render .search / .bell / avatar (lines 142-150). */
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-topbar-search {
   margin-left: auto;
   width: 230px;
@@ -1168,16 +1200,14 @@ body[data-theme-preset='deep-space'] {
   .ds-topbar-search:hover {
   background: rgba(255, 255, 255, 0.06);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-topbar-search
   svg {
   width: 13px;
   height: 13px;
   flex: none;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-topbar-kbd {
   margin-left: auto;
   font-size: 10.5px;
@@ -1185,8 +1215,7 @@ body[data-theme-preset='deep-space'] {
   border-radius: 4px;
   padding: 1px 5px;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-topbar-bell {
   width: 32px;
   height: 32px;
@@ -1195,16 +1224,14 @@ body[data-theme-preset='deep-space'] {
   background: rgba(255, 255, 255, 0.03);
   color: var(--ds-t2);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-topbar-bell
   svg {
   width: 14px;
   height: 14px;
 }
 /* Language + theme-settings triggers share the bell's 32px glass recipe. */
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-topbar-icon
   [data-slot='button'] {
   width: 32px;
@@ -1214,16 +1241,14 @@ body[data-theme-preset='deep-space'] {
   background: rgba(255, 255, 255, 0.03);
   color: var(--ds-t2);
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-topbar-icon
   [data-slot='button']
   svg {
   width: 14px;
   height: 14px;
 }
-.dark
-  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-topbar-avatar
   [data-slot='avatar'] {
   width: 30px;
@@ -1236,6 +1261,57 @@ body[data-theme-preset='deep-space'] {
   box-shadow:
     0 0 0 1px color-mix(in oklch, var(--primary) 55%, transparent),
     0 6px 28px -6px color-mix(in oklch, var(--violet) 65%, transparent);
+}
+
+/* Light pass chrome (drafts 32–42, values from draft 33 lines 138-216):
+ * the shell structure above is mode-agnostic; only these values differ. */
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-menu-button'][data-active='true'] {
+  background: rgba(8, 145, 178, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(8, 145, 178, 0.22);
+  color: #0c4a6e;
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='sidebar-menu-button']:hover {
+  background: rgba(15, 35, 70, 0.04);
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-side-brand-orb {
+  background: radial-gradient(
+    circle at 32% 30%,
+    #a5f3fc 0%,
+    #22d3ee 34%,
+    #3b82f6 72%,
+    #1e40af 100%
+  );
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-search {
+  background: rgba(255, 255, 255, 0.6);
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-search:hover {
+  background: rgba(255, 255, 255, 0.75);
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-bell,
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-icon
+  [data-slot='button'] {
+  background: rgba(255, 255, 255, 0.6);
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='button'].bg-primary {
+  background-image: linear-gradient(92deg, #3b82f6, #6366f1 55%, #8b5cf6);
+  box-shadow: 0 4px 18px -6px rgba(99, 102, 241, 0.55);
 }
 
 /* Wallet first metric becomes the visual energy core from the rendering
@@ -2367,6 +2443,307 @@ body[data-theme-preset='deep-space'] {
   }
 }
 
+/* ── Deep Space light backdrop (WO-019 light pass): draft 33 recipe ── */
+/* Cold indigo-violet nebula on a bright canvas — not a daylight sky. The
+ * DOM layers live in deep-space-backdrop.tsx (light branch); values are
+ * frozen to evidence/WO-019-exec/33-渲染稿-v6-亮色-API密钥.html lines
+ * 30-131 — retune there first, never here alone. Class mapping:
+ * .bg-space→.ds-lsky, .bg-noise→.ds-lnoise, .milkyway→.ds-lmilkyway,
+ * .starfield→.ds-lstarfield, .star.dark→.ds-lstar,
+ * .star.bright→.ds-lstar-bright, .sparkles→.ds-lsparkles,
+ * .moon→.ds-lmoon, .particles→.ds-lparticles, .pt→.ds-lpt,
+ * .horizon→.ds-lhorizon, .vignette→.ds-lvignette. */
+.ds-lsky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #dfe3fa 0%, #e7eafa 55%, #eceefa 100%);
+}
+.ds-lsky::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      1100px 680px at 80% -10%,
+      rgba(129, 140, 248, 0.34),
+      transparent 62%
+    ),
+    radial-gradient(
+      900px 640px at -8% 30%,
+      rgba(167, 139, 250, 0.26),
+      transparent 60%
+    ),
+    radial-gradient(
+      700px 520px at 38% 76%,
+      rgba(129, 140, 248, 0.2),
+      transparent 62%
+    ),
+    radial-gradient(
+      1200px 560px at 60% 114%,
+      rgba(103, 232, 249, 0.2),
+      transparent 65%
+    );
+}
+/* Draft 33 line 41: multiply-blended turbulence (vs screen in dark). */
+.ds-lnoise {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.05;
+}
+/* 银道面：亮色深空里的发光星带（白心紫晕，双层）— draft 33 lines 43-50 */
+.ds-lmilkyway {
+  position: absolute;
+  left: -12%;
+  top: 6%;
+  width: 132%;
+  height: 300px;
+  transform: rotate(-16deg);
+  background: linear-gradient(
+    90deg,
+    transparent 2%,
+    rgba(150, 160, 255, 0.3) 28%,
+    rgba(200, 208, 255, 0.55) 50%,
+    rgba(150, 160, 255, 0.3) 72%,
+    transparent 98%
+  );
+  filter: blur(26px);
+}
+.ds-lmilkyway::before {
+  content: '';
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  top: 34%;
+  bottom: 34%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.75) 40%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 255, 255, 0.75) 60%,
+    transparent 100%
+  );
+  filter: blur(10px);
+}
+/* 星点：暗星（深蓝点）+ 亮星（✦ 白心蓝晕），满幅分布 — draft 33 lines 51-71 */
+.ds-lstarfield {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ds-lstar {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(32, 40, 100, 0.95);
+  animation:
+    ds-ltwinkle var(--tdur) ease-in-out infinite,
+    ds-ldrift var(--ddur) ease-in-out infinite alternate;
+  animation-delay: var(--tdel), var(--ddel);
+}
+.ds-lstar-bright {
+  position: absolute;
+  clip-path: polygon(
+    50% 0,
+    60% 40%,
+    100% 50%,
+    60% 60%,
+    50% 100%,
+    40% 60%,
+    0 50%,
+    40% 40%
+  );
+  background: linear-gradient(135deg, #eef0ff 0%, #aab4ff 55%, #7c8af5 100%);
+  filter: drop-shadow(0 0 4px rgba(110, 120, 240, 0.75))
+    drop-shadow(0 0 12px rgba(110, 120, 240, 0.4));
+  animation:
+    ds-ltwinkle var(--tdur) ease-in-out infinite,
+    ds-ldrift var(--ddur) ease-in-out infinite alternate;
+  animation-delay: var(--tdel), var(--ddel);
+}
+/* 亮星浮层：在内容层之上，低透明度（亮色玻璃会遮死玻璃后的星点）。
+ * Draft 33 .sparkles z-6 / opacity 0.55; the React layer carries z-30
+ * (below the drawer scrim z-40+), matching the draft's stacking intent. */
+.ds-lsparkles .ds-lstar-bright {
+  opacity: 0.55;
+}
+@keyframes ds-ldrift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(var(--dx), var(--dy), 0);
+  }
+}
+@keyframes ds-ltwinkle {
+  0%,
+  100% {
+    opacity: var(--so);
+  }
+  50% {
+    opacity: calc(var(--so) * 0.45);
+  }
+}
+/* 淡月弧：左下角，透过侧栏玻璃可见（冷紫月光）— draft 33 lines 73-98 */
+.ds-lmoon {
+  position: absolute;
+  width: 880px;
+  height: 880px;
+  left: -420px;
+  bottom: -560px;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      52% 44% at 60% 20%,
+      rgba(255, 255, 255, 0.9),
+      rgba(205, 212, 252, 0.35) 46%,
+      transparent 70%
+    ),
+    radial-gradient(
+      120% 120% at 68% 6%,
+      rgba(255, 255, 255, 0.6),
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 50% 30%,
+      #ccd4f5 0%,
+      #c0caef 40%,
+      #b4c0ea 66%,
+      #a8b4e6 100%
+    );
+  box-shadow:
+    0 -1px 0 0 rgba(255, 255, 255, 0.95),
+    0 -6px 22px -4px rgba(255, 255, 255, 0.75),
+    0 -30px 80px -14px rgba(165, 175, 245, 0.5),
+    0 -100px 220px -50px rgba(150, 160, 240, 0.35),
+    inset 0 26px 60px -28px rgba(255, 255, 255, 0.85),
+    inset -40px -60px 140px rgba(110, 120, 200, 0.4);
+}
+.ds-lmoon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      34% 10% at 55% 9%,
+      rgba(255, 255, 255, 0.6),
+      transparent 70%
+    ),
+    radial-gradient(
+      50% 12% at 40% 15%,
+      rgba(255, 255, 255, 0.4),
+      transparent 72%
+    ),
+    radial-gradient(
+      40% 9% at 60% 22%,
+      rgba(255, 255, 255, 0.28),
+      transparent 70%
+    ),
+    radial-gradient(
+      30% 8% at 48% 28%,
+      rgba(255, 255, 255, 0.22),
+      transparent 70%
+    );
+  filter: blur(5px);
+}
+.ds-lmoon::after {
+  content: '';
+  position: absolute;
+  inset: -30px;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    transparent 82%,
+    rgba(167, 139, 250, 0.28) 92%,
+    transparent 100%
+  );
+}
+/* floating glow particles — behind the frosted glass — draft 33 lines 100-117 */
+.ds-lparticles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ds-lpt {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(186, 196, 255, 0.45) 40%,
+    transparent 70%
+  );
+  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  animation: ds-lpfloat var(--dur) linear infinite;
+  animation-delay: var(--del);
+}
+.ds-lpt.violet {
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(199, 186, 255, 0.42) 40%,
+    transparent 70%
+  );
+  box-shadow: 0 0 12px 3px rgba(199, 186, 255, 0.5);
+}
+.ds-lpt.orb {
+  filter: blur(6px);
+}
+@keyframes ds-lpfloat {
+  0% {
+    transform: translate3d(0, 44px, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: var(--po);
+  }
+  85% {
+    opacity: var(--po);
+  }
+  100% {
+    transform: translate3d(var(--sw), -160px, 0);
+    opacity: 0;
+  }
+}
+/* near-flat ground horizon at bottom-right — draft 33 lines 119-128.
+   Render pins top:874px on a 1000px canvas; bottom-anchored like the dark
+   .ds-horizon so the same arc shows at any viewport height. */
+.ds-lhorizon {
+  position: absolute;
+  width: 3600px;
+  height: 3600px;
+  left: 32%;
+  bottom: -3474px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #eef0fd 0%, #e4e8fa 12%, #dae0f7 40%);
+  box-shadow:
+    0 -1px 0 0 rgba(255, 255, 255, 0.9),
+    0 -14px 42px -8px rgba(200, 205, 250, 0.65),
+    0 -60px 160px -30px rgba(180, 190, 245, 0.5),
+    inset 0 24px 48px -24px rgba(255, 255, 255, 0.75);
+}
+.ds-lvignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    130% 120% at 50% 42%,
+    transparent 62%,
+    rgba(80, 90, 170, 0.12) 100%
+  );
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-lstar,
+  .ds-lstar-bright {
+    animation: none;
+  }
+  .ds-lpt {
+    animation: none;
+    opacity: var(--po);
+  }
+}
+
 /* Wallet screen (render 10-渲染稿-v6-钱包.html): the hero/action buttons.
    Render .btn-primary (lines 161-166) and .btn-ghost (167-171) verbatim;
    these classes only exist inside the deep-space wallet branch. */
@@ -2460,9 +2837,7 @@ body[data-theme-preset='deep-space'] {
   background: var(--ds-card);
   border-color: var(--ds-line);
   backdrop-filter: blur(16px);
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  box-shadow: var(--ds-panel-shadow);
 }
 
 /* Recharge drawer (render 11-渲染稿-v6-钱包-充值抽屉.html lines 229-346):
@@ -2737,6 +3112,226 @@ body[data-theme-preset='deep-space'] {
   transform-origin: 0 0;
 }
 
+/* Light pass (drafts 34-35): wallet hero buttons + recharge drawer. The
+ * dark rules above are unprefixed, so each light counterpart re-declares
+ * only the hardcoded dark values; properties backed by --ds-* tokens
+ * resolve per mode on their own. 申报: the render has no light literal for
+ * the redeem field (its open state shows the pay flow), so the redeem
+ * input/button follow the drawer's glass recipe and the link color #0e7490
+ * from draft 34. */
+html:not(.dark) .ds-btn-primary {
+  color: #fff;
+  background: linear-gradient(92deg, #3b82f6, #6366f1 55%, #8b5cf6);
+  box-shadow: 0 4px 18px -6px rgba(99, 102, 241, 0.55);
+}
+html:not(.dark) .ds-btn-ghost {
+  border: 1px solid var(--ds-line-strong);
+  background: var(--ds-glass);
+  box-shadow: none;
+}
+html:not(.dark) .ds-rd-scrim {
+  background: rgba(30, 35, 90, 0.3);
+}
+html:not(.dark) .ds-rd-drawer {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.97),
+    rgba(248, 250, 255, 0.97)
+  );
+  box-shadow: -40px 0 120px rgba(30, 60, 120, 0.18);
+}
+html:not(.dark) .ds-rd-x {
+  background: var(--ds-glass);
+}
+html:not(.dark) .ds-rd-amount-box {
+  border: 1px solid rgba(8, 145, 178, 0.35);
+  background: rgba(8, 145, 178, 0.05);
+  box-shadow:
+    0 0 0 3px rgba(8, 145, 178, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+html:not(.dark) .ds-rd-chip {
+  background: var(--ds-glass);
+}
+html:not(.dark) .ds-rd-chip.on {
+  border-color: rgba(8, 145, 178, 0.5);
+  color: #0c4a6e;
+  background: rgba(8, 145, 178, 0.08);
+  box-shadow: 0 0 12px -2px rgba(8, 145, 178, 0.35);
+}
+html:not(.dark) .ds-rd-pay {
+  background: var(--ds-glass);
+}
+html:not(.dark) .ds-rd-pay.on {
+  border-color: rgba(8, 145, 178, 0.5);
+  background: rgba(8, 145, 178, 0.06);
+}
+html:not(.dark) .ds-rd-pay.on .radio::after {
+  box-shadow: 0 0 6px rgba(8, 145, 178, 0.8);
+}
+html:not(.dark) .ds-rd-pay-btn {
+  color: #fff;
+  background: linear-gradient(92deg, #3b82f6, #6366f1 55%, #8b5cf6);
+  box-shadow: 0 6px 22px -4px rgba(99, 102, 241, 0.55);
+}
+html:not(.dark) .ds-rd-redeem input {
+  background: var(--ds-glass);
+}
+html:not(.dark) .ds-rd-redeem input:focus {
+  border-color: rgba(8, 145, 178, 0.4);
+}
+html:not(.dark) .ds-rd-redeem button {
+  border: 1px solid rgba(8, 145, 178, 0.4);
+  background: rgba(8, 145, 178, 0.1);
+  color: #0e7490;
+}
+html:not(.dark) .ds-rd-iframe-wrap {
+  background: #fff;
+  box-shadow: 0 4px 24px rgba(30, 60, 120, 0.08);
+}
+
+/* Light pass (drafts 37-38): auth screens. The dark rules above are scoped
+ * `.dark :is(...)`; these light counterparts are scoped to the deep-space
+ * preset in light mode because .ds-auth-panel renders in stock mode too.
+ * Brand block (h1 gradient / gw / feat stroke) takes draft 37's literals;
+ * 申报: draft 38's brand block differs slightly (#3b4fc0 / #7c4fd0, orb
+ * #a5f3fc) — treated as draft noise against 37, which matches the already
+ * implemented dark orb verbatim. The planet drop-shadow is draft 37's only
+ * declared light decoration (亮色融合，已申报). */
+/* Scope note: deep-space is the default preset, so the provider strips
+ * data-theme-preset from <body> — match both the attribute and its absence,
+ * like every dark rule above. Inputs are matched by element because
+ * FormControl (a Radix Slot) overwrites the Input's data-slot with
+ * "form-control", so [data-slot='input'] never matches inside auth forms. */
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-auth-panel {
+  padding: 34px 36px 32px;
+  border: 1px solid var(--ds-line-strong);
+  border-radius: 18px;
+  background: var(--ds-card);
+  box-shadow: var(--ds-panel-shadow);
+  backdrop-filter: blur(16px);
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-auth-panel
+  .ds-auth-reg
+  a {
+  color: #0e7490;
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-auth-panel
+  .ds-auth-forgot {
+  color: #0e7490;
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-auth-panel
+  input {
+  border: 1px solid rgba(30, 35, 90, 0.1);
+  background: rgba(255, 255, 255, 0.6);
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-auth-panel
+  input:focus {
+  border-color: rgba(8, 145, 178, 0.5);
+  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.08);
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-auth-panel
+  .ds-auth-code {
+  border: 1px solid rgba(30, 35, 90, 0.1);
+  background: rgba(255, 255, 255, 0.6);
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-auth-panel
+  .ds-auth-code:focus-within {
+  border-color: rgba(8, 145, 178, 0.5);
+  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.08);
+}
+/* The code chip keeps its own glass shell; the inner input stays borderless. */
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-auth-panel
+  .ds-auth-code
+  input {
+  border: none;
+  background: none;
+  box-shadow: none;
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-auth-panel
+  .ds-auth-code
+  input:focus {
+  border: none;
+  box-shadow: none;
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-auth-panel
+  .ds-auth-send-code {
+  color: #0e7490;
+  border-color: rgba(8, 145, 178, 0.35);
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-auth-panel
+  .ds-auth-agree
+  [data-slot='checkbox'][data-checked] {
+  background: rgba(8, 145, 178, 0.75);
+  border-color: rgba(8, 145, 178, 0.6);
+  color: #06121f;
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-auth-panel
+  .ds-auth-agree
+  a {
+  color: #0e7490;
+}
+html:not(.dark) .ds-auth-brand h1 {
+  background: linear-gradient(92deg, #4353d9 0%, #7c3aed 45%, #0e7490 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+html:not(.dark) .ds-auth-gw {
+  color: #0e7490;
+}
+html:not(.dark) .ds-auth-feat svg {
+  stroke: #0e7490;
+}
+html:not(.dark) .ds-earth-big,
+html:not(.dark) .ds-earth-small {
+  filter: drop-shadow(0 20px 44px rgba(30, 60, 120, 0.16));
+}
+
+/* Light pass (drafts 36/36b): profile helpers. Only the hardcoded dark
+ * values are re-declared; token-backed properties resolve per mode. 申报:
+ * draft 36's .ntile carries background var(--glass); the dark tile's
+ * transparent background was a dark-panel-specific ruling (2026-09-18), so
+ * the light tile follows the render verbatim. */
+html:not(.dark) .ds-ntile {
+  background: var(--ds-glass);
+}
+html:not(.dark) .ds-ntile[data-state='on'] {
+  border-color: rgba(8, 145, 178, 0.5);
+  color: #0c4a6e;
+  background: rgba(8, 145, 178, 0.07);
+  box-shadow: 0 0 12px -2px rgba(8, 145, 178, 0.35);
+}
+html:not(.dark) .ds-btn-ghost2 {
+  background: var(--ds-glass);
+}
+html:not(.dark) .ds-btn-ghost2:hover {
+  border-color: rgba(8, 145, 178, 0.35);
+}
+
 /* API key inline group quick-switch (render 24-渲染稿-v6-API密钥.html):
  * deep-space capsule trigger and group switch menu; these classes only
  * exist inside the deep-space branch of the keys feature
@@ -2990,4 +3585,121 @@ body[data-theme-preset='deep-space'] {
   color: #67e8f9;
   border-color: rgba(34, 211, 238, 0.45);
   background: rgba(34, 211, 238, 0.09);
+}
+
+/* Failed-row tint (draft 40 tr.err). The class replaced the dark batch's
+ * bg-rose-500/[0.05]; the dark value is byte-equivalent (rose-500 5%), the
+ * light value is draft 40's rgba(220,38,38,0.05) verbatim. */
+.ds-au-row-err {
+  background: rgba(244, 63, 94, 0.05);
+}
+
+/* ── Light pass (drafts 33/39/40/41/42): light counterparts of the
+ * dark-literal ds-* rules above. These classes render only inside
+ * deep-space-gated branches, so a plain html:not(.dark) prefix is safe.
+ * 申报: draft 40 has no light dye for the failed HTTP code — #b91c1c is the
+ * standard light red used across this batch, counterpart of the approved
+ * dark #fca5a5; draft 41 dyes no danger title in light — text-rose-700 is
+ * the counterpart of dark text-rose-300 (applied in JSX). */
+html:not(.dark) .ds-au-row-err {
+  background: rgba(220, 38, 38, 0.05);
+}
+html:not(.dark) .ds-au-ident {
+  border-color: rgba(8, 145, 178, 0.22);
+  background: rgba(8, 145, 178, 0.07);
+  color: #0e7490;
+}
+html:not(.dark) .ds-au-http-bad {
+  color: #b91c1c;
+}
+html:not(.dark) .ds-stat-chip {
+  background: rgba(255, 255, 255, 0.6);
+}
+html:not(.dark) .ds-lt-up {
+  color: #047857;
+  border-color: rgba(5, 150, 105, 0.35);
+  background: rgba(5, 150, 105, 0.08);
+}
+html:not(.dark) .ds-lt-cy {
+  color: #0e7490;
+  border-color: rgba(8, 145, 178, 0.35);
+  background: rgba(8, 145, 178, 0.08);
+}
+html:not(.dark) .ds-lt-pu {
+  color: #6d28d9;
+  border-color: rgba(109, 40, 217, 0.35);
+  background: rgba(109, 40, 217, 0.08);
+}
+html:not(.dark) .ds-lt-dn {
+  color: #b91c1c;
+  border-color: rgba(220, 38, 38, 0.35);
+  background: rgba(220, 38, 38, 0.08);
+}
+html:not(.dark) .ds-lt-info {
+  color: #1d4ed8;
+  border-color: rgba(37, 99, 235, 0.35);
+  background: rgba(37, 99, 235, 0.08);
+}
+html:not(.dark) .ds-lt-or {
+  color: #b45309;
+  border-color: rgba(217, 119, 6, 0.35);
+  background: rgba(217, 119, 6, 0.08);
+}
+html:not(.dark) .ds-fic {
+  color: #0e7490;
+  background: rgba(8, 145, 178, 0.08);
+  border-color: rgba(8, 145, 178, 0.2);
+}
+html:not(.dark) .ds-fic-danger {
+  color: #b91c1c;
+  background: rgba(220, 38, 38, 0.08);
+  border-color: rgba(220, 38, 38, 0.25);
+}
+/* Draft 41 .fcard.danger: light keeps the card's own shadow, only the rim
+ * recolors (the dark rule's inset-ring box-shadow is .dark-scoped). */
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='card'].ds-fcard-danger {
+  --tw-ring-color: rgba(220, 38, 38, 0.28);
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  [data-slot='badge'].ds-gb-cy {
+  border-color: rgba(8, 145, 178, 0.3);
+  background: rgba(8, 145, 178, 0.07);
+  color: #0e7490;
+}
+html:not(.dark) .ds-pchip {
+  background: rgba(15, 35, 70, 0.03);
+}
+html:not(.dark) .ds-pchip-on {
+  color: #0e7490;
+  border-color: rgba(8, 145, 178, 0.45);
+  background: rgba(8, 145, 178, 0.09);
+}
+html:not(.dark) .ds-gqs-trigger {
+  border-color: rgba(8, 145, 178, 0.3);
+  background: rgba(8, 145, 178, 0.07);
+  color: #0e7490;
+}
+html:not(.dark) .ds-gqs-trigger:hover {
+  background: rgba(8, 145, 178, 0.12);
+}
+html:not(.dark) .ds-gqs-dot-auto {
+  box-shadow: 0 0 6px rgba(8, 145, 178, 0.8);
+}
+html:not(.dark) .ds-gqs-menu {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.97),
+    rgba(248, 250, 255, 0.97)
+  );
+  box-shadow: 0 12px 32px rgba(30, 60, 120, 0.18);
+}
+html:not(.dark) .ds-gqs-item:hover {
+  background: rgba(15, 35, 70, 0.05);
+}
+html:not(.dark) .ds-gqs-item[data-selected='true'] {
+  color: #0e7490;
+  background: rgba(8, 145, 178, 0.08);
 }

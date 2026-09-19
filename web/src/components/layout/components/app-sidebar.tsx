@@ -25,7 +25,7 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar'
 import { useLayout } from '@/context/layout-provider'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { useSidebarView } from '@/hooks/use-sidebar-view'
 import { MOTION_TRANSITION, MOTION_VARIANTS } from '@/lib/motion'
 
@@ -54,11 +54,12 @@ export function AppSidebar() {
   const { collapsible, variant } = useLayout()
   const { key, view, navGroups } = useSidebarView()
   const shouldReduce = useReducedMotion()
-  const deepSpaceDark = useDeepSpaceDark()
+  // Brand header is deep-space chrome in both modes (light renders keep it).
+  const deepSpace = useDeepSpace()
 
   return (
     <Sidebar collapsible={collapsible} variant={variant}>
-      {deepSpaceDark && (
+      {deepSpace && (
         <SidebarHeader className='ds-side-brand'>
           <SystemBrand variant='compact' />
         </SidebarHeader>

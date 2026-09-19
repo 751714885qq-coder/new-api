@@ -21,7 +21,7 @@ import { getRouteApi } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 import { Skeleton } from '@/components/ui/skeleton'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { formatLogQuota } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
@@ -39,21 +39,20 @@ function StatBadge(props: {
   tone: 'sky' | 'rose' | 'slate'
 }) {
   // WO-019 render 25: stat chip with a full-height accent bar on the left
-  // (render .stat-chip / .sc-sky / .sc-rose / .sc-slate).
-  const deepSpaceDark = useDeepSpaceDark()
+  // (render .stat-chip / .sc-sky / .sc-rose / .sc-slate). Chip chrome is
+  // structural; its light bg lives in the html:not(.dark) CSS (draft 39
+  // rgba(255,255,255,0.60) verbatim).
+  const deepSpace = useDeepSpace()
   return (
     <span
       className={cn(
         'border-border/60 bg-muted/25 inline-flex h-7 items-center gap-2 rounded-md border px-2.5 text-xs shadow-xs',
-        deepSpaceDark && 'ds-stat-chip',
-        deepSpaceDark && `ds-stat-chip-${props.tone}`
+        deepSpace && 'ds-stat-chip',
+        deepSpace && `ds-stat-chip-${props.tone}`
       )}
     >
       <span
-        className={cn(
-          'h-3.5 w-0.5 rounded-full',
-          !deepSpaceDark && props.accent
-        )}
+        className={cn('h-3.5 w-0.5 rounded-full', !deepSpace && props.accent)}
       />
       <span className='text-muted-foreground'>{props.label}</span>
       <span className='text-foreground/85 font-mono font-semibold tabular-nums'>

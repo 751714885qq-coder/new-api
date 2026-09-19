@@ -45,7 +45,7 @@ import {
   getTaskUsagePriceUnitLabelKey,
 } from '@/features/pricing/lib/dynamic-price'
 import type { BillingUsageSchema } from '@/features/pricing/types'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { getUserAvatarFallback, getUserAvatarStyle } from '@/lib/avatar'
 import { formatBillingCurrencyFromUSD } from '@/lib/currency'
 import { formatLogQuota, formatTimestampToDate } from '@/lib/format'
@@ -352,7 +352,10 @@ export function useCommonLogsColumns(
   isRoot: boolean
 ): ColumnDef<UsageLog>[] {
   const { t } = useTranslation()
-  const deepSpaceDark = useDeepSpaceDark()
+  // Log-type badges are structural (draft 39 keeps them in light); the
+  // ds-lt-* light values live in the html:not(.dark) section of
+  // theme-presets.css (draft 39 .mini up/cy/pu/dn/info/or verbatim).
+  const deepSpace = useDeepSpace()
   const columns: ColumnDef<UsageLog>[] = [
     {
       accessorKey: 'created_at',
@@ -373,13 +376,13 @@ export function useCommonLogsColumns(
               size='sm'
               copyable={false}
               className={
-                deepSpaceDark
+                deepSpace
                   ? cn('-ml-1.5', deepSpaceLogTypeClass[log.type])
                   : '-ml-1.5 !text-xs [&_span]:!text-xs'
               }
             >
               {t(config.label)}
-              {deepSpaceDark && DEPRECATED_LOG_TYPES.has(log.type) && (
+              {deepSpace && DEPRECATED_LOG_TYPES.has(log.type) && (
                 <span className='opacity-70'>{t('Deprecated')}</span>
               )}
             </StatusBadge>

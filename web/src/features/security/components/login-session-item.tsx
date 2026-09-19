@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import dayjs from '@/lib/dayjs'
 import type { LoginSession } from '@/stores/auth-store'
 
@@ -35,9 +35,10 @@ interface LoginSessionItemProps {
 
 export function LoginSessionItem({ session, onRevoke }: LoginSessionItemProps) {
   const { t } = useTranslation()
-  // WO-019 render 27: the current-session marker uses the render's cyan
-  // glass badge (.gbadge.cy) in deep space only.
-  const deepSpaceDark = useDeepSpaceDark()
+  // WO-019 render 27 / light draft 41: the current-session marker uses the
+  // render's cyan glass badge (.gbadge.cy); its light values live in the
+  // html:not(.dark) CSS.
+  const deepSpace = useDeepSpace()
   const maxTouchPoints =
     session.current && typeof navigator !== 'undefined'
       ? navigator.maxTouchPoints
@@ -61,7 +62,7 @@ export function LoginSessionItem({ session, onRevoke }: LoginSessionItemProps) {
           {session.current && (
             <Badge
               variant='secondary'
-              className={deepSpaceDark ? 'ds-gb-cy' : undefined}
+              className={deepSpace ? 'ds-gb-cy' : undefined}
             >
               {t('Current')}
             </Badge>

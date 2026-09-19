@@ -27,6 +27,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { getUserAvatarFallback, getUserAvatarStyle } from '@/lib/avatar'
 import { formatCompactNumber, formatQuota } from '@/lib/format'
@@ -46,6 +47,11 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
   const { t } = useTranslation()
+  // Banner frame is structural (drafts 36/36b keep it in light); the tag
+  // colors, id-chip glass and avatar ring carry dark literals (drafts 36/
+  // 36b: teal group tag #0e7490, green bound tag #047857, amber warn tag
+  // #b45309, light ring rgba(8,145,178,...)).
+  const deepSpace = useDeepSpace()
   const deepSpaceDark = useDeepSpaceDark()
 
   if (loading) {
@@ -89,7 +95,7 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
   const avatarFallback = getUserAvatarFallback(avatarName)
   const avatarFallbackStyle = getUserAvatarStyle(avatarName)
   const roleLabel = getRoleLabel(profile.role)
-  if (deepSpaceDark) {
+  if (deepSpace) {
     // Render 12-渲染稿-v6-个人资料.html lines 346-373 verbatim: user banner
     // with avatar, name + group / email-bound tags, meta row (username,
     // copyable user-id chip, registered date) and three live stat columns.
@@ -108,8 +114,7 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
           borderRadius: 14,
           background: 'var(--ds-card)',
           backdropFilter: 'blur(16px)',
-          boxShadow:
-            '0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.045)',
+          boxShadow: 'var(--ds-panel-shadow)',
           padding: '14px 22px',
         }}
       >
@@ -122,9 +127,10 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
             border: '1px solid var(--ds-line-strong)',
             fontSize: 23,
             fontWeight: 600,
-            color: '#cdefff',
-            boxShadow:
-              '0 0 0 3px rgba(34,211,238,0.08), 0 6px 22px -6px rgba(56,189,248,0.35)',
+            color: deepSpaceDark ? '#cdefff' : '#0c4a6e',
+            boxShadow: deepSpaceDark
+              ? '0 0 0 3px rgba(34,211,238,0.08), 0 6px 22px -6px rgba(56,189,248,0.35)'
+              : '0 0 0 3px rgba(8,145,178,0.08), 0 6px 22px -6px rgba(8,145,178,0.35)',
           }}
         >
           <Avatar className='h-full w-full rounded-full'>
@@ -146,7 +152,9 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
               style={{
                 ...tagBaseStyle,
                 color: 'var(--ds-t2)',
-                background: 'rgba(255,255,255,0.03)',
+                background: deepSpaceDark
+                  ? 'rgba(255,255,255,0.03)'
+                  : 'var(--ds-glass)',
                 border: '1px solid var(--ds-line)',
               }}
             >
@@ -156,9 +164,13 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
               <span
                 style={{
                   ...tagBaseStyle,
-                  color: '#a5f3fc',
-                  background: 'rgba(34,211,238,0.08)',
-                  border: '1px solid rgba(34,211,238,0.30)',
+                  color: deepSpaceDark ? '#a5f3fc' : '#0e7490',
+                  background: deepSpaceDark
+                    ? 'rgba(34,211,238,0.08)'
+                    : 'rgba(8,145,178,0.08)',
+                  border: deepSpaceDark
+                    ? '1px solid rgba(34,211,238,0.30)'
+                    : '1px solid rgba(8,145,178,0.30)',
                 }}
               >
                 {t('Group {{name}}', { name: profile.group })}
@@ -168,9 +180,13 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
               <span
                 style={{
                   ...tagBaseStyle,
-                  color: '#6ee7b7',
-                  background: 'rgba(52,211,153,0.08)',
-                  border: '1px solid rgba(52,211,153,0.30)',
+                  color: deepSpaceDark ? '#6ee7b7' : '#047857',
+                  background: deepSpaceDark
+                    ? 'rgba(52,211,153,0.08)'
+                    : 'rgba(5,150,105,0.08)',
+                  border: deepSpaceDark
+                    ? '1px solid rgba(52,211,153,0.30)'
+                    : '1px solid rgba(5,150,105,0.30)',
                 }}
               >
                 {t('Email bound')}
@@ -179,9 +195,13 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
               <span
                 style={{
                   ...tagBaseStyle,
-                  color: '#fcd34d',
-                  background: 'rgba(251,191,36,0.08)',
-                  border: '1px solid rgba(251,191,36,0.30)',
+                  color: deepSpaceDark ? '#fcd34d' : '#b45309',
+                  background: deepSpaceDark
+                    ? 'rgba(251,191,36,0.08)'
+                    : 'rgba(217,119,6,0.08)',
+                  border: deepSpaceDark
+                    ? '1px solid rgba(251,191,36,0.30)'
+                    : '1px solid rgba(217,119,6,0.30)',
                 }}
               >
                 {t('Email not bound')}
@@ -209,7 +229,9 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
                 padding: '0 9px',
                 border: '1px solid var(--ds-line)',
                 borderRadius: 6,
-                background: 'rgba(255,255,255,0.03)',
+                background: deepSpaceDark
+                  ? 'rgba(255,255,255,0.03)'
+                  : 'var(--ds-glass)',
                 fontSize: 11,
               }}
             >
@@ -218,7 +240,9 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
                 value={String(profile.id)}
                 variant='ghost'
                 className='h-4 w-4'
-                iconClassName='size-3 text-[#7dd3fc]'
+                iconClassName={
+                  deepSpaceDark ? 'size-3 text-[#7dd3fc]' : 'size-3 text-[#0e7490]'
+                }
                 aria-label={t('Copy to clipboard')}
               />
             </span>

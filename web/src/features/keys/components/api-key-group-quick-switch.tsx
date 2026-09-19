@@ -31,7 +31,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { stringToColor } from '@/lib/colors'
 import { cn } from '@/lib/utils'
 
@@ -55,7 +55,10 @@ export function ApiKeyGroupQuickSwitch(
   props: ApiKeyGroupQuickSwitchProps
 ) {
   const { t } = useTranslation()
-  const deepSpaceDark = useDeepSpaceDark()
+  // The ds-gqs classes are structural (draft 33 keeps the capsule trigger and
+  // menu in light); their light values live in the html:not(.dark) section of
+  // theme-presets.css (draft 33 .gsw/.gmenu verbatim).
+  const deepSpace = useDeepSpace()
   const { triggerRefresh } = useApiKeys()
   const [open, setOpen] = useState(false)
   const [pending, setPending] = useState(false)
@@ -113,7 +116,7 @@ export function ApiKeyGroupQuickSwitch(
             aria-label={t('Switch group')}
             data-slot='api-key-group-quick-switch'
             className={cn(
-              deepSpaceDark
+              deepSpace
                 ? 'ds-gqs-trigger'
                 : 'inline-flex h-5 max-w-full min-w-0 items-center gap-1.5 rounded-full border border-border bg-card px-2 text-xs font-medium transition-colors hover:bg-muted/60',
               'disabled:cursor-not-allowed disabled:opacity-60'
@@ -127,7 +130,7 @@ export function ApiKeyGroupQuickSwitch(
             'size-1.5 shrink-0 rounded-full',
             dotColorMap[stringToColor(currentGroup) as StatusVariant],
             textColorMap[stringToColor(currentGroup) as StatusVariant],
-            deepSpaceDark && 'ds-gqs-dot'
+            deepSpace && 'ds-gqs-dot'
           )}
         />
         <span className='min-w-0 truncate'>{currentGroup}</span>
@@ -135,7 +138,7 @@ export function ApiKeyGroupQuickSwitch(
           <span
             className={cn(
               'shrink-0 tabular-nums',
-              deepSpaceDark
+              deepSpace
                 ? 'ds-gqs-ratio'
                 : 'text-[10px] text-muted-foreground'
             )}
@@ -150,12 +153,12 @@ export function ApiKeyGroupQuickSwitch(
         sideOffset={4}
         className={cn(
           'gap-0.5',
-          deepSpaceDark ? 'ds-gqs-menu' : 'w-52 min-w-52 rounded-lg p-1'
+          deepSpace ? 'ds-gqs-menu' : 'w-52 min-w-52 rounded-lg p-1'
         )}
       >
         <div
           className={cn(
-            deepSpaceDark
+            deepSpace
               ? 'ds-gqs-title'
               : 'px-2 pb-0.5 pt-1 text-[10px] tracking-[0.08em] text-muted-foreground'
           )}
@@ -167,14 +170,14 @@ export function ApiKeyGroupQuickSwitch(
           const isAuto = group.value === 'auto'
           const dotClassName = (() => {
             if (isAuto) {
-              return deepSpaceDark
+              return deepSpace
                 ? 'ds-gqs-dot ds-gqs-dot-auto'
                 : 'bg-info text-info'
             }
             return cn(
               dotColorMap[stringToColor(group.value) as StatusVariant],
               textColorMap[stringToColor(group.value) as StatusVariant],
-              deepSpaceDark && 'ds-gqs-dot'
+              deepSpace && 'ds-gqs-dot'
             )
           })()
           return (
@@ -185,10 +188,10 @@ export function ApiKeyGroupQuickSwitch(
               disabled={pending}
               onClick={() => handleSelect(group.value)}
               className={cn(
-                deepSpaceDark
+                deepSpace
                   ? 'ds-gqs-item'
                   : 'flex h-7 w-full items-center gap-2 rounded-md px-2 text-left text-xs transition-colors hover:bg-muted',
-                selected && !deepSpaceDark && 'bg-muted'
+                selected && !deepSpace && 'bg-muted'
               )}
             >
               {selected ? (
@@ -196,9 +199,7 @@ export function ApiKeyGroupQuickSwitch(
                   aria-hidden='true'
                   className={cn(
                     'shrink-0',
-                    deepSpaceDark
-                      ? 'ds-gqs-check'
-                      : 'size-3 text-muted-foreground'
+                    deepSpace ? 'ds-gqs-check' : 'size-3 text-muted-foreground'
                   )}
                 />
               ) : (
@@ -214,7 +215,7 @@ export function ApiKeyGroupQuickSwitch(
                 <span
                   className={cn(
                     'ml-auto shrink-0 tabular-nums',
-                    deepSpaceDark
+                    deepSpace
                       ? 'ds-gqs-chip'
                       : 'rounded-sm border border-border px-1 text-[10.5px] text-muted-foreground'
                   )}

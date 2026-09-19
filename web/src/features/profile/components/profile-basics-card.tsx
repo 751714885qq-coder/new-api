@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TitledCard } from '@/components/ui/titled-card'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { getUserAvatarFallback, getUserAvatarStyle } from '@/lib/avatar'
 
@@ -53,6 +54,11 @@ export function ProfileBasicsCard({
   onUpdateProfile,
 }: ProfileBasicsCardProps) {
   const { t } = useTranslation()
+  // Card frame and head chrome are structural (drafts 36/36b keep them in
+  // light); the field glass, head icon tint and link accent carry dark
+  // literals (drafts 36/36b: field bg rgba(255,255,255,0.60), icon #0e7490,
+  // links #0e7490).
+  const deepSpace = useDeepSpace()
   const deepSpaceDark = useDeepSpaceDark()
   // null = untouched, fall back to the profile value while typing.
   const [editedName, setEditedName] = useState<string | null>(null)
@@ -88,7 +94,7 @@ export function ProfileBasicsCard({
   const displayName = editedName ?? currentName
   const dirty = editedName !== null && editedName !== currentName
 
-  if (deepSpaceDark) {
+  if (deepSpace) {
     // Render 12-渲染稿-v6-个人资料.html lines 377-413 verbatim: 基本信息
     // card head (icon / title / sub) and body (identity row, display-name
     // field, locked username field, email-binding and registered-time rows).
@@ -96,7 +102,9 @@ export function ProfileBasicsCard({
       height: 38,
       borderRadius: 9,
       border: '1px solid var(--ds-line)',
-      background: 'rgba(255,255,255,0.03)',
+      background: deepSpaceDark
+        ? 'rgba(255,255,255,0.03)'
+        : 'rgba(255,255,255,0.60)',
       color: 'var(--ds-t1)',
       fontSize: 13,
     } as const
@@ -129,8 +137,10 @@ export function ProfileBasicsCard({
               height: 34,
               borderRadius: 9,
               border: '1px solid var(--ds-line)',
-              background: 'rgba(255,255,255,0.03)',
-              color: '#7dd3fc',
+              background: deepSpaceDark
+                ? 'rgba(255,255,255,0.03)'
+                : 'var(--ds-glass)',
+              color: deepSpaceDark ? '#7dd3fc' : '#0e7490',
             }}
           >
             <UserRound className='h-4 w-4' />
@@ -202,7 +212,7 @@ export function ProfileBasicsCard({
                   variant='ghost'
                   render={<Link to='/security' />}
                   className='h-auto p-0 text-[11.5px] font-normal'
-                  style={{ color: '#7dd3fc' }}
+                  style={{ color: deepSpaceDark ? '#7dd3fc' : '#0e7490' }}
                 >
                   {t('Change')} →
                 </Button>
@@ -216,7 +226,7 @@ export function ProfileBasicsCard({
                   variant='ghost'
                   render={<Link to='/security' />}
                   className='h-auto p-0 text-[11.5px] font-normal'
-                  style={{ color: '#7dd3fc' }}
+                  style={{ color: deepSpaceDark ? '#7dd3fc' : '#0e7490' }}
                 >
                   {t('Bind now')} →
                 </Button>

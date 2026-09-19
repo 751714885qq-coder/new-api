@@ -30,7 +30,7 @@ import {
 } from '@/components/ui/card'
 import { IconBadge } from '@/components/ui/icon-badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { SecureVerificationDialog } from '@/features/auth/secure-verification'
 import { useDialogs } from '@/hooks/use-dialog'
 import { cn } from '@/lib/utils'
@@ -54,7 +54,10 @@ type DialogKey = 'disable' | 'backup'
 export function TwoFACard({ loading: pageLoading }: TwoFACardProps) {
   const { t } = useTranslation()
   // WO-019 render 27: cyan icon squares (.fic) in deep space only.
-  const deepSpaceDark = useDeepSpaceDark()
+  // WO-019 render 27 / light draft 41: header icon + divider and the status
+  // icon square are structural; the icon's light values live in the
+  // html:not(.dark) CSS.
+  const deepSpace = useDeepSpace()
   const { status, loading, error, refetch } = useTwoFA(!pageLoading)
   const dialogs = useDialogs<DialogKey>()
   const setup = useTwoFASetup(refetch)
@@ -90,9 +93,9 @@ export function TwoFACard({ loading: pageLoading }: TwoFACardProps) {
   return (
     <>
       <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
-        <CardHeader className={cn('p-3 sm:p-5', deepSpaceDark && 'border-b')}>
+        <CardHeader className={cn('p-3 sm:p-5', deepSpace && 'border-b')}>
           <div className='flex min-w-0 items-start gap-3'>
-            {deepSpaceDark && (
+            {deepSpace && (
               <IconBadge size='title' className='ds-fic'>
                 <Shield />
               </IconBadge>
@@ -116,7 +119,7 @@ export function TwoFACard({ loading: pageLoading }: TwoFACardProps) {
                 <IconBadge
                   tone='success'
                   size='sm'
-                  className={deepSpaceDark ? 'ds-fic' : undefined}
+                  className={deepSpace ? 'ds-fic' : undefined}
                 >
                   <Shield />
                 </IconBadge>

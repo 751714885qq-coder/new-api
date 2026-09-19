@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next'
 
 import { TruncatedCell } from '@/components/data-table'
 import { StatusBadge } from '@/components/status-badge'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import dayjs from '@/lib/dayjs'
 import { cn } from '@/lib/utils'
 
@@ -34,7 +34,11 @@ export function useAuditLogColumns(
   accessOnly?: boolean
 ): ColumnDef<AuditLog>[] {
   const { t } = useTranslation()
-  const deepSpaceDark = useDeepSpaceDark()
+  // Identifier chip + failed-HTTP dye are structural (draft 40 keeps them in
+  // light); their light values live in the html:not(.dark) section of
+  // theme-presets.css (draft 40 .au-ident verbatim; failed HTTP #b91c1c is
+  // the light counterpart of the approved dark #fca5a5 — 申报).
+  const deepSpace = useDeepSpace()
   return useMemo(() => {
     const columns: ColumnDef<AuditLog>[] = [
       {
@@ -100,7 +104,7 @@ export function useAuditLogColumns(
                         'shrink-0 whitespace-nowrap',
                         // WO-019 render 26: cyan mono identifier chip
                         // (render .au-ident).
-                        deepSpaceDark && 'ds-au-ident'
+                        deepSpace && 'ds-au-ident'
                       )}
                     >
                       {operation.identifier}
@@ -175,7 +179,7 @@ export function useAuditLogColumns(
             className={cn(
               'font-mono tabular-nums',
               // WO-019 render 26: failed rows dye the HTTP code rose.
-              deepSpaceDark && !row.original.success && 'ds-au-http-bad'
+              deepSpace && !row.original.success && 'ds-au-http-bad'
             )}
           >
             {row.original.status || '—'}
@@ -206,5 +210,5 @@ export function useAuditLogColumns(
       }
     )
     return columns
-  }, [accessOnly, t, deepSpaceDark])
+  }, [accessOnly, t, deepSpace])
 }

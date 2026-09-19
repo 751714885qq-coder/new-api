@@ -28,7 +28,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
 import { getLobeIcon } from '@/lib/lobe-icon'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { cn } from '@/lib/utils'
 
 import {
@@ -101,7 +101,7 @@ function FilterChip(props: {
   onClick: () => void
 }) {
   // WO-019 render 28: .pchip / .pchip.on chip language in deep space only.
-  const deepSpaceDark = useDeepSpaceDark()
+  const deepSpace = useDeepSpace()
   return (
     <Button
       type='button'
@@ -111,8 +111,8 @@ function FilterChip(props: {
       aria-pressed={props.active}
       className={cn(
         'h-auto max-w-full gap-1.5 px-2 py-1 text-xs',
-        deepSpaceDark && 'ds-pchip',
-        deepSpaceDark && props.active && 'ds-pchip-on'
+        deepSpace && 'ds-pchip',
+        deepSpace && props.active && 'ds-pchip-on'
       )}
       title={props.option.label}
     >
@@ -138,7 +138,7 @@ function FilterChip(props: {
 
 function FilterSection(props: FilterSectionProps) {
   // WO-019 render 28: .psec uppercase-tracked section labels, deep space only.
-  const deepSpaceDark = useDeepSpaceDark()
+  const deepSpace = useDeepSpace()
   return (
     <Collapsible
       defaultOpen
@@ -148,7 +148,7 @@ function FilterSection(props: FilterSectionProps) {
         <span
           className={cn(
             'text-foreground text-sm font-semibold',
-            deepSpaceDark && 'ds-psec'
+            deepSpace && 'ds-psec'
           )}
         >
           {props.title}
@@ -174,7 +174,7 @@ function FilterSection(props: FilterSectionProps) {
 export function PricingSidebar(props: PricingSidebarProps) {
   const { t } = useTranslation()
   // WO-019 render 28: .prail glass rail, deep space only.
-  const deepSpaceDark = useDeepSpaceDark()
+  const deepSpace = useDeepSpace()
   const quotaTypeLabels = getQuotaTypeLabels(t)
   const endpointTypeLabels = getEndpointTypeLabels(t)
 
@@ -277,7 +277,7 @@ export function PricingSidebar(props: PricingSidebarProps) {
     <aside
       className={cn(
         'bg-card rounded-xl border p-3',
-        deepSpaceDark && props.glassRail && 'ds-panel-glass',
+        deepSpace && props.glassRail && 'ds-panel-glass',
         props.className
       )}
     >

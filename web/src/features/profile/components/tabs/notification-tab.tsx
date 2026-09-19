@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { ROLE } from '@/lib/roles'
 
@@ -53,6 +54,10 @@ interface NotificationTabProps {
 
 export function NotificationTab({ profile, onUpdate }: NotificationTabProps) {
   const { t } = useTranslation()
+  // Layout and switch theming are structural (draft 36 keeps them in light);
+  // the field glass carries a dark literal (draft 36: field bg
+  // rgba(255,255,255,0.60); ntile on-state + save button via CSS).
+  const deepSpace = useDeepSpace()
   const deepSpaceDark = useDeepSpaceDark()
   const isAdmin = (profile?.role ?? 0) >= ROLE.ADMIN
   const [loading, setLoading] = useState(false)
@@ -96,7 +101,7 @@ export function NotificationTab({ profile, onUpdate }: NotificationTabProps) {
 
   const notifyType = settings.notify_type
 
-  if (deepSpaceDark) {
+  if (deepSpace) {
     // Render 12-渲染稿-v6-个人资料.html lines 470-510 verbatim: two-column
     // settings grid — notification channel tiles + threshold / email fields
     // on the left, preference switches + save button on the right. The
@@ -106,7 +111,9 @@ export function NotificationTab({ profile, onUpdate }: NotificationTabProps) {
       height: 38,
       borderRadius: 9,
       border: '1px solid var(--ds-line)',
-      background: 'rgba(255,255,255,0.03)',
+      background: deepSpaceDark
+        ? 'rgba(255,255,255,0.03)'
+        : 'rgba(255,255,255,0.60)',
       color: 'var(--ds-t1)',
       fontSize: 13,
     } as const

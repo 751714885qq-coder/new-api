@@ -42,7 +42,7 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty'
 import { IconBadge } from '@/components/ui/icon-badge'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { cn } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -61,9 +61,10 @@ const sessionQueryKey = ['profile', 'login-sessions'] as const
 
 export function LoginSessionsCard() {
   const { t } = useTranslation()
-  // WO-019 render 27: card header gains the cyan icon square (.fic) and a
-  // divider (.fcard-h) in deep space only.
-  const deepSpaceDark = useDeepSpaceDark()
+  // WO-019 render 27 / light draft 41: the header icon square (.fic) and
+  // divider (.fcard-h) are structural; the icon's light values live in the
+  // html:not(.dark) CSS.
+  const deepSpace = useDeepSpace()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [revokeTarget, setRevokeTarget] = useState<LoginSession | null>(null)
@@ -179,9 +180,9 @@ export function LoginSessionsCard() {
   return (
     <>
       <Card data-card-hover='false'>
-        <CardHeader className={cn(deepSpaceDark && 'border-b')}>
+        <CardHeader className={cn(deepSpace && 'border-b')}>
           <div className='flex min-w-0 items-start gap-3'>
-            {deepSpaceDark && (
+            {deepSpace && (
               <IconBadge size='title' className='ds-fic'>
                 <Monitor />
               </IconBadge>

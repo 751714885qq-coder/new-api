@@ -26,7 +26,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { TitledCard } from '@/components/ui/titled-card'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { updateUserSettings } from '@/features/profile/api'
 import { parseUserSettings } from '@/features/profile/lib/format'
 import type { UserProfile } from '@/features/profile/types'
@@ -38,8 +38,9 @@ type PrivacyCardProps = {
 
 export function PrivacyCard(props: PrivacyCardProps) {
   const { t } = useTranslation()
-  // WO-019 render 27: cyan icon square (.fic) in deep space only.
-  const deepSpaceDark = useDeepSpaceDark()
+  // WO-019 render 27 / light draft 41: cyan icon square (.fic) is
+  // structural; its light values live in the html:not(.dark) CSS.
+  const deepSpace = useDeepSpace()
   const [recordIpLog, setRecordIpLog] = useState(() =>
     Boolean(parseUserSettings(props.profile.setting).record_ip_log)
   )
@@ -67,12 +68,8 @@ export function PrivacyCard(props: PrivacyCardProps) {
     <TitledCard
       title={t('Record IP Address')}
       description={t('Log IP address for usage and error logs')}
-      icon={
-        deepSpaceDark ? (
-          <Eye className='size-4' />
-        ) : undefined
-      }
-      iconClassName={deepSpaceDark ? 'size-7 sm:size-7 ds-fic' : undefined}
+      icon={deepSpace ? <Eye className='size-4' /> : undefined}
+      iconClassName={deepSpace ? 'size-7 sm:size-7 ds-fic' : undefined}
       disableHoverEffect
     >
       <div className='flex items-center justify-between gap-4'>

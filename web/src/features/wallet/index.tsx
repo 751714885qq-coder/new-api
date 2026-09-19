@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next'
 
 import { SectionPageLayout } from '@/components/layout'
 import { Button } from '@/components/ui/button'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { getSelf } from '@/lib/api'
@@ -68,7 +68,9 @@ interface WalletProps {
 
 export function Wallet(props: WalletProps) {
   const { t } = useTranslation()
-  const deepSpaceDark = useDeepSpaceDark()
+  // Deep-space wallet chrome (renders 10/11) is structural: the light pass
+  // drafts 34-35 keep the same hero/drawer frame with light values in CSS.
+  const deepSpace = useDeepSpace()
   const [user, setUser] = useState<UserWalletData | null>(null)
   const [userLoading, setUserLoading] = useState(true)
   const [topupAmount, setTopupAmount] = useState(0)
@@ -344,12 +346,12 @@ export function Wallet(props: WalletProps) {
   return (
     <>
       <SectionPageLayout>
-        {!deepSpaceDark && (
+        {!deepSpace && (
           <SectionPageLayout.Title>{t('Wallet')}</SectionPageLayout.Title>
         )}
         <SectionPageLayout.Content>
           <div className='mx-auto flex w-full max-w-7xl flex-col gap-4 sm:gap-5'>
-            {deepSpaceDark && (
+            {deepSpace && (
               // Render 10-渲染稿-v6-钱包.html lines 294-302 verbatim: hero row
               // (title + sub + actions). User rework 2026-09-17: "Add Funds"
               // opens the recharge drawer (render 11); "Redeem Card Code"
@@ -403,13 +405,13 @@ export function Wallet(props: WalletProps) {
               </div>
             )}
 
-            <div className={deepSpaceDark ? 'mt-3' : undefined}>
+            <div className={deepSpace ? 'mt-3' : undefined}>
               <WalletStatsCard user={user} loading={userLoading} />
             </div>
 
             <div
               className={
-                deepSpaceDark
+                deepSpace
                   ? 'grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px] xl:items-stretch'
                   : 'grid gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] xl:items-start'
               }
@@ -420,7 +422,7 @@ export function Wallet(props: WalletProps) {
               />
             </div>
 
-            {deepSpaceDark && (
+            {deepSpace && (
               // User rework 2026-09-17: the bottom "Add Funds" action card is
               // removed (single recharge entry, top-right hero button only);
               // the referral card keeps its live transfer functionality.
@@ -435,7 +437,7 @@ export function Wallet(props: WalletProps) {
               />
             )}
 
-            {deepSpaceDark ? (
+            {deepSpace ? (
               // Render 11-渲染稿-v6-钱包-充值抽屉 moves the recharge form into
               // the drawer (recharge-drawer.tsx); render 10 has no inline
               // recharge form, so the page keeps only the plans block.
@@ -496,7 +498,7 @@ export function Wallet(props: WalletProps) {
               </div>
             )}
 
-            {!deepSpaceDark && (
+            {!deepSpace && (
               <AffiliateRewardsCard
                 user={user}
                 affiliateLink={affiliateLink}
@@ -511,7 +513,7 @@ export function Wallet(props: WalletProps) {
         </SectionPageLayout.Content>
       </SectionPageLayout>
 
-      {deepSpaceDark && (
+      {deepSpace && (
         // Render 11-渲染稿-v6-钱包-充值抽屉 (hash-locked f4dcc21de8eecde6):
         // deep-space topup drawer with the card shop iframe (WO-019 增补二).
         <RechargeDrawer

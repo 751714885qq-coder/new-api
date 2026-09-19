@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { DeepSpaceBackdrop } from '@/components/layout/components/deep-space-backdrop'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useThemeCustomization } from '@/context/theme-customization-provider'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { useSystemConfig } from '@/hooks/use-system-config'
 
 type AuthLayoutProps = {
@@ -116,14 +116,17 @@ export function AuthLayout({ children }: AuthLayoutProps) {
   const { t } = useTranslation()
   const { systemName, logo, loading } = useSystemConfig()
   const { customization } = useThemeCustomization()
-  const deepSpaceDark = useDeepSpaceDark()
+  // Deep-space auth chrome (renders 13/13b) is structural: the light pass
+  // drafts 37/38 keep the same planets + brand block + card frame with light
+  // values in CSS (html:not(.dark) section of theme-presets.css).
+  const deepSpace = useDeepSpace()
   const isDeepSpace = customization.preset === 'deep-space'
   const displaySystemName =
     isDeepSpace && (!systemName || systemName === 'New API')
       ? 'MindClaw'
       : systemName
 
-  if (deepSpaceDark) {
+  if (deepSpace) {
     return (
       <div className='relative h-svh max-w-none overflow-hidden'>
         <DeepSpaceBackdrop withLandscape={false} />

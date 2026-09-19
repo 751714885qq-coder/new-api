@@ -25,6 +25,7 @@ import { useTranslation } from 'react-i18next'
 import { DS_PANEL_STYLE, sumQuotaBetween } from '@/components/deep-space/ds-kit'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TitledCard } from '@/components/ui/titled-card'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { useThemeCustomization } from '@/context/theme-customization-provider'
 import { useTheme } from '@/context/theme-provider'
@@ -82,6 +83,10 @@ function startOfDay(offsetDays = 0): number {
 
 export function WalletConsumptionTrendCard() {
   const { t } = useTranslation()
+  // Panel frame is structural (draft 34 keeps it in light); only the weekly
+  // total color and legend-dot glow carry dark literals (draft 34: #0e7490
+  // / rgba(8,145,178,.6)).
+  const deepSpace = useDeepSpace()
   const deepSpaceDark = useDeepSpaceDark()
   const { customization } = useThemeCustomization()
   const chartRadius = useThemeRadiusPx(
@@ -133,7 +138,7 @@ export function WalletConsumptionTrendCard() {
     }
   }, [chartData.spec_area])
 
-  if (deepSpaceDark) {
+  if (deepSpace) {
     // Render 10-渲染稿-v6-钱包.html lines 325-385: panel with inline title +
     // weekly total and the render's single consumption legend; the VChart
     // stays as the live data slot.
@@ -154,7 +159,10 @@ export function WalletConsumptionTrendCard() {
               {t('Last 7 days · daily · total ')}
               <span
                 className='tabular-nums'
-                style={{ color: '#a5f3fc', fontWeight: 600 }}
+                style={{
+                  color: deepSpaceDark ? '#a5f3fc' : '#0e7490',
+                  fontWeight: 600,
+                }}
               >
                 {formatQuota(weekTotal)}
               </span>
@@ -169,7 +177,9 @@ export function WalletConsumptionTrendCard() {
                 className='mr-1.5 inline-block size-2 rounded-[2px]'
                 style={{
                   background: 'var(--ds-accent)',
-                  boxShadow: '0 0 6px rgba(34,211,238,.6)',
+                  boxShadow: deepSpaceDark
+                    ? '0 0 6px rgba(34,211,238,.6)'
+                    : '0 0 6px rgba(8,145,178,.6)',
                 }}
               />
               {t('Consumption')}

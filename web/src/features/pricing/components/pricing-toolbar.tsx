@@ -43,7 +43,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { cn } from '@/lib/utils'
 
 import { getSortLabels, type SortOption, type ViewMode } from '../constants'
@@ -83,8 +83,9 @@ export interface PricingToolbarProps {
 
 export function PricingToolbar(props: PricingToolbarProps) {
   const { t } = useTranslation()
-  // WO-019 render 28: .ptool glass toolbar, deep space only.
-  const deepSpaceDark = useDeepSpaceDark()
+  // WO-019 renders 28/42: .ptool glass toolbar; ds-panel-glass is
+  // var-based, so one class serves both modes.
+  const deepSpace = useDeepSpace()
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const sortLabels = getSortLabels(t)
 
@@ -92,7 +93,7 @@ export function PricingToolbar(props: PricingToolbarProps) {
     <div
       className={cn(
         'bg-card rounded-xl border p-3',
-        deepSpaceDark && 'ds-panel-glass'
+        deepSpace && 'ds-panel-glass'
       )}
     >
       <div className='flex flex-wrap items-center justify-between gap-3'>

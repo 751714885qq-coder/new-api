@@ -23,6 +23,7 @@ import { DS_PANEL_STYLE } from '@/components/deep-space/ds-kit'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TitledCard } from '@/components/ui/titled-card'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 
 import type { UserProfile } from '../types'
@@ -44,6 +45,9 @@ export function ProfileSettingsCard({
   onProfileUpdate,
 }: ProfileSettingsCardProps) {
   const { t } = useTranslation()
+  // Card frame is structural (draft 36 keeps it in light); the head icon
+  // glass carries dark literals (draft 36: icon #0e7490 on glass).
+  const deepSpace = useDeepSpace()
   const deepSpaceDark = useDeepSpaceDark()
 
   if (loading) {
@@ -62,7 +66,7 @@ export function ProfileSettingsCard({
     )
   }
 
-  if (deepSpaceDark) {
+  if (deepSpace) {
     // Render 12-渲染稿-v6-个人资料.html lines 461-514 verbatim: 设置 card
     // head; the notification / preference fields live in NotificationTab.
     return (
@@ -78,8 +82,10 @@ export function ProfileSettingsCard({
               height: 34,
               borderRadius: 9,
               border: '1px solid var(--ds-line)',
-              background: 'rgba(255,255,255,0.03)',
-              color: '#7dd3fc',
+              background: deepSpaceDark
+                ? 'rgba(255,255,255,0.03)'
+                : 'var(--ds-glass)',
+              color: deepSpaceDark ? '#7dd3fc' : '#0e7490',
             }}
           >
             <Settings className='h-4 w-4' />

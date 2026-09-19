@@ -30,6 +30,7 @@ import { DS_PANEL_STYLE } from '@/components/deep-space/ds-kit'
 import { Button } from '@/components/ui/button'
 import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
 import { TitledCard } from '@/components/ui/titled-card'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 
 import { maskEmail } from '../lib'
@@ -49,6 +50,10 @@ export function ProfileSecurityLinksCard({
   profile,
 }: ProfileSecurityLinksCardProps) {
   const { t } = useTranslation()
+  // Card frame and rows are structural (draft 36 keeps them in light); the
+  // icon glass carries dark literals (draft 36: head icon #047857 on glass,
+  // row icons on glass).
+  const deepSpace = useDeepSpace()
   const deepSpaceDark = useDeepSpaceDark()
 
   const rows: {
@@ -83,7 +88,7 @@ export function ProfileSecurityLinksCard({
     },
   ]
 
-  if (deepSpaceDark) {
+  if (deepSpace) {
     // Render 12-渲染稿-v6-个人资料.html lines 415-457 verbatim: 安全设置
     // card head (green shield) and four entry rows with ghost manage buttons
     // linking to the Security & Access page.
@@ -100,8 +105,10 @@ export function ProfileSecurityLinksCard({
               height: 34,
               borderRadius: 9,
               border: '1px solid var(--ds-line)',
-              background: 'rgba(255,255,255,0.03)',
-              color: '#a7f3d0',
+              background: deepSpaceDark
+                ? 'rgba(255,255,255,0.03)'
+                : 'var(--ds-glass)',
+              color: deepSpaceDark ? '#a7f3d0' : '#047857',
             }}
           >
             <ShieldCheck className='h-4 w-4' />
@@ -130,7 +137,9 @@ export function ProfileSecurityLinksCard({
                     width: 32,
                     height: 32,
                     border: '1px solid var(--ds-line)',
-                    background: 'rgba(255,255,255,0.03)',
+                    background: deepSpaceDark
+                      ? 'rgba(255,255,255,0.03)'
+                      : 'var(--ds-glass)',
                     color: 'var(--ds-t2)',
                   }}
                 >

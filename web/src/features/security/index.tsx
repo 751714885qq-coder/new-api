@@ -30,7 +30,7 @@ import {
 } from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TitledCard } from '@/components/ui/titled-card'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { useProfile } from '@/features/profile/hooks/use-profile'
 
 import { AccessTokenCard } from './components/access-token-card'
@@ -43,8 +43,10 @@ import { TwoFACard } from './components/two-fa-card'
 
 export function Security() {
   const { t } = useTranslation()
-  // WO-019 render 27: card language — cyan icon squares (.fic) in headers.
-  const deepSpaceDark = useDeepSpaceDark()
+  // WO-019 render 27 / light draft 41: card language — cyan icon squares
+  // (.fic) in headers; the icon's light values live in the html:not(.dark)
+  // CSS.
+  const deepSpace = useDeepSpace()
   const { profile, loading, refreshProfile, fetchProfile } = useProfile()
 
   let content: ReactNode
@@ -98,7 +100,7 @@ export function Security() {
               contentClassName='p-3 sm:p-3'
               titleClassName='text-sm sm:text-sm'
               iconClassName={
-                deepSpaceDark
+                deepSpace
                   ? 'size-7 sm:size-7 ds-fic'
                   : 'size-7 sm:size-7'
               }

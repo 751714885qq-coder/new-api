@@ -33,8 +33,7 @@ export const DS_PANEL_STYLE: CSSProperties = {
   borderRadius: 14,
   background: 'var(--ds-card)',
   backdropFilter: 'blur(16px)',
-  boxShadow:
-    '0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.045)',
+  boxShadow: 'var(--ds-panel-shadow)',
   padding: '22px 24px 18px',
 }
 
@@ -82,8 +81,7 @@ export function DsKpiCard(props: {
         borderRadius: 14,
         background: 'var(--ds-card)',
         backdropFilter: 'blur(16px)',
-        boxShadow:
-          '0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.045)',
+        boxShadow: 'var(--ds-panel-shadow)',
         padding: '20px 22px 18px',
       }}
     >

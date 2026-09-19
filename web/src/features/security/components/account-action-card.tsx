@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { IconBadge } from '@/components/ui/icon-badge'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { cn } from '@/lib/utils'
 
@@ -38,8 +39,11 @@ type AccountActionCardProps = {
 
 export function AccountActionCard(props: AccountActionCardProps) {
   const { t } = useTranslation()
-  // WO-019 render 27: cyan icon square (.fic); the delete card is the
-  // render's danger card (.fcard.danger rose rim + rose title).
+  // WO-019 render 27 / light draft 41: cyan icon square (.fic) and the
+  // danger card rim (.fcard.danger) are structural; their light values live
+  // in the html:not(.dark) CSS. The rose title keeps per-mode literals
+  // (dark rose-300, light counterpart rose-700 — 申报).
+  const deepSpace = useDeepSpace()
   const deepSpaceDark = useDeepSpaceDark()
   const isDelete = props.action === 'delete'
   const [open, setOpen] = useState(false)
@@ -68,7 +72,8 @@ export function AccountActionCard(props: AccountActionCardProps) {
         data-card-hover='false'
         className={cn(
           'gap-0 py-0',
-          isDelete && (deepSpaceDark ? 'ds-fcard-danger' : 'ring-destructive/30')
+          isDelete &&
+            (deepSpace ? 'ds-fcard-danger' : 'ring-destructive/30')
         )}
       >
         <div className='flex items-center gap-3 px-3 py-2.5 sm:px-4'>
@@ -76,9 +81,7 @@ export function AccountActionCard(props: AccountActionCardProps) {
             tone='neutral'
             size='sm'
             className={
-              deepSpaceDark
-                ? cn('ds-fic', isDelete && 'ds-fic-danger')
-                : undefined
+              deepSpace ? cn('ds-fic', isDelete && 'ds-fic-danger') : undefined
             }
           >
             <action.icon />
@@ -87,7 +90,9 @@ export function AccountActionCard(props: AccountActionCardProps) {
             <p
               className={cn(
                 'text-sm font-medium',
-                deepSpaceDark && isDelete && 'text-rose-300'
+                deepSpace &&
+                  isDelete &&
+                  (deepSpaceDark ? 'text-rose-300' : 'text-rose-700')
               )}
             >
               {action.title}

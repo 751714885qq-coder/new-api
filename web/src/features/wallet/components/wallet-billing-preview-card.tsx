@@ -24,6 +24,7 @@ import { StatusBadge } from '@/components/status-badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TitledCard } from '@/components/ui/titled-card'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
 import { formatNumber, formatQuota } from '@/lib/format'
 
@@ -46,10 +47,14 @@ interface WalletBillingPreviewCardProps {
 
 export function WalletBillingPreviewCard(props: WalletBillingPreviewCardProps) {
   const { t } = useTranslation()
+  // Panel frame is structural (draft 34 keeps it in light); the view-all
+  // link color and row-icon glass carry dark literals (draft 34: #0e7490
+  // link, --ds-glass icon box).
+  const deepSpace = useDeepSpace()
   const deepSpaceDark = useDeepSpaceDark()
   const { records, loading } = useBillingHistory({ initialPageSize: 4 })
 
-  if (deepSpaceDark) {
+  if (deepSpace) {
     // Render 10-渲染稿-v6-钱包.html lines 387-430: 充值记录 panel with
     // icon / name / date rows, green amounts and status pill on the right.
     return (
@@ -62,7 +67,7 @@ export function WalletBillingPreviewCard(props: WalletBillingPreviewCardProps) {
             type='button'
             onClick={props.onViewAll}
             className='cursor-pointer text-[11.5px] hover:underline'
-            style={{ color: '#7dd3fc' }}
+            style={{ color: deepSpaceDark ? '#7dd3fc' : '#0e7490' }}
           >
             {t('View All')}
           </button>
@@ -97,7 +102,9 @@ export function WalletBillingPreviewCard(props: WalletBillingPreviewCardProps) {
                       className='flex h-[30px] w-[30px] flex-none items-center justify-center rounded-lg'
                       style={{
                         border: '1px solid var(--ds-line)',
-                        background: 'rgba(255,255,255,0.03)',
+                        background: deepSpaceDark
+                          ? 'rgba(255,255,255,0.03)'
+                          : 'var(--ds-glass)',
                         color: 'var(--ds-t2)',
                       }}
                     >

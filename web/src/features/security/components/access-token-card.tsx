@@ -32,7 +32,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { SecureVerificationDialog } from '@/features/auth/secure-verification'
 import { AuditLogViewer } from '@/features/usage-logs/audit/components/audit-log-viewer'
 import dayjs from '@/lib/dayjs'
@@ -44,7 +44,9 @@ export function AccessTokenCard() {
   const { t } = useTranslation()
   // WO-019 render 27: card header gains the cyan icon square (.fic), a
   // divider (.fcard-h) and the render's description line in deep space only.
-  const deepSpaceDark = useDeepSpaceDark()
+  // WO-019 render 27 / light draft 41: header icon square (.fic) is
+  // structural; its light values live in the html:not(.dark) CSS.
+  const deepSpace = useDeepSpace()
   const access = useAccessToken()
   const [confirmation, setConfirmation] = useState<'rotate' | 'revoke' | null>(
     null
@@ -69,14 +71,14 @@ export function AccessTokenCard() {
       <Card data-card-hover='false' className='gap-3 p-3 sm:p-4'>
         <div className='flex flex-wrap items-center justify-between gap-2'>
           <div className='flex min-w-0 items-start gap-3'>
-            {deepSpaceDark && (
+            {deepSpace && (
               <IconBadge size='title' className='ds-fic'>
                 <KeyRound />
               </IconBadge>
             )}
             <div className='min-w-0'>
               <h4 className='text-sm font-semibold'>{t('Access Token')}</h4>
-              {deepSpaceDark && (
+              {deepSpace && (
                 <p className='text-muted-foreground mt-0.5 text-xs'>
                   {t(
                     'For security, existing access tokens cannot be displayed. Regenerate only when you need a new token.'

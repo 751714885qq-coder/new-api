@@ -31,6 +31,10 @@ import { useAuthStore } from '@/stores/auth-store'
 
 import { Profile } from '../index'
 
+vi.mock('@/hooks/use-deep-space', () => ({
+  useDeepSpace: () => true,
+}))
+
 vi.mock('@/hooks/use-deep-space-dark', () => ({
   useDeepSpaceDark: () => true,
 }))

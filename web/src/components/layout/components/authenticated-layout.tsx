@@ -21,7 +21,7 @@ import { SkipToMain } from '@/components/skip-to-main'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { LayoutProvider } from '@/context/layout-provider'
 import { SearchProvider } from '@/context/search-provider'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { getCookie } from '@/lib/cookies'
 import { cn } from '@/lib/utils'
 
@@ -36,20 +36,20 @@ type AuthenticatedLayoutProps = {
 
 export function AuthenticatedLayout(props: AuthenticatedLayoutProps) {
   const defaultOpen = getCookie('sidebar_state') !== 'false'
-  const deepSpaceDark = useDeepSpaceDark()
-
-  // Deep Space (dark): the approved render's frame — full-height sidebar on
-  // the left, main column with the 56px breadcrumb topbar on top. Any other
-  // theme keeps the stock shell (top bar spanning both columns).
+  // Deep Space chrome (both modes — the light pass drafts 32–42 share the
+  // dark frame): full-height sidebar on the left, main column with the 56px
+  // breadcrumb topbar on top. Any other theme keeps the stock shell (top bar
+  // spanning both columns). Mode-specific values live in CSS.
+  const deepSpace = useDeepSpace()
   const inset = (
     <SidebarInset
       className={cn(
         '@container/content',
-        deepSpaceDark
+        deepSpace
           ? 'min-h-0 flex-1 overflow-hidden'
           : 'h-[calc(100svh-var(--app-header-height,0px))]',
-        !deepSpaceDark && 'min-h-0 overflow-hidden',
-        !deepSpaceDark &&
+        !deepSpace && 'min-h-0 overflow-hidden',
+        !deepSpace &&
           'peer-data-[variant=inset]:h-[calc(100svh-var(--app-header-height,0px)-(var(--spacing)*4))]'
       )}
     >
@@ -62,11 +62,11 @@ export function AuthenticatedLayout(props: AuthenticatedLayoutProps) {
       <SearchProvider>
         <SidebarProvider
           defaultOpen={defaultOpen}
-          className={deepSpaceDark ? 'h-svh flex-row' : 'flex-col'}
+          className={deepSpace ? 'h-svh flex-row' : 'flex-col'}
         >
           <DeepSpaceBackdrop />
           <SkipToMain />
-          {deepSpaceDark ? (
+          {deepSpace ? (
             <>
               <AppSidebar />
               <div className='flex h-svh min-w-0 flex-1 flex-col'>

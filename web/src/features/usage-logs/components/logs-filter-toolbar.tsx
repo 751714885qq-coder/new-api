@@ -34,7 +34,7 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { useMediaQuery } from '@/hooks'
 import { cn } from '@/lib/utils'
 
@@ -89,7 +89,7 @@ export function LogsFilterInput(props: ComponentProps<typeof Input>) {
 
 export function LogsFilterToolbar<TData>(props: LogsFilterToolbarProps<TData>) {
   const { t } = useTranslation()
-  const deepSpaceDark = useDeepSpaceDark()
+  const deepSpace = useDeepSpace()
   const [advancedOpen, setAdvancedOpen] = useState(false)
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const [mobilePanelCollapsed, setMobilePanelCollapsed] = useState(false)
@@ -325,8 +325,9 @@ export function LogsFilterToolbar<TData>(props: LogsFilterToolbarProps<TData>) {
     <div
       className={cn(
         'bg-card/50 rounded-lg border p-2.5 sm:p-3',
-        // WO-019 renders 25/26: filter panel glass (render .fpanel).
-        deepSpaceDark && 'ds-fpanel',
+        // WO-019 renders 25/26/39/40: filter panel glass (render .fpanel);
+        // var-based, so one class serves both modes.
+        deepSpace && 'ds-fpanel',
         props.className
       )}
     >

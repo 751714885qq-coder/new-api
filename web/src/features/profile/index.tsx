@@ -23,7 +23,7 @@ import {
   CardStaggerContainer,
   CardStaggerItem,
 } from '@/components/page-transition'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { useStatus } from '@/hooks/use-status'
 import { useAuthStore } from '@/stores/auth-store'
 
@@ -41,7 +41,9 @@ export function Profile() {
   const { profile, loading, updating, refreshProfile, updateProfile } =
     useProfile()
   const { status } = useStatus()
-  const deepSpaceDark = useDeepSpaceDark()
+  // Deep-space profile chrome (render 12) is structural: the light pass
+  // drafts 36/36b keep the same hero/banner/cards with light values in CSS.
+  const deepSpace = useDeepSpace()
   const permissions = useAuthStore((s) => s.auth.user?.permissions)
 
   const checkinEnabled = status?.checkin_enabled === true
@@ -51,7 +53,7 @@ export function Profile() {
   const turnstileSiteKey = status?.turnstile_site_key || ''
   const canConfigureSidebar = permissions?.sidebar_settings !== false
 
-  if (deepSpaceDark) {
+  if (deepSpace) {
     // Render 12-渲染稿-v6-个人资料.html: hero → user banner → identity /
     // security two-col → settings card; language / checkin / sidebar-module
     // cards are outside the render and stay below as the functional zone.

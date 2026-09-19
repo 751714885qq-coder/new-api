@@ -26,7 +26,7 @@ import {
 } from '@/components/deep-space/ds-kit'
 import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useDeepSpaceDark } from '@/hooks/use-deep-space-dark'
+import { useDeepSpace } from '@/hooks/use-deep-space'
 import { formatNumber, formatQuota } from '@/lib/format'
 
 import { useWalletUsage } from '../hooks/use-wallet-usage'
@@ -39,7 +39,8 @@ interface WalletStatsCardProps {
 
 export function WalletStatsCard(props: WalletStatsCardProps) {
   const { t } = useTranslation()
-  const deepSpaceDark = useDeepSpaceDark()
+  // Render 10 KPI row is structural (draft 34 keeps it in light).
+  const deepSpace = useDeepSpace()
   const usage = useWalletUsage()
 
   if (props.loading) {
@@ -56,7 +57,7 @@ export function WalletStatsCard(props: WalletStatsCardProps) {
     )
   }
 
-  if (deepSpaceDark) {
+  if (deepSpace) {
     // Render 10-渲染稿-v6-钱包.html lines 305-322: three KPI cards with the
     // render's label / value / delta rhythm; only the data slots are live.
     return (
