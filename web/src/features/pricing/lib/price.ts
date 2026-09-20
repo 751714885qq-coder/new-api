@@ -65,7 +65,9 @@ function calculateTokenPrice(
   type: PriceType,
   ratio: number
 ): number {
-  const base = model.model_ratio * 2 * ratio
+  // 显示价换算: $/1M = MR × GR × 1e6 / QuotaPerUnit。本站 QPU=3650000（options.QuotaPerUnit），
+  // new-api 原生公式 ×2 隐含 QPU=500000，与本站不符会导致显示价 ×7.3。
+  const base = (model.model_ratio * 1000000 * ratio) / 3650000
 
   switch (type) {
     case 'input':
