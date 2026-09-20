@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/QuantumNous/new-api/logger"
 	"github.com/QuantumNous/new-api/model"
 	"github.com/QuantumNous/new-api/setting"
 	pancake "github.com/waffo-com/waffo-pancake-sdk-go"
@@ -17,8 +18,10 @@ type WaffoPancakePriceSnapshot struct {
 }
 
 // WaffoPancakeCreateSessionParams is the input to CreateWaffoPancakeCheckoutSession.
-// BuyerIdentity must be stable per user (see WaffoPancakeBuyerIdentityFromUserID).
-// OrderMerchantExternalID = our trade_no; Pancake echoes it back in webhooks.
+// BuyerIdentity is a stable per-user identifier for Pancake's buyer portal;
+// it is NOT echoed back in webhooks as documented (Pancake returns the
+// checkout form email instead — see waffoPancakeLogIdentityDrift). Order
+// attribution relies on OrderMerchantExternalID = our trade_no.
 type WaffoPancakeCreateSessionParams struct {
 	ProductID               string
 	BuyerIdentity           string
@@ -94,8 +97,9 @@ func newWaffoPancakeClientFromCreds(merchantID, privateKey string) (*pancake.Cli
 }
 
 // CreateWaffoPancakeCheckoutSession creates an Authenticated-mode checkout
-// session: the order is bound to BuyerIdentity (stable per user) so it stays
-// attributable even if the buyer edits the email on Waffo's checkout form.
+// session. BuyerIdentity (stable per user) binds the order to Pancake's
+// buyer portal; webhook attribution itself relies on
+// OrderMerchantExternalID = trade_no (see waffoPancakeLogIdentityDrift).
 func CreateWaffoPancakeCheckoutSession(ctx context.Context, params *WaffoPancakeCreateSessionParams) (*WaffoPancakeCheckoutSession, error) {
 	if params == nil {
 		return nil, fmt.Errorf("missing checkout params")
@@ -153,8 +157,10 @@ func optionalString(s string) *string {
 }
 
 // WaffoPancakeBuyerIdentityFromUserID renders the canonical buyer identity
-// for checkout. Webhook handlers compare against the value rendered here to
-// reject identity mismatches, so both call sites must use this function.
+// for checkout (Pancake buyer-portal binding and drift audit logging). It is
+// not a webhook attribution key: Pancake echoes the checkout form email in
+// merchantProvidedBuyerIdentity, so handlers only log drift against this
+// value instead of rejecting.
 func WaffoPancakeBuyerIdentityFromUserID(userID int) string {
 	return fmt.Sprintf("new-api-user-%d", userID)
 }
@@ -194,8 +200,39 @@ func VerifyConfiguredWaffoPancakeWebhook(payload string, signatureHeader string)
 	}, nil
 }
 
+// waffoPancakeEventStoreAllowed reports whether a webhook event may be
+// attributed to the configured Pancake binding. StoreID is not part of the
+// enablement check, so an unset configured store skips the guard.
+func waffoPancakeEventStoreAllowed(configuredStore, eventStore string) bool {
+	configuredStore = strings.TrimSpace(configuredStore)
+	if configuredStore == "" {
+		return true
+	}
+	return strings.TrimSpace(eventStore) == configuredStore
+}
+
+// waffoPancakeLogIdentityDrift records buyer-identity drift without blocking.
+// Live behavior (WO-028 test drills, 2026-09-20): Pancake echoes the checkout
+// form email in merchantProvidedBuyerIdentity instead of the BuyerIdentity
+// burned into the session token, contradicting the SDK docs ("order stays
+// tied to your identifier even if the buyer changes the email"). The field is
+// therefore audit-only: attribution relies on OrderMerchantExternalID (our
+// server-generated unique trade_no) plus the verified webhook signature.
+func waffoPancakeLogIdentityDrift(tradeNo string, userID int, actualIdentity string) {
+	expected := WaffoPancakeBuyerIdentityFromUserID(userID)
+	if actualIdentity == expected {
+		return
+	}
+	logger.LogWarn(context.Background(), fmt.Sprintf(
+		"waffo pancake buyer identity drift (non-blocking) trade_no=%s expected=%q actual=%q",
+		tradeNo, expected, actualIdentity,
+	))
+}
+
 // ResolveWaffoPancakeTradeNo maps a verified webhook event to a local TopUp
-// trade_no via OrderMerchantExternalID, and rejects buyer-identity mismatches.
+// trade_no via OrderMerchantExternalID. Attribution does not use
+// merchantProvidedBuyerIdentity (see waffoPancakeLogIdentityDrift); the store
+// binding is still enforced.
 func ResolveWaffoPancakeTradeNo(event *WaffoPancakeWebhookEvent) (string, error) {
 	if event == nil {
 		return "", fmt.Errorf("missing webhook event")
@@ -204,20 +241,17 @@ func ResolveWaffoPancakeTradeNo(event *WaffoPancakeWebhookEvent) (string, error)
 	if tradeNo == "" {
 		return "", fmt.Errorf("missing webhook orderMerchantExternalId")
 	}
+	if !waffoPancakeEventStoreAllowed(setting.WaffoPancakeStoreID, event.StoreID) {
+		return "", fmt.Errorf(
+			"waffo pancake event store mismatch: configured=%q actual=%q tradeNo=%s",
+			setting.WaffoPancakeStoreID, event.StoreID, tradeNo,
+		)
+	}
 	topUp := model.GetTopUpByTradeNo(tradeNo)
 	if topUp == nil || topUp.PaymentProvider != model.PaymentProviderWaffoPancake {
 		return "", fmt.Errorf("waffo pancake order not found for tradeNo=%s", tradeNo)
 	}
-	expectedIdentity := WaffoPancakeBuyerIdentityFromUserID(topUp.UserId)
-	actualIdentity := strings.TrimSpace(event.Data.MerchantProvidedBuyerIdentity)
-	if actualIdentity != expectedIdentity {
-		return "", fmt.Errorf(
-			"waffo pancake buyer identity mismatch for tradeNo=%s: expected=%q actual=%q",
-			tradeNo,
-			expectedIdentity,
-			actualIdentity,
-		)
-	}
+	waffoPancakeLogIdentityDrift(tradeNo, topUp.UserId, strings.TrimSpace(event.Data.MerchantProvidedBuyerIdentity))
 	return tradeNo, nil
 }
 
@@ -231,20 +265,17 @@ func ResolveWaffoPancakeSubscriptionTradeNo(event *WaffoPancakeWebhookEvent) (st
 	if tradeNo == "" {
 		return "", fmt.Errorf("missing webhook orderMerchantExternalId")
 	}
+	if !waffoPancakeEventStoreAllowed(setting.WaffoPancakeStoreID, event.StoreID) {
+		return "", fmt.Errorf(
+			"waffo pancake event store mismatch: configured=%q actual=%q subscriptionTradeNo=%s",
+			setting.WaffoPancakeStoreID, event.StoreID, tradeNo,
+		)
+	}
 	order := model.GetSubscriptionOrderByTradeNo(tradeNo)
 	if order == nil || order.PaymentProvider != model.PaymentProviderWaffoPancake {
 		return "", fmt.Errorf("waffo pancake subscription order not found for tradeNo=%s", tradeNo)
 	}
-	expectedIdentity := WaffoPancakeBuyerIdentityFromUserID(order.UserId)
-	actualIdentity := strings.TrimSpace(event.Data.MerchantProvidedBuyerIdentity)
-	if actualIdentity != expectedIdentity {
-		return "", fmt.Errorf(
-			"waffo pancake buyer identity mismatch for subscription tradeNo=%s: expected=%q actual=%q",
-			tradeNo,
-			expectedIdentity,
-			actualIdentity,
-		)
-	}
+	waffoPancakeLogIdentityDrift(tradeNo, order.UserId, strings.TrimSpace(event.Data.MerchantProvidedBuyerIdentity))
 	return tradeNo, nil
 }
 
