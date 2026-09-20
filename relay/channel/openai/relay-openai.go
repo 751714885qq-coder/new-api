@@ -19,13 +19,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// rewriteResponseModel maps the upstream model name in a stream chunk back to
+// the origin (user-facing) model name so model_mapping never leaks upstream ids.
+func rewriteResponseModel(info *relaycommon.RelayInfo, data string) string {
+	if !info.IsModelMapped || info.OriginModelName == "" || info.OriginModelName == info.UpstreamModelName {
+		return data
+	}
+	from := fmt.Sprintf("\"model\":%q", info.UpstreamModelName)
+	to := fmt.Sprintf("\"model\":%q", info.OriginModelName)
+	return strings.Replace(data, from, to, 1)
+}
+
 func sendStreamData(c *gin.Context, info *relaycommon.RelayInfo, data string, forceFormat bool, thinkToContent bool) error {
 	if data == "" {
 		return nil
 	}
 
 	if !forceFormat && !thinkToContent {
-		return helper.StringData(c, data)
+		return helper.StringData(c, rewriteResponseModel(info, data))
 	}
 
 	var lastStreamResponse dto.ChatCompletionsStreamResponse
@@ -271,6 +282,9 @@ func OpenaiHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Respo
 	if oaiError := simpleResponse.GetOpenAIError(); oaiError != nil && oaiError.Type != "" {
 		return nil, types.WithOpenAIError(*oaiError, resp.StatusCode)
 	}
+	if info.IsModelMapped && info.OriginModelName != "" && info.OriginModelName != info.UpstreamModelName {
+		simpleResponse.Model = info.OriginModelName
+	}
 
 	for _, choice := range simpleResponse.Choices {
 		if choice.FinishReason == constant.FinishReasonContentFilter {
@@ -312,22 +326,30 @@ func OpenaiHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Respo
 
 	switch info.RelayFormat {
 	case types.RelayFormatOpenAI:
-		if usageModified {
+		if usageModified || (info.IsModelMapped && info.OriginModelName != "" && info.OriginModelName != info.UpstreamModelName) {
 			var bodyMap map[string]any
 			err = common.Unmarshal(responseBody, &bodyMap)
 			if err != nil {
 				return nil, types.NewOpenAIError(err, types.ErrorCodeBadResponseBody, http.StatusInternalServerError)
 			}
-			bodyMap["usage"] = simpleResponse.Usage
+			if usageModified {
+				bodyMap["usage"] = simpleResponse.Usage
+			}
+			if info.IsModelMapped && info.OriginModelName != "" && info.OriginModelName != info.UpstreamModelName {
+				bodyMap["model"] = info.OriginModelName
+			}
 			responseBody, _ = common.Marshal(bodyMap)
-		}
-		if forceFormat {
+			if forceFormat {
+				responseBody, err = common.Marshal(simpleResponse)
+				if err != nil {
+					return nil, types.NewError(err, types.ErrorCodeBadResponseBody)
+				}
+			}
+		} else if forceFormat {
 			responseBody, err = common.Marshal(simpleResponse)
 			if err != nil {
 				return nil, types.NewError(err, types.ErrorCodeBadResponseBody)
 			}
-		} else {
-			break
 		}
 	case types.RelayFormatClaude:
 		convertResult, err := service.ConvertResponse(c, info, types.RelayFormatClaude, &simpleResponse)
