@@ -1289,6 +1289,50 @@ html:not(.dark) .wanyun-brand {
   background: rgba(255, 255, 255, 0.03);
   color: var(--ds-t2);
 }
+/* Balance chip: same glass family as the search box, tinted cyan so the
+ * number reads as live account state rather than chrome (user ruling
+ * 2026-09-20: global per-page balance display). */
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-balance {
+  height: 32px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  background: rgba(34, 211, 238, 0.08);
+  color: var(--ds-t1);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+}
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-balance:hover {
+  background: rgba(34, 211, 238, 0.14);
+}
+:is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-balance
+  svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  color: #7dd3fc;
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-balance {
+  border-color: rgba(8, 145, 178, 0.4);
+  background: rgba(8, 145, 178, 0.08);
+}
+html:not(.dark)
+  :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
+  .ds-topbar-balance
+  svg {
+  color: #0e7490;
+}
 :is(body:not([data-theme-preset]), body[data-theme-preset='deep-space'])
   .ds-topbar-bell
   svg {

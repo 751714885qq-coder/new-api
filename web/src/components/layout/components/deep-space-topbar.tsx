@@ -24,6 +24,7 @@ import { ConfigDrawer } from '@/components/config-drawer'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { NotificationPopover } from '@/components/notification-popover'
 import { ProfileDropdown } from '@/components/profile-dropdown'
+import { BalanceChip } from '@/components/layout/components/balance-chip'
 import { useSearch } from '@/context/search-provider'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useSidebarView } from '@/hooks/use-sidebar-view'
@@ -77,6 +78,7 @@ export function DeepSpaceTopbar() {
         <span>{t('Search models, keys…')}</span>
         <span className='ds-topbar-kbd'>Ctrl K</span>
       </button>
+      <BalanceChip />
       <NotificationPopover
         className='ds-topbar-bell'
         open={notifications.popoverOpen}

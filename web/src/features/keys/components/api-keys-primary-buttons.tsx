@@ -16,42 +16,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { Copy, Link2, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
-import { copyToClipboard } from '@/lib/copy-to-clipboard'
 
 import { useApiKeys } from './api-keys-provider'
-import { useChatPresets } from '@/features/chat/hooks/use-chat-presets'
 
 export function ApiKeysPrimaryButtons() {
   const { t } = useTranslation()
   const { setOpen } = useApiKeys()
-  const { serverAddress } = useChatPresets()
-  const baseUrl = `${serverAddress.replace(/\/+$/, '')}/v1`
-
-  const handleCopyBaseUrl = async () => {
-    const ok = await copyToClipboard(baseUrl)
-    if (ok) toast.success(t('Copied'))
-  }
-
   return (
-    <div className='flex items-center gap-2'>
-      <button
-        type='button'
-        onClick={handleCopyBaseUrl}
-        aria-label={t('Copy API base URL')}
-        title={t('Copy API base URL')}
-        className='text-muted-foreground hover:bg-accent hover:text-foreground hidden items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs transition-colors sm:flex'
-      >
-        <Link2 className='size-3.5 shrink-0' />
-        <span className='max-w-56 truncate font-mono lg:max-w-72'>
-          {baseUrl}
-        </span>
-        <Copy className='size-3.5 shrink-0' />
-      </button>
+    <div className='flex gap-2'>
       <Button size='sm' onClick={() => setOpen('create')}>
         <Plus className='h-4 w-4' />
         {t('Create API Key')}

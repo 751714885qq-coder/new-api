@@ -79,6 +79,11 @@ export type DataTableToolbarProps<TData> = {
    */
   additionalSearch?: ReactNode
   /**
+   * Content rendered before the search input in the primary row
+   * (e.g. an API base URL chip that must read as the page's endpoint).
+   */
+  leading?: ReactNode
+  /**
    * Whether non-table filters (e.g. `additionalSearch` or `expandable`
    * inputs) are currently active. Controls Reset button visibility
    * when no column filters are set.
@@ -345,6 +350,7 @@ export function DataTableToolbar<TData>(props: DataTableToolbarProps<TData>) {
     return (
       <div className={cn('flex flex-col gap-2', props.className)}>
         <div className='flex flex-wrap items-center gap-2 sm:gap-3'>
+          {props.leading}
           {props.customSearch !== undefined ? props.customSearch : searchInput}
           {props.additionalSearch}
           {filterChips}
@@ -380,6 +386,7 @@ export function DataTableToolbar<TData>(props: DataTableToolbarProps<TData>) {
         props.className
       )}
     >
+      {props.leading}
       {props.customSearch !== undefined ? props.customSearch : searchInput}
       {props.additionalSearch}
       {filterChips}

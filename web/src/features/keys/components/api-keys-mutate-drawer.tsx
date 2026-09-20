@@ -657,7 +657,9 @@ export function ApiKeysMutateDrawer({
                 control={form.control}
                 name='unlimited_quota'
                 render={({ field }) => (
-                  <FormItem className={sideDrawerSwitchItemClassName()}>
+                  <FormItem
+                    className={sideDrawerSwitchItemClassName('border-b-0')}
+                  >
                     <div className='flex flex-col gap-0.5'>
                       <FormLabel className='text-sm'>
                         {t('Unlimited Quota')}

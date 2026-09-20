@@ -264,27 +264,6 @@ export function DataTableRowActions<TData>({
         <TooltipContent>{t('Import to CC Switch')}</TooltipContent>
       </Tooltip>
 
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <Button
-              variant='ghost'
-              size='icon-sm'
-              onClick={handleTestConnection}
-              disabled={isTestingConnection}
-              aria-label={t('Test Connection')}
-            />
-          }
-        >
-          {isTestingConnection ? (
-            <Loader2 className='size-4 animate-spin' />
-          ) : (
-            <PlugZap />
-          )}
-        </TooltipTrigger>
-        <TooltipContent>{t('Test Connection')}</TooltipContent>
-      </Tooltip>
-
       <DataTableRowActionMenu
         ariaLabel={t('Open menu')}
         contentClassName='w-[200px]'
@@ -320,6 +299,19 @@ export function DataTableRowActions<TData>({
           {t('Copy Connection Info')}
           <DropdownMenuShortcut>
             <Link size={16} />
+          </DropdownMenuShortcut>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          disabled={isTestingConnection}
+          onClick={handleTestConnection}
+        >
+          {t('Test Connection')}
+          <DropdownMenuShortcut>
+            {isTestingConnection ? (
+              <Loader2 className='size-4 animate-spin' />
+            ) : (
+              <PlugZap size={16} />
+            )}
           </DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuSeparator />

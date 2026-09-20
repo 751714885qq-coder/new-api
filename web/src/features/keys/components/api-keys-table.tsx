@@ -62,6 +62,7 @@ import {
 import { useApiKeysColumns } from './api-keys-columns'
 import { useApiKeys } from './api-keys-provider'
 import { DataTableBulkActions } from './data-table-bulk-actions'
+import { ApiBaseUrlChip } from './api-base-url-chip'
 import { DataTableRowActions } from './data-table-row-actions'
 
 const route = getRouteApi('/_authenticated/keys/')
@@ -352,6 +353,7 @@ export function ApiKeysTable() {
       skeletonKeyPrefix='api-keys-skeleton'
       applyHeaderSize
       toolbarProps={{
+        leading: <ApiBaseUrlChip />,
         searchPlaceholder: t('Filter by name...'),
         searchDebounceMs: 500,
         additionalSearch: (
