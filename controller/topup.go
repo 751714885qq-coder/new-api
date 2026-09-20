@@ -53,26 +53,10 @@ func GetTopUpInfo(c *gin.Context) {
 		}
 	}
 
-	// Waffo Pancake is displayed above the standard Waffo gateway.
+	// Waffo Pancake is not appended to pay_methods: the web drawer renders a
+	// dedicated card for it (recharge-drawer.tsx), and appending it here made
+	// the method show up twice.
 	enableWaffoPancake := isWaffoPancakeTopUpEnabled()
-	if enableWaffoPancake {
-		hasWaffoPancake := false
-		for _, method := range payMethods {
-			if method["type"] == model.PaymentMethodWaffoPancake {
-				hasWaffoPancake = true
-				break
-			}
-		}
-
-		if !hasWaffoPancake {
-			payMethods = append(payMethods, map[string]string{
-				"name":      "Waffo Pancake",
-				"type":      model.PaymentMethodWaffoPancake,
-				"color":     "#F97316",
-				"min_topup": strconv.Itoa(setting.WaffoPancakeMinTopUp),
-			})
-		}
-	}
 
 	// 如果启用了 Waffo 支付，添加到支付方法列表
 	enableWaffo := isWaffoTopUpEnabled()
