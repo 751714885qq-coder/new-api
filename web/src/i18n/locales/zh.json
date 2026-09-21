@@ -5254,6 +5254,7 @@
     "The administrator configured an external link for this document.": "管理员为此文档配置了外部链接。",
     "The administrator has not configured a privacy policy yet.": "管理员尚未配置隐私政策。",
     "The administrator has not configured a user agreement yet.": "管理员尚未配置用户协议。",
+    "The administrator has not configured documentation content yet.": "管理员暂未配置文档内容。",
     "The administrator has not configured any about content yet. You can set it in the settings page, supporting HTML or URL.": "管理员尚未配置任何关于内容。您可以在设置页面中进行设置，支持 HTML 或 URL。",
     "The API key used for the requests": "请求所使用的 API 密钥",
     "The authenticator code is incorrect.": "认证器验证码错误。",

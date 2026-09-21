@@ -189,6 +189,13 @@ func GetAbout(c *gin.Context) {
 	serveRevalidatedJSON(c, about)
 }
 
+func GetDocsContent(c *gin.Context) {
+	common.OptionMapRWMutex.RLock()
+	docs := common.OptionMap["DocsContent"]
+	common.OptionMapRWMutex.RUnlock()
+	serveRevalidatedJSON(c, docs)
+}
+
 func GetUserAgreement(c *gin.Context) {
 	serveRevalidatedJSON(c, system_setting.GetLegalSettings().UserAgreement)
 }

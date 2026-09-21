@@ -5254,6 +5254,7 @@
     "The administrator configured an external link for this document.": "The administrator configured an external link for this document.",
     "The administrator has not configured a privacy policy yet.": "The administrator has not configured a privacy policy yet.",
     "The administrator has not configured a user agreement yet.": "The administrator has not configured a user agreement yet.",
+    "The administrator has not configured documentation content yet.": "The administrator has not configured documentation content yet.",
     "The administrator has not configured any about content yet. You can set it in the settings page, supporting HTML or URL.": "The administrator has not configured any about content yet. You can set it in the settings page, supporting HTML or URL.",
     "The API key used for the requests": "The API key used for the requests",
     "The authenticator code is incorrect.": "The authenticator code is incorrect.",
