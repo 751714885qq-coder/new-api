@@ -3004,6 +3004,23 @@ html:not(.dark)
   border-radius: 5px;
   padding: 2px 6px;
 }
+.ds-rd-amount-input {
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--ds-line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--ds-t1);
+  padding: 0 14px;
+  font-size: 15px;
+  width: 100%;
+  outline: none;
+}
+.ds-rd-amount-input:focus {
+  border-color: rgba(34, 211, 238, 0.55);
+}
+.ds-rd-amount-input::placeholder {
+  color: var(--ds-t3);
+}
 .ds-rd-chips {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

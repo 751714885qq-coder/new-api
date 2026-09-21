@@ -16,16 +16,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-// oxlint-disable react/iframe-missing-sandbox -- the card shop iframe is a
-// cross-origin embed (catfk.com): allow-same-origin only grants the framed
-// page access to its own origin's cookies/storage (shop session), without
-// exposing this site's origin; top navigation stays sandboxed.
 import { X } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getPaymentIcon } from '../lib'
-import { CARD_SHOP_URL, PAYMENT_TYPES } from '../constants'
+import { PAYMENT_TYPES } from '../constants'
 import type {
   CreemProduct,
   PaymentMethod,
@@ -36,12 +31,7 @@ import type {
 
 import { CreemProductsSection } from './creem-products-section'
 
-const CNY = 'CNY'
-// The card shop is a desktop-width page; the iframe renders it at this
-// logical width and scales it down to fit the drawer column. 1152 keeps
-// the shop's desktop grid intact while the zoom stays close to 1:1 on a
-// wide drawer.
-const SHOP_LOGICAL_WIDTH = 1152
+const USD = 'USD'
 
 function getStandardMethodSubtitle(type: string, t: (key: string) => string) {
   if (type === PAYMENT_TYPES.STRIPE) {
@@ -74,6 +64,7 @@ export function RechargeDrawer(props: {
   presetAmounts: PresetAmount[]
   selectedPreset: number | null
   onSelectPreset: (preset: PresetAmount) => void
+  onTopupAmountChange: (amount: number) => void
   topupAmount: number
   paymentAmount: number
   calculating: boolean
@@ -92,20 +83,6 @@ export function RechargeDrawer(props: {
 }) {
   const { t } = useTranslation()
   const { topupInfo } = props
-
-  // Proportional zoom for the shop iframe: observe the wrapper width and
-  // scale the fixed-width iframe down so the desktop layout fits whole.
-  const shopWrapRef = useRef<HTMLDivElement | null>(null)
-  const [shopScale, setShopScale] = useState(0)
-  useEffect(() => {
-    const el = shopWrapRef.current
-    if (!el) return
-    const observer = new ResizeObserver(() => {
-      setShopScale(el.clientWidth / SHOP_LOGICAL_WIDTH)
-    })
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [props.open])
 
   if (!props.open) {
     return null
@@ -145,7 +122,7 @@ export function RechargeDrawer(props: {
             <X size={14} strokeWidth={1.8} />
           </button>
         </div>
-        <div className='ds-rd-cols'>
+        <div className='ds-rd-cols' style={{ gridTemplateColumns: '1fr' }}>
           {/* left column: direct online payment (render lines 585-626) */}
           <div className='ds-rd-col'>
             <div className='ds-rd-label'>
@@ -153,12 +130,7 @@ export function RechargeDrawer(props: {
             </div>
             {hasAnyTopup ? (
               <>
-                <div className='ds-rd-amount-box'>
-                  <span className='cny'>¥</span>
-                  <span className='amt num'>{props.topupAmount.toFixed(2)}</span>
-                  <span className='cur'>{CNY}</span>
-                </div>
-                <div style={{ height: 12 }} />
+                <div className='ds-rd-label'>{t('Topup Credit')}</div>
                 {props.presetAmounts.length > 0 && (
                   <div className='ds-rd-chips'>
                     {props.presetAmounts.map((preset) => (
@@ -172,11 +144,45 @@ export function RechargeDrawer(props: {
                         }
                         onClick={() => props.onSelectPreset(preset)}
                       >
-                        ¥ {preset.value}
+                        {preset.value}
                       </button>
                     ))}
                   </div>
                 )}
+                <label
+                  className='ds-rd-label'
+                  htmlFor='ds-rd-custom-amount'
+                  style={{ marginTop: 12 }}
+                >
+                  {t('Custom Credit Amount')}
+                </label>
+                <input
+                  id='ds-rd-custom-amount'
+                  className='ds-rd-amount-input'
+                  type='number'
+                  min={1}
+                  step={0.01}
+                  placeholder={t('Enter credit amount, minimum 1')}
+                  value={
+                    props.selectedPreset === null && props.topupAmount > 0
+                      ? String(props.topupAmount)
+                      : ''
+                  }
+                  onChange={(e) => {
+                    const n = Number(e.target.value)
+                    if (Number.isFinite(n) && n > 0) {
+                      props.onTopupAmountChange(n)
+                    }
+                  }}
+                />
+                <div style={{ height: 12 }} />
+                <div className='ds-rd-amount-box'>
+                  <span className='cny'>$</span>
+                  <span className='amt num'>
+                    {props.paymentAmount.toFixed(2)}
+                  </span>
+                  <span className='cur'>{USD}</span>
+                </div>
                 <div className='ds-rd-label'>{t('Payment Method')}</div>
                 {hasStandardMethods &&
                   topupInfo?.pay_methods?.map((method) => {
@@ -305,7 +311,7 @@ export function RechargeDrawer(props: {
                       props.calculating
                     }
                   >
-                    {t('Pay Now')} ¥{props.paymentAmount.toFixed(2)}
+                    {t('Pay Now')} ${props.paymentAmount.toFixed(2)}
                   </button>
                   <div className='ds-rd-note'>
                     {t(
@@ -321,34 +327,6 @@ export function RechargeDrawer(props: {
                 )}
               </div>
             )}
-          </div>
-
-          {/* right column: card shop embed (user rework 2026-09-17: the
-              column is titled 充值, the shop branding/meta block is gone) */}
-          <div className='ds-rd-col'>
-            <div className='ds-rd-label' style={{ marginTop: 18 }}>
-              {t('Recharge')}
-            </div>
-
-            {/* Cross-origin embed; see the file-top oxlint-disable note.
-                The shop page is a desktop-width layout: it is scaled to fit
-                the column (proportional zoom) instead of being squeezed into
-                a narrow mobile-ish viewport. */}
-            <div ref={shopWrapRef} className='ds-rd-iframe-wrap'>
-              <iframe
-                className='ds-rd-iframe'
-                style={{
-                  width: SHOP_LOGICAL_WIDTH,
-                  height: shopScale > 0 ? `${100 / shopScale}%` : '100%',
-                  transform:
-                    shopScale > 0 ? `scale(${shopScale})` : undefined,
-                  transformOrigin: '0 0',
-                }}
-                src={CARD_SHOP_URL}
-                title={t('Recharge')}
-                sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox'
-              />
-            </div>
           </div>
         </div>
       </aside>
