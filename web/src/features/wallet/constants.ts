@@ -36,7 +36,16 @@ export const PAYMENT_TYPES = {
   CREEM: 'creem',
   WAFFO: 'waffo',
   WAFFO_PANCAKE: 'waffo_pancake',
+  ALIPAY_CLOUDCAT: 'alipay_cloudcat',
+  WECHAT_CLOUDCAT: 'wechat_cloudcat',
 } as const
+
+/**
+ * Credit denominations stocked at the cloud-cat card shop. Alipay/WeChat
+ * (cloud-cat) checkout is only offered when the chosen credit amount is
+ * one of these; stock lives at the shop, denominations are reviewed there.
+ */
+export const CLOUD_CAT_DENOMINATIONS = [5, 10, 30, 50, 100, 200, 500]
 
 /**
  * Default payment type
