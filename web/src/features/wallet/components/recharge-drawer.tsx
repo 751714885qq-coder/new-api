@@ -17,7 +17,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { X } from 'lucide-react'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getPaymentIcon } from '../lib'
@@ -84,32 +83,6 @@ export function RechargeDrawer(props: {
 }) {
   const { t } = useTranslation()
   const { topupInfo } = props
-  const unitPrice = topupInfo?.waffo_pancake_unit_price ?? 1
-
-  // The payer types USD directly; credit units are derived from the
-  // backend unit price (USD per credit unit) and fed back as `topupAmount`
-  // so the pay endpoint receives its native amount.
-  const [customUsd, setCustomUsd] = useState('')
-
-  const applyUsd = (usd: number) => {
-    const credit = Math.round((usd / unitPrice) * 100) / 100
-    if (credit > 0) {
-      props.onTopupAmountChange(credit)
-    }
-  }
-
-  const handleCustomUsdChange = (value: string) => {
-    setCustomUsd(value)
-    const usd = Number(value)
-    if (Number.isFinite(usd) && usd > 0) {
-      applyUsd(usd)
-    }
-  }
-
-  const handlePresetUsd = (usd: number) => {
-    setCustomUsd(String(usd))
-    applyUsd(usd)
-  }
 
   if (!props.open) {
     return null
@@ -157,7 +130,7 @@ export function RechargeDrawer(props: {
             </div>
             {hasAnyTopup ? (
               <>
-                <div className='ds-rd-label'>{t('Topup Amount (USD)')}</div>
+                <div className='ds-rd-label'>{t('Topup Credit')}</div>
                 {props.presetAmounts.length > 0 && (
                   <div className='ds-rd-chips'>
                     {props.presetAmounts.map((preset) => (
@@ -165,13 +138,13 @@ export function RechargeDrawer(props: {
                         key={preset.value}
                         type='button'
                         className={
-                          customUsd === String(preset.value)
+                          props.selectedPreset === preset.value
                             ? 'ds-rd-chip on'
                             : 'ds-rd-chip'
                         }
-                        onClick={() => handlePresetUsd(preset.value)}
+                        onClick={() => props.onSelectPreset(preset)}
                       >
-                        $ {preset.value}
+                        {preset.value}
                       </button>
                     ))}
                   </div>
@@ -181,7 +154,7 @@ export function RechargeDrawer(props: {
                   htmlFor='ds-rd-custom-amount'
                   style={{ marginTop: 12 }}
                 >
-                  {t('Custom Amount (USD)')}
+                  {t('Custom Credit Amount')}
                 </label>
                 <input
                   id='ds-rd-custom-amount'
@@ -189,9 +162,18 @@ export function RechargeDrawer(props: {
                   type='number'
                   min={1}
                   step={0.01}
-                  placeholder={t('Enter USD amount, e.g. 5')}
-                  value={customUsd}
-                  onChange={(e) => handleCustomUsdChange(e.target.value)}
+                  placeholder={t('Enter credit amount, minimum 1')}
+                  value={
+                    props.selectedPreset === null && props.topupAmount > 0
+                      ? String(props.topupAmount)
+                      : ''
+                  }
+                  onChange={(e) => {
+                    const n = Number(e.target.value)
+                    if (Number.isFinite(n) && n > 0) {
+                      props.onTopupAmountChange(n)
+                    }
+                  }}
                 />
                 <div style={{ height: 12 }} />
                 <div className='ds-rd-amount-box'>
