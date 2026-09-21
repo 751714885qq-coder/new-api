@@ -139,7 +139,7 @@ export function RechargeDrawer(props: {
             <X size={14} strokeWidth={1.8} />
           </button>
         </div>
-        <div className='ds-rd-cols' style={{ gridTemplateColumns: '1fr' }}>
+        <div className='ds-rd-cols'>
           {/* left column: direct online payment (render lines 585-626) */}
           <div className='ds-rd-col'>
             <div className='ds-rd-label'>

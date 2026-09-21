@@ -2911,7 +2911,7 @@ html:not(.dark)
   top: 0;
   right: 0;
   bottom: 0;
-  width: min(1520px, 96vw);
+  width: min(560px, 94vw);
   max-width: 100vw;
   z-index: 100;
   background: linear-gradient(
@@ -2953,8 +2953,8 @@ html:not(.dark)
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 28px;
+  grid-template-columns: 1fr;
+  gap: 0;
   margin-top: 6px;
 }
 .ds-rd-col {
