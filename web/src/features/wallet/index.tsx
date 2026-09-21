@@ -528,6 +528,7 @@ export function Wallet(props: WalletProps) {
           calculating={calculating}
           selectedPaymentMethod={selectedPaymentMethod}
           selectedWaffoMethodIndex={selectedWaffoMethodIndex}
+          onTopupAmountChange={handleTopupAmountChange}
           onMethodSelect={handleDrawerMethodSelect}
           onWaffoMethodSelect={handleDrawerWaffoSelect}
           onPancakeMethodSelect={handleDrawerPancakeSelect}
