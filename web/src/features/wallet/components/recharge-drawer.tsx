@@ -139,7 +139,7 @@ export function RechargeDrawer(props: {
             <X size={14} strokeWidth={1.8} />
           </button>
         </div>
-        <div className='ds-rd-cols' style={{ gridTemplateColumns: '1fr' }}>
+        <div className='ds-rd-cols'>
           {/* left column: direct online payment (render lines 585-626) */}
           <div className='ds-rd-col'>
             <div className='ds-rd-label'>
@@ -375,14 +375,14 @@ export function RechargeDrawer(props: {
                       props.onPay()
                     }}
                     disabled={
-                      !props.selectedPaymentMethod ||
                       creemSelected ||
+                      props.calculating ||
                       (cloudcatSelected !== null && !cloudcatAvailable) ||
-                      props.calculating
+                      (cloudcatSelected === null && !props.selectedPaymentMethod)
                     }
                   >
                     {cloudcatSelected
-                      ? t('Buy at card shop')
+                      ? t('Pay Now')
                       : `${t('Pay Now')} $${props.paymentAmount.toFixed(2)}`}
                   </button>
                   <div className='ds-rd-note'>
