@@ -284,7 +284,7 @@ export function RechargeDrawer(props: {
                         <div className='p-name'>{t('Alipay')}</div>
                         <div className='p-sub'>
                           {cloudcatAvailable
-                            ? t('via card shop · opens in new tab')
+                            ? t('跳转云猫小店卡网购买，站内兑换码核销')
                             : t('credit amount must match a stocked denomination')}
                         </div>
                       </div>
@@ -303,7 +303,7 @@ export function RechargeDrawer(props: {
                         <div className='p-name'>{t('WeChat Pay')}</div>
                         <div className='p-sub'>
                           {cloudcatAvailable
-                            ? t('via card shop · opens in new tab')
+                            ? t('跳转云猫小店卡网购买，站内兑换码核销')
                             : t('credit amount must match a stocked denomination')}
                         </div>
                       </div>
