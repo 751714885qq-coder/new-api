@@ -6239,19 +6239,16 @@
     "Bound to {{email}}, can be used for login and account recovery": "已绑定 {{email}}，可用于登录与找回密码",
     "Manage your account identity, security settings, and notification preferences — ": "管理账户身份、安全设置与通知偏好 —— ",
     "sensitive actions require security verification": "敏感操作需通过安全验证",
-    ", changes take effect immediately.": "，更改即时生效。"
-  },
-  "Alipay": "支付宝",
-  "WeChat Pay": "微信支付",
-  "via card shop · opens in new tab": "经卡密店铺 · 新标签页打开",
-  "credit amount must match a stocked denomination": "充值额度需与在售档位一致",
-  "Buy at card shop": "前往卡密店铺购买",
-  "You will be redirected to the card shop: buy the matching credit code, then redeem it here.": "即将跳转卡密店铺：购买对应档位卡密后，回本页兑换即可到账。",
-  "Topup Amount (USD)": "充值金额 (USD)",
-  "Custom Amount (USD)": "自定义金额 (USD)",
-  "Enter USD amount, e.g. 5": "输入美元金额，例如 5",
-  "Custom Credit Amount": "自定义额度",
-  "Enter credit amount, minimum 1": "输入额度数，最低 1",
-  "Topup Credit": "充值额度",
-  "Pay Now": "立即支付"
+    ", changes take effect immediately.": "，更改即时生效。",
+    "via card shop · opens in new tab": "经卡密店铺 · 新标签页打开",
+    "credit amount must match a stocked denomination": "充值额度需与在售档位一致",
+    "Buy at card shop": "前往卡密店铺购买",
+    "You will be redirected to the card shop: buy the matching credit code, then redeem it here.": "即将跳转卡密店铺：购买对应档位卡密后，回本页兑换即可到账。",
+    "Topup Amount (USD)": "充值金额 (USD)",
+    "Custom Amount (USD)": "自定义金额 (USD)",
+    "Enter USD amount, e.g. 5": "输入美元金额，例如 5",
+    "Custom Credit Amount": "自定义额度",
+    "Enter credit amount, minimum 1": "输入额度数，最低 1",
+    "Topup Credit": "充值额度"
+  }
 }
