@@ -3015,6 +3015,15 @@ html:not(.dark)
   width: 100%;
   outline: none;
 }
+.ds-rd-amount-input::-webkit-outer-spin-button,
+.ds-rd-amount-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.ds-rd-amount-input {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
 .ds-rd-amount-input:focus {
   border-color: rgba(34, 211, 238, 0.55);
 }
