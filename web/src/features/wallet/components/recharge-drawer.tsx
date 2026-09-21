@@ -17,10 +17,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getPaymentIcon } from '../lib'
-import { PAYMENT_TYPES } from '../constants'
+import { CLOUD_CAT_DENOMINATIONS, PAYMENT_TYPES } from '../constants'
 import type {
   CreemProduct,
   PaymentMethod,
@@ -76,6 +77,7 @@ export function RechargeDrawer(props: {
   onCreemMethodSelect: () => void
   onCreemProductSelect?: (product: CreemProduct) => void
   onPay: () => void
+  onCloudcatPay: (channel: 'alipay' | 'wechat') => void
   redemptionCode: string
   onRedemptionCodeChange: (code: string) => void
   onRedeem: () => void
@@ -83,6 +85,21 @@ export function RechargeDrawer(props: {
 }) {
   const { t } = useTranslation()
   const { topupInfo } = props
+
+  // Cloud-cat (card shop) channel: Alipay/WeChat pay at the shop, which
+  // only stocks fixed credit denominations — selectable only when the
+  // chosen credit amount matches one.
+  const cloudcatEnabled = true
+  const cloudcatAvailable =
+    CLOUD_CAT_DENOMINATIONS.includes(props.topupAmount)
+  const [cloudcatSelected, setSelectedCloudcat] = useState<
+    'alipay' | 'wechat' | null
+  >(null)
+  useEffect(() => {
+    if (!cloudcatAvailable) {
+      setSelectedCloudcat(null)
+    }
+  }, [cloudcatAvailable])
 
   if (!props.open) {
     return null
@@ -234,11 +251,15 @@ export function RechargeDrawer(props: {
                     type='button'
                     className={
                       props.selectedPaymentMethod?.type ===
-                      PAYMENT_TYPES.WAFFO_PANCAKE
+                        PAYMENT_TYPES.WAFFO_PANCAKE &&
+                      !cloudcatSelected
                         ? 'ds-rd-pay on'
                         : 'ds-rd-pay'
                     }
-                    onClick={props.onPancakeMethodSelect}
+                    onClick={() => {
+                      setSelectedCloudcat(null)
+                      props.onPancakeMethodSelect()
+                    }}
                   >
                     {getPaymentIcon(PAYMENT_TYPES.WAFFO_PANCAKE, 'h-[17px] w-[17px] shrink-0')}
                     <div>
@@ -247,6 +268,48 @@ export function RechargeDrawer(props: {
                     </div>
                     <span className='radio' aria-hidden='true' />
                   </button>
+                )}
+                {cloudcatEnabled && (
+                  <>
+                    <button
+                      type='button'
+                      className={
+                        cloudcatSelected === 'alipay' ? 'ds-rd-pay on' : 'ds-rd-pay'
+                      }
+                      disabled={!cloudcatAvailable}
+                      onClick={() => setSelectedCloudcat('alipay')}
+                    >
+                      {getPaymentIcon(PAYMENT_TYPES.ALIPAY, 'h-[17px] w-[17px] shrink-0')}
+                      <div>
+                        <div className='p-name'>{t('Alipay')}</div>
+                        <div className='p-sub'>
+                          {cloudcatAvailable
+                            ? t('via card shop · opens in new tab')
+                            : t('credit amount must match a stocked denomination')}
+                        </div>
+                      </div>
+                      <span className='radio' aria-hidden='true' />
+                    </button>
+                    <button
+                      type='button'
+                      className={
+                        cloudcatSelected === 'wechat' ? 'ds-rd-pay on' : 'ds-rd-pay'
+                      }
+                      disabled={!cloudcatAvailable}
+                      onClick={() => setSelectedCloudcat('wechat')}
+                    >
+                      {getPaymentIcon(PAYMENT_TYPES.WECHAT, 'h-[17px] w-[17px] shrink-0')}
+                      <div>
+                        <div className='p-name'>{t('WeChat Pay')}</div>
+                        <div className='p-sub'>
+                          {cloudcatAvailable
+                            ? t('via card shop · opens in new tab')
+                            : t('credit amount must match a stocked denomination')}
+                        </div>
+                      </div>
+                      <span className='radio' aria-hidden='true' />
+                    </button>
+                  </>
                 )}
                 {topupInfo?.enable_creem_topup && (
                   <button
@@ -304,19 +367,32 @@ export function RechargeDrawer(props: {
                   <button
                     type='button'
                     className='ds-rd-pay-btn'
-                    onClick={props.onPay}
+                    onClick={() => {
+                      if (cloudcatSelected) {
+                        props.onCloudcatPay(cloudcatSelected)
+                        return
+                      }
+                      props.onPay()
+                    }}
                     disabled={
                       !props.selectedPaymentMethod ||
                       creemSelected ||
+                      (cloudcatSelected !== null && !cloudcatAvailable) ||
                       props.calculating
                     }
                   >
-                    {t('Pay Now')} ${props.paymentAmount.toFixed(2)}
+                    {cloudcatSelected
+                      ? t('Buy at card shop')
+                      : `${t('Pay Now')} $${props.paymentAmount.toFixed(2)}`}
                   </button>
                   <div className='ds-rd-note'>
-                    {t(
-                      'You will be redirected to the payment page; the balance arrives in real time after payment.'
-                    )}
+                    {cloudcatSelected
+                      ? t(
+                          'You will be redirected to the card shop: buy the matching credit code, then redeem it here.'
+                        )
+                      : t(
+                          'You will be redirected to the payment page; the balance arrives in real time after payment.'
+                        )}
                   </div>
                 </div>
               </>

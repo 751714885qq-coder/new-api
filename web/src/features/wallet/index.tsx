@@ -39,7 +39,11 @@ import { SubscriptionPlansCard } from './components/subscription-plans-card'
 import { WalletBillingPreviewCard } from './components/wallet-billing-preview-card'
 import { WalletConsumptionTrendCard } from './components/wallet-consumption-trend-card'
 import { WalletStatsCard } from './components/wallet-stats-card'
-import { DEFAULT_DISCOUNT_RATE, PAYMENT_TYPES } from './constants'
+import {
+  CARD_SHOP_URL,
+  DEFAULT_DISCOUNT_RATE,
+  PAYMENT_TYPES,
+} from './constants'
 import {
   useTopupInfo,
   usePayment,
@@ -321,8 +325,26 @@ export function Wallet(props: WalletProps) {
   const handleDrawerPay = async () => {
     const method = selectedPaymentMethod
     if (!method || method.type === PAYMENT_TYPES.CREEM) return
+    if (
+      method.type === PAYMENT_TYPES.ALIPAY_CLOUDCAT ||
+      method.type === PAYMENT_TYPES.WECHAT_CLOUDCAT
+    ) {
+      window.open(CARD_SHOP_URL, '_blank', 'noopener')
+      return
+    }
     await calculatePaymentAmount(topupAmount, method.type)
     setConfirmDialogOpen(true)
+  }
+
+  const handleDrawerCloudcatPay = (channel: 'alipay' | 'wechat') => {
+    setSelectedPaymentMethod({
+      name: channel === 'alipay' ? 'Alipay' : 'WeChat Pay',
+      type:
+        channel === 'alipay'
+          ? PAYMENT_TYPES.ALIPAY_CLOUDCAT
+          : PAYMENT_TYPES.WECHAT_CLOUDCAT,
+    })
+    window.open(CARD_SHOP_URL, '_blank', 'noopener')
   }
 
   // Get discount rate for current topup amount
@@ -535,6 +557,7 @@ export function Wallet(props: WalletProps) {
           onCreemMethodSelect={handleDrawerCreemSelect}
           onCreemProductSelect={handleCreemProductSelect}
           onPay={handleDrawerPay}
+          onCloudcatPay={handleDrawerCloudcatPay}
           redemptionCode={redemptionCode}
           onRedemptionCodeChange={setRedemptionCode}
           onRedeem={handleRedeem}
