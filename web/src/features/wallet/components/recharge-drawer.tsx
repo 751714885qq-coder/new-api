@@ -20,8 +20,12 @@ import { X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { getPaymentIcon } from '../lib'
 import { CLOUD_CAT_DENOMINATIONS, PAYMENT_TYPES } from '../constants'
+import {
+  formatChannelPaymentAmount,
+  getChannelPaymentDisplay,
+  getPaymentIcon,
+} from '../lib'
 import type {
   CreemProduct,
   PaymentMethod,
@@ -29,10 +33,7 @@ import type {
   TopupInfo,
   WaffoPayMethod,
 } from '../types'
-
 import { CreemProductsSection } from './creem-products-section'
-
-const USD = 'USD'
 
 function getStandardMethodSubtitle(type: string, t: (key: string) => string) {
   if (type === PAYMENT_TYPES.STRIPE) {
@@ -122,6 +123,21 @@ export function RechargeDrawer(props: {
   const creemProducts = topupInfo?.creem_products
   const creemSelected = props.selectedPaymentMethod?.type === PAYMENT_TYPES.CREEM
 
+  // Actual charge for the selected channel: USDT (rate estimate), card-shop
+  // face value, or the nominal USD order money.
+  let paymentType = props.selectedPaymentMethod?.type
+  if (cloudcatSelected === 'alipay') {
+    paymentType = PAYMENT_TYPES.ALIPAY_CLOUDCAT
+  } else if (cloudcatSelected === 'wechat') {
+    paymentType = PAYMENT_TYPES.WECHAT_CLOUDCAT
+  }
+  const paymentDisplay = getChannelPaymentDisplay({
+    paymentType,
+    money: props.paymentAmount,
+    topupAmount: props.topupAmount,
+    usdtRate: props.selectedPaymentMethod?.usdt_rate,
+  })
+
   const close = () => props.onOpenChange(false)
 
   return (
@@ -194,11 +210,13 @@ export function RechargeDrawer(props: {
                 />
                 <div style={{ height: 12 }} />
                 <div className='ds-rd-amount-box'>
-                  <span className='cny'>$</span>
-                  <span className='amt num'>
-                    {props.paymentAmount.toFixed(2)}
+                  <span className='cny'>
+                    {`${paymentDisplay.approximate ? '≈' : ''}${paymentDisplay.symbol}`}
                   </span>
-                  <span className='cur'>{USD}</span>
+                  <span className='amt num'>
+                    {paymentDisplay.amount.toFixed(2)}
+                  </span>
+                  <span className='cur'>{paymentDisplay.unit}</span>
                 </div>
                 <div className='ds-rd-label'>{t('Payment Method')}</div>
                 {hasStandardMethods &&
@@ -214,7 +232,12 @@ export function RechargeDrawer(props: {
                         className={selected ? 'ds-rd-pay on' : 'ds-rd-pay'}
                         onClick={() => props.onMethodSelect(method)}
                       >
-                        {getPaymentIcon(method.type, 'h-[17px] w-[17px] shrink-0', method.icon, method.name)}
+                        {getPaymentIcon(
+                          method.type,
+                          'h-[17px] w-[17px] shrink-0',
+                          method.icon,
+                          method.name
+                        )}
                         <div>
                           <div className='p-name'>{method.name}</div>
                           {subtitle && <div className='p-sub'>{subtitle}</div>}
@@ -226,7 +249,8 @@ export function RechargeDrawer(props: {
                 {hasWaffoMethods &&
                   topupInfo?.waffo_pay_methods?.map((method, index) => {
                     const selected =
-                      props.selectedPaymentMethod?.type === PAYMENT_TYPES.WAFFO &&
+                      props.selectedPaymentMethod?.type ===
+                        PAYMENT_TYPES.WAFFO &&
                       props.selectedWaffoMethodIndex === index
                     return (
                       <button
@@ -235,11 +259,18 @@ export function RechargeDrawer(props: {
                         className={selected ? 'ds-rd-pay on' : 'ds-rd-pay'}
                         onClick={() => props.onWaffoMethodSelect(method, index)}
                       >
-                        {getPaymentIcon(PAYMENT_TYPES.WAFFO, 'h-[17px] w-[17px] shrink-0', method.icon, method.name)}
+                        {getPaymentIcon(
+                          PAYMENT_TYPES.WAFFO,
+                          'h-[17px] w-[17px] shrink-0',
+                          method.icon,
+                          method.name
+                        )}
                         <div>
                           <div className='p-name'>{method.name}</div>
                           <div className='p-sub'>
-                            {t('Aggregated payment · channels configured in admin')}
+                            {t(
+                              'Aggregated payment · channels configured in admin'
+                            )}
                           </div>
                         </div>
                         <span className='radio' aria-hidden='true' />
@@ -251,8 +282,7 @@ export function RechargeDrawer(props: {
                     type='button'
                     className={
                       props.selectedPaymentMethod?.type ===
-                        PAYMENT_TYPES.WAFFO_PANCAKE &&
-                      !cloudcatSelected
+                        PAYMENT_TYPES.WAFFO_PANCAKE && !cloudcatSelected
                         ? 'ds-rd-pay on'
                         : 'ds-rd-pay'
                     }
@@ -261,10 +291,15 @@ export function RechargeDrawer(props: {
                       props.onPancakeMethodSelect()
                     }}
                   >
-                    {getPaymentIcon(PAYMENT_TYPES.WAFFO_PANCAKE, 'h-[17px] w-[17px] shrink-0')}
+                    {getPaymentIcon(
+                      PAYMENT_TYPES.WAFFO_PANCAKE,
+                      'h-[17px] w-[17px] shrink-0'
+                    )}
                     <div>
                       <div className='p-name'>Waffo Pancake</div>
-                      <div className='p-sub'>{t('Redirect to checkout page payment')}</div>
+                      <div className='p-sub'>
+                        {t('Redirect to checkout page payment')}
+                      </div>
                     </div>
                     <span className='radio' aria-hidden='true' />
                   </button>
@@ -274,18 +309,25 @@ export function RechargeDrawer(props: {
                     <button
                       type='button'
                       className={
-                        cloudcatSelected === 'alipay' ? 'ds-rd-pay on' : 'ds-rd-pay'
+                        cloudcatSelected === 'alipay'
+                          ? 'ds-rd-pay on'
+                          : 'ds-rd-pay'
                       }
                       disabled={!cloudcatAvailable}
                       onClick={() => setSelectedCloudcat('alipay')}
                     >
-                      {getPaymentIcon(PAYMENT_TYPES.ALIPAY, 'h-[17px] w-[17px] shrink-0')}
+                      {getPaymentIcon(
+                        PAYMENT_TYPES.ALIPAY,
+                        'h-[17px] w-[17px] shrink-0'
+                      )}
                       <div>
                         <div className='p-name'>{t('Alipay')}</div>
                         <div className='p-sub'>
                           {cloudcatAvailable
                             ? t('跳转云猫小店卡网购买，站内兑换码核销')
-                            : t('credit amount must match a stocked denomination')}
+                            : t(
+                                'credit amount must match a stocked denomination'
+                              )}
                         </div>
                       </div>
                       <span className='radio' aria-hidden='true' />
@@ -293,18 +335,25 @@ export function RechargeDrawer(props: {
                     <button
                       type='button'
                       className={
-                        cloudcatSelected === 'wechat' ? 'ds-rd-pay on' : 'ds-rd-pay'
+                        cloudcatSelected === 'wechat'
+                          ? 'ds-rd-pay on'
+                          : 'ds-rd-pay'
                       }
                       disabled={!cloudcatAvailable}
                       onClick={() => setSelectedCloudcat('wechat')}
                     >
-                      {getPaymentIcon(PAYMENT_TYPES.WECHAT, 'h-[17px] w-[17px] shrink-0')}
+                      {getPaymentIcon(
+                        PAYMENT_TYPES.WECHAT,
+                        'h-[17px] w-[17px] shrink-0'
+                      )}
                       <div>
                         <div className='p-name'>{t('WeChat Pay')}</div>
                         <div className='p-sub'>
                           {cloudcatAvailable
                             ? t('跳转云猫小店卡网购买，站内兑换码核销')
-                            : t('credit amount must match a stocked denomination')}
+                            : t(
+                                'credit amount must match a stocked denomination'
+                              )}
                         </div>
                       </div>
                       <span className='radio' aria-hidden='true' />
@@ -317,11 +366,16 @@ export function RechargeDrawer(props: {
                     className={creemSelected ? 'ds-rd-pay on' : 'ds-rd-pay'}
                     onClick={props.onCreemMethodSelect}
                   >
-                    {getPaymentIcon(PAYMENT_TYPES.CREEM, 'h-[17px] w-[17px] shrink-0')}
+                    {getPaymentIcon(
+                      PAYMENT_TYPES.CREEM,
+                      'h-[17px] w-[17px] shrink-0'
+                    )}
                     <div>
                       <div className='p-name'>Creem</div>
                       <div className='p-sub'>
-                        {t('Fixed-denomination products · international payment')}
+                        {t(
+                          'Fixed-denomination products · international payment'
+                        )}
                       </div>
                     </div>
                     <span className='radio' aria-hidden='true' />
@@ -332,9 +386,11 @@ export function RechargeDrawer(props: {
                   !topupInfo?.enable_waffo_pancake_topup &&
                   !topupInfo?.enable_creem_topup && (
                     <div className='ds-rd-note' style={{ textAlign: 'left' }}>
-                      {t('No payment methods available. Please contact administrator.')}
+                      {t(
+                        'No payment methods available. Please contact administrator.'
+                      )}
                     </div>
-                )}
+                  )}
                 {creemSelected &&
                   Array.isArray(creemProducts) &&
                   creemProducts.length > 0 &&
@@ -350,7 +406,9 @@ export function RechargeDrawer(props: {
                     <div className='ds-rd-redeem'>
                       <input
                         value={props.redemptionCode}
-                        onChange={(e) => props.onRedemptionCodeChange(e.target.value)}
+                        onChange={(e) =>
+                          props.onRedemptionCodeChange(e.target.value)
+                        }
                         placeholder={t('Enter your redemption code')}
                       />
                       <button
@@ -378,12 +436,11 @@ export function RechargeDrawer(props: {
                       creemSelected ||
                       props.calculating ||
                       (cloudcatSelected !== null && !cloudcatAvailable) ||
-                      (cloudcatSelected === null && !props.selectedPaymentMethod)
+                      (cloudcatSelected === null &&
+                        !props.selectedPaymentMethod)
                     }
                   >
-                    {cloudcatSelected
-                      ? t('Pay Now')
-                      : `${t('Pay Now')} $${props.paymentAmount.toFixed(2)}`}
+                    {`${t('Pay Now')} ${formatChannelPaymentAmount(paymentDisplay)}`}
                   </button>
                   <div className='ds-rd-note'>
                     {cloudcatSelected

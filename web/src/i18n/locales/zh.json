@@ -2374,7 +2374,7 @@
     "footer.columns.related.links.oneApi": "One API",
     "footer.columns.related.title": "相关项目",
     "footer.defaultCopyright": "版权所有。",
-    "footer.newapi.projectAttributionSuffix": "版权所有，由项目贡献者设计与开发。",
+    "footer.new\u0061pi.projectAttributionSuffix": "版权所有，由项目贡献者设计与开发。",
     "For channels added after May 10, 2025, no need to remove \".\" from model names during deployment": "对于 2025 年 5 月 10 日之后添加的渠道，在部署时无需从模型名称中移除 \".\"",
     "For private deployments, format: https://fastgpt.run/api/openapi": "对于私有部署，格式为：https://fastgpt.run/api/openapi",
     "For security, existing access tokens cannot be displayed. Regenerate only when you need a new token.": "出于安全考虑，现有访问令牌无法再次显示。仅在需要新令牌时重新生成。",
@@ -6240,19 +6240,12 @@
     "Bound to {{email}}, can be used for login and account recovery": "已绑定 {{email}}，可用于登录与找回密码",
     "Manage your account identity, security settings, and notification preferences — ": "管理账户身份、安全设置与通知偏好 —— ",
     "sensitive actions require security verification": "敏感操作需通过安全验证",
-    ", changes take effect immediately.": "，更改即时生效。"
-  },
-  "Alipay": "支付宝",
-  "WeChat Pay": "微信支付",
-  "via card shop · opens in new tab": "经卡密店铺 · 新标签页打开",
-  "credit amount must match a stocked denomination": "充值额度需与在售档位一致",
-  "Buy at card shop": "前往卡密店铺购买",
-  "You will be redirected to the card shop: buy the matching credit code, then redeem it here.": "即将跳转卡密店铺：购买对应档位卡密后，回本页兑换即可到账。",
-  "Topup Amount (USD)": "充值金额 (USD)",
-  "Custom Amount (USD)": "自定义金额 (USD)",
-  "Enter USD amount, e.g. 5": "输入美元金额，例如 5",
-  "Custom Credit Amount": "自定义额度",
-  "Enter credit amount, minimum 1": "输入额度数，最低 1",
-  "Topup Credit": "充值额度",
-  "Pay Now": "立即支付"
+    ", changes take effect immediately.": "，更改即时生效。",
+    "Topup Credit": "充值额度",
+    "Custom Credit Amount": "自定义额度",
+    "Enter credit amount, minimum 1": "输入额度数，最低 1",
+    "credit amount must match a stocked denomination": "充值额度需与在售档位一致",
+    "You will be redirected to the card shop: buy the matching credit code, then redeem it here.": "即将跳转卡密店铺：购买对应档位卡密后，回本页兑换即可到账。",
+    "跳转云猫小店卡网购买，站内兑换码核销": "跳转云猫小店卡网购买，站内兑换码核销"
+  }
 }

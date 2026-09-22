@@ -5254,6 +5254,7 @@
     "The administrator configured an external link for this document.": "Người quản trị đã cấu hình một liên kết ngoài cho tài liệu này.",
     "The administrator has not configured a privacy policy yet.": "Quản trị viên chưa cấu hình chính sách bảo mật.",
     "The administrator has not configured a user agreement yet.": "Quản trị viên chưa cấu hình thỏa thuận người dùng.",
+    "The administrator has not configured documentation content yet.": "The administrator has not configured documentation content yet.",
     "The administrator has not configured any about content yet. You can set it in the settings page, supporting HTML or URL.": "Quản trị viên chưa cấu hình bất kỳ nội dung giới thiệu nào. Bạn có thể thiết lập nó trong trang cài đặt, hỗ trợ HTML hoặc URL.",
     "The API key used for the requests": "Khóa API được dùng cho các yêu cầu",
     "The authenticator code is incorrect.": "Mã xác thực không chính xác.",
@@ -6239,6 +6240,12 @@
     "Bound to {{email}}, can be used for login and account recovery": "已绑定 {{email}}，可用于登录与找回密码",
     "Manage your account identity, security settings, and notification preferences — ": "管理账户身份、安全设置与通知偏好 —— ",
     "sensitive actions require security verification": "敏感操作需通过安全验证",
-    ", changes take effect immediately.": "，更改即时生效。"
+    ", changes take effect immediately.": "，更改即时生效。",
+    "Topup Credit": "Topup Credit",
+    "Custom Credit Amount": "Custom Credit Amount",
+    "Enter credit amount, minimum 1": "Enter credit amount, minimum 1",
+    "credit amount must match a stocked denomination": "credit amount must match a stocked denomination",
+    "You will be redirected to the card shop: buy the matching credit code, then redeem it here.": "You will be redirected to the card shop: buy the matching credit code, then redeem it here.",
+    "跳转云猫小店卡网购买，站内兑换码核销": "Buy the matching credit code at the card shop, then redeem it here."
   }
 }

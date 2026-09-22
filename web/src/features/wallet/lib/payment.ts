@@ -76,6 +76,79 @@ export function isStripePayment(paymentType: string): boolean {
 }
 
 /**
+ * Check if payment method pays in USDT through the crypto gateway
+ *
+ * Crypto methods are custom epay entries (e.g. "usdt.trc20") configured by
+ * the administrator; the order money stays CNY while the cashier converts
+ * to USDT at its own rate.
+ */
+export function isUsdtPayment(paymentType: string | undefined): boolean {
+  return typeof paymentType === 'string' && paymentType.startsWith('usdt')
+}
+
+export interface ChannelPaymentDisplay {
+  /** True when the amount is a rate-based estimate ("≈" prefix) */
+  approximate: boolean
+  symbol: string
+  amount: number
+  unit: string
+}
+
+/**
+ * Resolve what the drawer should show as the actual charge for the selected
+ * channel. The generic amount endpoint returns the CNY order money, which
+ * must never masquerade as a USD charge: crypto channels show the USDT
+ * estimate from the method's configured rate, and the card-shop channel
+ * charges the card's face value.
+ */
+export function getChannelPaymentDisplay(props: {
+  paymentType: string | undefined
+  money: number
+  topupAmount: number
+  usdtRate?: string
+}): ChannelPaymentDisplay {
+  const { paymentType, money, topupAmount, usdtRate } = props
+
+  if (
+    isUsdtPayment(paymentType) &&
+    usdtRate !== undefined &&
+    Number.parseFloat(usdtRate) > 0
+  ) {
+    return {
+      approximate: true,
+      symbol: '',
+      amount: money / Number.parseFloat(usdtRate),
+      unit: 'USDT',
+    }
+  }
+
+  if (
+    paymentType === PAYMENT_TYPES.ALIPAY_CLOUDCAT ||
+    paymentType === PAYMENT_TYPES.WECHAT_CLOUDCAT
+  ) {
+    return { approximate: false, symbol: '¥', amount: topupAmount, unit: 'CNY' }
+  }
+
+  if (isUsdtPayment(paymentType)) {
+    // No rate configured: fall back to the honest CNY order money.
+    return { approximate: false, symbol: '¥', amount: money, unit: 'CNY' }
+  }
+
+  return { approximate: false, symbol: '$', amount: money, unit: 'USD' }
+}
+
+export function formatChannelPaymentAmount(
+  display: ChannelPaymentDisplay
+): string {
+  const prefix = display.approximate ? '≈' : ''
+  const core = `${display.symbol}${display.amount.toFixed(2)}`
+  // "$1.00" / "¥5.00" are self-explanatory; a bare "0.15" needs its unit.
+  return display.symbol
+    ? `${prefix}${core}`
+    : `${prefix}${core} ${display.unit}`
+}
+
+/**
  * Check if payment method is Waffo
  */
 export function isWaffoPayment(paymentType: string): boolean {

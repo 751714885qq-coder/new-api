@@ -6240,6 +6240,12 @@
     "Bound to {{email}}, can be used for login and account recovery": "已绑定 {{email}}，可用于登录与找回密码",
     "Manage your account identity, security settings, and notification preferences — ": "管理账户身份、安全设置与通知偏好 —— ",
     "sensitive actions require security verification": "敏感操作需通过安全验证",
-    ", changes take effect immediately.": "，更改即时生效。"
+    ", changes take effect immediately.": "，更改即时生效。",
+    "Topup Credit": "Topup Credit",
+    "Custom Credit Amount": "Custom Credit Amount",
+    "Enter credit amount, minimum 1": "Enter credit amount, minimum 1",
+    "credit amount must match a stocked denomination": "credit amount must match a stocked denomination",
+    "You will be redirected to the card shop: buy the matching credit code, then redeem it here.": "You will be redirected to the card shop: buy the matching credit code, then redeem it here.",
+    "跳转云猫小店卡网购买，站内兑换码核销": "Buy the matching credit code at the card shop, then redeem it here."
   }
 }

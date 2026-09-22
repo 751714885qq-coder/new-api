@@ -100,6 +100,12 @@ export interface PaymentMethod {
   min_topup?: number
   /** Optional react-icons component name or safe icon URL */
   icon?: string
+  /**
+   * CNY per USDT rate configured on the crypto gateway for this method
+   * (e.g. "6.7"). Display-only: the cashier charges at its live rate, so
+   * the drawer shows the estimate with an "≈" prefix.
+   */
+  usdt_rate?: string
 }
 
 /**
