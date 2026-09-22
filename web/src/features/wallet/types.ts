@@ -164,6 +164,20 @@ export interface TopupInfo {
   payment_compliance_confirmed?: boolean
   /** Current compliance terms version */
   payment_compliance_terms_version?: string
+  /** Recharge commission display config; absent when commission is disabled */
+  recharge_commission?: RechargeCommissionInfo
+}
+
+/**
+ * Recharge commission display info (read-only, from /api/user/topup/info)
+ */
+export interface RechargeCommissionInfo {
+  /** Commission rate (0-1), e.g. 0.12 for 12% */
+  rate: number
+  /** Number of successful recharges per invited user that earn commission */
+  count: number
+  /** Cumulative cap per inviter in quota units; 0 means no cap */
+  cap_quota: number
 }
 
 /**

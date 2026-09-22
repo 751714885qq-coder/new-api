@@ -40,14 +40,16 @@ function extractTLiteralKeys(source: string): string[] {
 }
 
 describe('recharge drawer i18n keys', () => {
-  it('resolves every drawer t() key inside the zh translation namespace', () => {
-    const source = readFileSync(
-      join(walletDir, 'components/recharge-drawer.tsx'),
-      'utf-8'
-    )
-    const keys = extractTLiteralKeys(source).filter(
-      (key) => key.length > 3 && key.includes(' ')
-    )
+  it('resolves every drawer and affiliate card t() key inside the zh translation namespace', () => {
+    const sources = [
+      'components/recharge-drawer.tsx',
+      'components/affiliate-rewards-card.tsx',
+    ]
+      .map((relative) => readFileSync(join(walletDir, relative), 'utf-8'))
+
+    const keys = [
+      ...new Set(sources.flatMap((source) => extractTLiteralKeys(source))),
+    ].filter((key) => key.length > 3 && key.includes(' '))
     expect(keys.length).toBeGreaterThan(0)
 
     const missing = keys.filter((key) => !(key in zh.translation))

@@ -455,6 +455,7 @@ export function Wallet(props: WalletProps) {
                 complianceConfirmed={
                   topupInfo?.payment_compliance_confirmed !== false
                 }
+                commission={topupInfo?.recharge_commission}
                 loading={affiliateLoading}
               />
             )}
@@ -528,6 +529,7 @@ export function Wallet(props: WalletProps) {
                 complianceConfirmed={
                   topupInfo?.payment_compliance_confirmed !== false
                 }
+                commission={topupInfo?.recharge_commission}
                 loading={affiliateLoading}
               />
             )}

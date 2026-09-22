@@ -55,6 +55,9 @@ const quotaSchema = z.object({
   PreConsumedQuota: z.coerce.number().min(0),
   QuotaForInviter: z.coerce.number().min(0),
   QuotaForInvitee: z.coerce.number().min(0),
+  RechargeCommissionRate: z.coerce.number().min(0),
+  RechargeCommissionTopupCount: z.coerce.number().int().min(1),
+  RechargeCommissionCap: z.coerce.number().min(0),
   TopUpLink: z.string(),
   general_setting: z.object({
     docs_link: z.string(),
@@ -231,6 +234,94 @@ export function QuotaSettingsSection({
                     {t('Quota given to invited users ({{formattedQuota}})', {
                       formattedQuota: formatQuotaInputValue(field.value),
                     })}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='RechargeCommissionRate'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('Recharge Commission Rate (%)')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type='number'
+                      min={0}
+                      step={0.01}
+                      value={field.value ?? ''}
+                      onChange={handleNumberChange(field.onChange)}
+                      name={field.name}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {t(
+                      'Percentage of successful recharge quota credited to the inviter. 0 disables recharge commission.'
+                    )}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='RechargeCommissionTopupCount'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t('Commissioned Successful Recharges')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type='number'
+                      min={1}
+                      step={1}
+                      value={field.value ?? ''}
+                      onChange={handleNumberChange(field.onChange)}
+                      name={field.name}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {t(
+                      'Number of successful recharges per invited user that earn commission.'
+                    )}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='RechargeCommissionCap'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t('Recharge Commission Cumulative Cap')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type='number'
+                      min={0}
+                      value={field.value ?? ''}
+                      onChange={handleNumberChange(field.onChange)}
+                      name={field.name}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {t(
+                      'Maximum cumulative recharge commission credited to each inviter across all invited users ({{formattedQuota}}). 0 means no cap.',
+                      { formattedQuota: formatQuotaInputValue(field.value) }
+                    )}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

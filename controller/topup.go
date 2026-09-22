@@ -105,6 +105,17 @@ func GetTopUpInfo(c *gin.Context) {
 		"amount_options":           operation_setting.GetPaymentSetting().AmountOptions,
 		"discount":                 operation_setting.GetPaymentSetting().AmountDiscount,
 		"topup_link":               common.TopUpLink,
+		// 只读展示字段：返佣未启用（rate<=0）时为 nil，前端不渲染返佣说明。
+		"recharge_commission": func() any {
+			if common.RechargeCommissionRate <= 0 {
+				return nil
+			}
+			return gin.H{
+				"rate":      common.RechargeCommissionRate,
+				"count":     common.RechargeCommissionTopupCount,
+				"cap_quota": common.RechargeCommissionCap,
+			}
+		}(),
 	}
 	common.ApiSuccess(c, data)
 }

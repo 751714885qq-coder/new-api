@@ -29,13 +29,14 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useDeepSpace } from '@/hooks/use-deep-space'
 import { formatQuota } from '@/lib/format'
 
-import type { UserWalletData } from '../types'
+import type { RechargeCommissionInfo, UserWalletData } from '../types'
 
 interface AffiliateRewardsCardProps {
   user: UserWalletData | null
   affiliateLink: string
   onTransfer: () => void
   complianceConfirmed?: boolean
+  commission?: RechargeCommissionInfo
   loading?: boolean
 }
 
@@ -44,9 +45,11 @@ export function AffiliateRewardsCard({
   affiliateLink,
   onTransfer,
   complianceConfirmed = true,
+  commission,
   loading,
 }: AffiliateRewardsCardProps) {
   const { t } = useTranslation()
+  const percent = commission ? Math.round(commission.rate * 1000) / 10 : 0
   // Referral card frame is structural (draft 34 keeps it in light); the
   // invite box glass comes from --ds-glass per mode.
   const deepSpace = useDeepSpace()
@@ -90,6 +93,14 @@ export function AffiliateRewardsCard({
           >
             {t(
               'Earn rewards when users join through your referral link. Transfer accumulated rewards to your balance anytime.'
+            )}
+            {commission && (
+              <span className='mt-1 block'>
+                {t(
+                  'Earn {{percent}}% commission on the first {{count}} successful recharges of each invited user.',
+                  { percent, count: String(commission.count) }
+                )}
+              </span>
             )}
           </div>
           <div
@@ -190,6 +201,14 @@ export function AffiliateRewardsCard({
                 'Earn rewards when users join through your referral link. Transfer accumulated rewards to your balance anytime.'
               )}
             </p>
+            {commission && (
+              <p className='text-muted-foreground text-xs'>
+                {t(
+                  'Earn {{percent}}% commission on the first {{count}} successful recharges of each invited user.',
+                  { percent, count: String(commission.count) }
+                )}
+              </p>
+            )}
           </div>
         </div>
 

@@ -131,6 +131,12 @@ var TelegramBotName = ""
 var QuotaForNewUser = 0
 var QuotaForInviter = 0
 var QuotaForInvitee = 0
+
+// RechargeCommissionRate 充值返佣比例（0-1），0=停用；TopupCount 为每位被
+// 邀请人计返佣的成功充值笔数；Cap 为每位邀请人累计返佣封顶（quota），0=不封顶。
+var RechargeCommissionRate = 0.0
+var RechargeCommissionTopupCount = 3
+var RechargeCommissionCap = 0
 var ChannelDisableThreshold = 5.0
 var AutomaticDisableChannelEnabled = false
 var AutomaticEnableChannelEnabled = false

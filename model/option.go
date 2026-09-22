@@ -144,6 +144,9 @@ func InitOptionMap() {
 	common.OptionMap["QuotaForNewUser"] = strconv.Itoa(common.QuotaForNewUser)
 	common.OptionMap["QuotaForInviter"] = strconv.Itoa(common.QuotaForInviter)
 	common.OptionMap["QuotaForInvitee"] = strconv.Itoa(common.QuotaForInvitee)
+	common.OptionMap["RechargeCommissionRate"] = strconv.FormatFloat(common.RechargeCommissionRate, 'f', -1, 64)
+	common.OptionMap["RechargeCommissionTopupCount"] = strconv.Itoa(common.RechargeCommissionTopupCount)
+	common.OptionMap["RechargeCommissionCap"] = strconv.Itoa(common.RechargeCommissionCap)
 	common.OptionMap["QuotaRemindThreshold"] = strconv.Itoa(common.QuotaRemindThreshold)
 	common.OptionMap["PreConsumedQuota"] = strconv.Itoa(common.PreConsumedQuota)
 	common.OptionMap["ModelRequestRateLimitCount"] = strconv.Itoa(setting.ModelRequestRateLimitCount)
@@ -557,6 +560,21 @@ func updateOptionMap(key string, value string) (err error) {
 		common.QuotaForInviter, _ = strconv.Atoi(value)
 	case "QuotaForInvitee":
 		common.QuotaForInvitee, _ = strconv.Atoi(value)
+	case "RechargeCommissionRate":
+		rate, parseErr := strconv.ParseFloat(value, 64)
+		if parseErr == nil && rate >= 0 {
+			common.RechargeCommissionRate = rate
+		}
+	case "RechargeCommissionTopupCount":
+		count, parseErr := strconv.Atoi(value)
+		if parseErr == nil && count >= 1 {
+			common.RechargeCommissionTopupCount = count
+		}
+	case "RechargeCommissionCap":
+		cap, parseErr := strconv.Atoi(value)
+		if parseErr == nil && cap >= 0 {
+			common.RechargeCommissionCap = cap
+		}
 	case "QuotaRemindThreshold":
 		common.QuotaRemindThreshold, _ = strconv.Atoi(value)
 	case "PreConsumedQuota":
