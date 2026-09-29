@@ -95,6 +95,8 @@ export function PublicHeader(props: PublicHeaderProps) {
 
   const user = auth.user
   const isAuthenticated = !!user
+  // WO-039: auth 未就绪时显示中性态，防"已登录仍显示登录/注册"
+  const authReady = auth.bootstrapState === 'complete'
   const displaySiteName = customSiteName || systemName
   const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
 
@@ -280,7 +282,7 @@ export function PublicHeader(props: PublicHeaderProps) {
               {showAuthButtons && (
                 <>
                   <div className='bg-border/40 mx-1 h-4 w-px' />
-                  {loading ? (
+                  {loading || !authReady ? (
                     <Skeleton className='h-8 w-20 rounded-lg' />
                   ) : isAuthenticated ? (
                     <ProfileDropdown />

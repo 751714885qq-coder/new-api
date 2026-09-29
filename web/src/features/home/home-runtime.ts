@@ -30,10 +30,24 @@ import { api } from '@/lib/api'
  * WO-008 placeholder state stays untouched.
  */
 
-/** Money rendering: quotaPerUnit default 500000 = $1 (bench-verified against
- * the rc.36 console rendering; keep literal to the approved runtime). */
+/** Money rendering: quotaPerUnit read from /api/status (WO-039: 023 nominal
+ * pricing moved QuotaPerUnit to 3650000; hardcoded 500000 rendered $308
+ * instead of $42.19 for the same quota). */
+let quotaPerUnit: number | null = null
+async function fetchQuotaPerUnit(): Promise<number> {
+  if (quotaPerUnit !== null) return quotaPerUnit
+  try {
+    const res = await fetch('/api/status')
+    const payload = await res.json()
+    const v = Number(payload?.data?.quota_per_unit)
+    quotaPerUnit = Number.isFinite(v) && v > 0 ? v : 3650000
+  } catch {
+    quotaPerUnit = 3650000
+  }
+  return quotaPerUnit
+}
 function money(quota: number | undefined): string {
-  const v = (quota || 0) / 500000
+  const v = (quota || 0) / (quotaPerUnit ?? 3650000)
   return '$' + (v >= 0.01 ? v.toFixed(2) : v.toFixed(4))
 }
 
@@ -97,6 +111,7 @@ async function bindUserRuntime(
   authenticated: boolean
 ): Promise<void> {
   if (!authenticated) return
+  await fetchQuotaPerUnit()
   const payload = await getJson('/api/user/self').catch(() => null)
   const u: SelfUser | undefined = payload && payload.data
   if (!u) return
