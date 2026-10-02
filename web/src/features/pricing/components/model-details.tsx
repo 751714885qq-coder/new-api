@@ -655,8 +655,21 @@ function PriceSection(props: {
   const { t } = useTranslation()
   const isTokenBased = isTokenBasedModel(props.model)
   const tokenUnitLabel = props.tokenUnit === 'K' ? '1K' : '1M'
+  // WO-043: base price shows the LOWEST group price (aligns with home card
+  // '低至' wording) instead of the gr=1.0 hypothetical anchor that became
+  // misleading after the 023 nominal rescale (mr 243 -> display 66/400).
+  const modelEnableGroupsForBase = Array.isArray(props.model.enable_groups)
+    ? props.model.enable_groups
+    : []
+  let baseGroupRatioValue = 1
+  for (const g of modelEnableGroupsForBase) {
+    const r = props.groupRatio?.[g]
+    if (typeof r === 'number' && Number.isFinite(r) && r < baseGroupRatioValue) {
+      baseGroupRatioValue = r
+    }
+  }
   const baseGroupKey = '_base'
-  const baseGroupRatioMap = { [baseGroupKey]: 1 }
+  const baseGroupRatioMap = { [baseGroupKey]: baseGroupRatioValue }
   const dynamicSummary = getDynamicPricingSummary(props.model, {
     tokenUnit: props.tokenUnit,
     showRechargePrice: props.showRechargePrice,
