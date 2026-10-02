@@ -675,7 +675,7 @@ function PriceSection(props: {
     showRechargePrice: props.showRechargePrice,
     priceRate: props.priceRate,
     usdExchangeRate: props.usdExchangeRate,
-    groupRatioMultiplier: 1,
+    groupRatioMultiplier: baseGroupRatioValue,
   })
 
   const primaryPriceTypes: { label: string; type: PriceType }[] = [
