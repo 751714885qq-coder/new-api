@@ -1069,7 +1069,7 @@ function GroupPricingSection(props: {
       showRechargePrice,
       priceRate: props.priceRate,
       usdExchangeRate: props.usdExchangeRate,
-      groupRatioMultiplier: 1,
+      groupRatioMultiplier: baseGroupRatioValue,
       usageSchema: props.model.billing_usage_schema,
     })
     const formattedPricesByGroup = new Map(
